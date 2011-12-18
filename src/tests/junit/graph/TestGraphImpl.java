@@ -1,6 +1,6 @@
 package tests.junit.graph;
 
-import rectest.graph.*;
+import recng.graph.*;
 
 public class TestGraphImpl extends AbstractTestGraph {
 

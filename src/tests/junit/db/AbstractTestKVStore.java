@@ -2,7 +2,8 @@ package tests.junit.db;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import rectest.db.KVStore;
+
+import recng.db.KVStore;
 
 public abstract class AbstractTestKVStore {
 

@@ -7,12 +7,12 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.common.FieldMetadata;
-import rectest.common.FieldMetadataImpl;
-import rectest.common.FieldSet;
-import rectest.common.FieldSetImpl;
-import rectest.common.Marshallers;
-import rectest.common.PropertyContainer;
+import recng.common.FieldMetadata;
+import recng.common.FieldMetadataImpl;
+import recng.common.FieldSet;
+import recng.common.FieldSetImpl;
+import recng.common.Marshallers;
+import recng.common.PropertyContainer;
 
 public abstract class AbstractTestPropertyContainer {
 

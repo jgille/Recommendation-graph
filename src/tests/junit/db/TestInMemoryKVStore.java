@@ -1,7 +1,7 @@
 package tests.junit.db;
 
-import rectest.db.KVStore;
-import rectest.db.InMemoryKVStore;
+import recng.db.InMemoryKVStore;
+import recng.db.KVStore;
 
 public class TestInMemoryKVStore extends AbstractTestKVStore {
 

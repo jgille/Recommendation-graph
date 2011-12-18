@@ -3,7 +3,7 @@ package tests.junit.index;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.index.SplitKeyKVStore;;
+import recng.index.SplitKeyKVStore;
 
 /**
  *

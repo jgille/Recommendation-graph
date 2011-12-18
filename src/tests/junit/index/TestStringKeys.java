@@ -3,13 +3,13 @@ package tests.junit.index;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.index.IntKey;
-import rectest.index.LongKey;
-import rectest.index.PrefixIntSuffixKey;
-import rectest.index.PrefixLongSuffixKey;
-import rectest.index.Key;
-import rectest.index.StringKeys;
-import rectest.index.UTF8StringKey;
+import recng.index.IntKey;
+import recng.index.Key;
+import recng.index.LongKey;
+import recng.index.PrefixIntSuffixKey;
+import recng.index.PrefixLongSuffixKey;
+import recng.index.StringKeys;
+import recng.index.UTF8StringKey;
 
 public class TestStringKeys {
 

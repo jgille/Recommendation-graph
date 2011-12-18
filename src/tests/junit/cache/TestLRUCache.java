@@ -3,12 +3,12 @@ package tests.junit.cache;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.cache.Cache;
-import rectest.cache.CacheBuilder;
-import rectest.cache.Weigher;
+import recng.cache.Cache;
+import recng.cache.CacheBuilder;
+import recng.cache.Weigher;
 
 /**
- * Tests for {@link rectest.cache.LRUCache}.
+ * Tests for {@link recng.cache.LRUCache}.
  *
  * @author Jon Ivmark
  */

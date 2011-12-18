@@ -3,11 +3,11 @@ package tests.junit.cache;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.common.Marshaller;
-import rectest.common.Marshallers;
+import recng.common.Marshaller;
+import recng.common.Marshallers;
 
 /**
- * Tests for all marshallers in {@link rectest.common.Marshallers}.
+ * Tests for all marshallers in {@link recng.common.Marshallers}.
  *
  * @author Jon Ivmark
  */

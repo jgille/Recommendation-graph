@@ -3,11 +3,11 @@ package tests.junit.cache;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.cache.Cache;
-import rectest.cache.CacheBuilder;
+import recng.cache.Cache;
+import recng.cache.CacheBuilder;
 
 /**
- * Tests for {@link rectest.cache.ShardedLRUCache}.
+ * Tests for {@link recng.cache.ShardedLRUCache}.
  *
  * @author Jon Ivmark
  */

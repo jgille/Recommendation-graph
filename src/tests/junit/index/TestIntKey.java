@@ -6,9 +6,9 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.index.IntKey;
-import rectest.index.Key;
-import rectest.index.KeyFactory;
+import recng.index.IntKey;
+import recng.index.Key;
+import recng.index.KeyFactory;
 
 public class TestIntKey {
 

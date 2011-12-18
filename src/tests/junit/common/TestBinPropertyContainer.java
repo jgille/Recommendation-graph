@@ -1,8 +1,8 @@
 package tests.junit.common;
 
-import rectest.common.BinPropertyContainer;
-import rectest.common.FieldSet;
-import rectest.common.PropertyContainer;
+import recng.common.BinPropertyContainer;
+import recng.common.FieldSet;
+import recng.common.PropertyContainer;
 
 public class TestBinPropertyContainer extends
     AbstractTestPropertyContainer {

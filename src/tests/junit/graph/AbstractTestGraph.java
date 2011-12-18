@@ -7,8 +7,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import rectest.graph.*;
-import rectest.recommendations.RecommendationType;
+import recng.graph.*;
+import recng.recommendations.RecommendationType;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractTestGraph {

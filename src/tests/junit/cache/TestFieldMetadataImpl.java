@@ -3,13 +3,13 @@ package tests.junit.cache;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.common.FieldMetadata;
-import rectest.common.FieldMetadataImpl;
-import rectest.common.Marshaller;
-import rectest.common.Marshallers;
+import recng.common.FieldMetadata;
+import recng.common.FieldMetadataImpl;
+import recng.common.Marshaller;
+import recng.common.Marshallers;
 
 /**
- * Tests for {@link rectest.common.FieldMetadataImpl}.
+ * Tests for {@link recng.common.FieldMetadataImpl}.
  *
  * @author Jon Ivmark
  */

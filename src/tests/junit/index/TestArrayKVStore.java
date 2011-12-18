@@ -5,7 +5,7 @@ import java.util.Comparator;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.index.ArrayKVStore;
+import recng.index.ArrayKVStore;
 
 /**
  *

@@ -5,14 +5,14 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.common.FieldMetadata;
-import rectest.common.FieldMetadataImpl;
-import rectest.common.FieldSet;
-import rectest.common.FieldSetImpl;
-import rectest.common.Marshallers;
+import recng.common.FieldMetadata;
+import recng.common.FieldMetadataImpl;
+import recng.common.FieldSet;
+import recng.common.FieldSetImpl;
+import recng.common.Marshallers;
 
 /**
- * Tests for {@link rectest.common.FieldSetImpl}.
+ * Tests for {@link recng.common.FieldSetImpl}.
  *
  * @author Jon Ivmark
  */

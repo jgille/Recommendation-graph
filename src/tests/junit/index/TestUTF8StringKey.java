@@ -6,8 +6,8 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import rectest.index.UTF8StringKey;
-import rectest.index.Key;
+import recng.index.Key;
+import recng.index.UTF8StringKey;
 
 public class TestUTF8StringKey {
 

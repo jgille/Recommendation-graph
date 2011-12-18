@@ -1,14 +1,14 @@
 package tests.misc;
 
-import rectest.cache.*;
-import rectest.common.BinPropertyContainer;
-import rectest.common.FieldMetadata;
-import rectest.common.FieldMetadataImpl;
-import rectest.common.FieldSet;
-import rectest.common.FieldSetImpl;
-import rectest.common.Marshallers;
-import rectest.common.WeightedPropertyContainer;
-import rectest.index.*;
+import recng.cache.*;
+import recng.common.BinPropertyContainer;
+import recng.common.FieldMetadata;
+import recng.common.FieldMetadataImpl;
+import recng.common.FieldSet;
+import recng.common.FieldSetImpl;
+import recng.common.Marshallers;
+import recng.common.WeightedPropertyContainer;
+import recng.index.*;
 
 import java.io.*;
 import java.util.*;

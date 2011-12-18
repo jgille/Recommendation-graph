@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import rectest.graph.*;
-import rectest.recommendations.ProductId;
-import rectest.recommendations.RecommendationType;
+import recng.graph.*;
+import recng.recommendations.ProductId;
+import recng.recommendations.RecommendationType;
 
 import static org.junit.Assert.*;
 import org.junit.Test;

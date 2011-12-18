@@ -2,13 +2,13 @@ package rectest.graph;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Describes a type of node in a graph.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public class NodeTypeImpl implements NodeType {
 
@@ -18,14 +18,14 @@ public class NodeTypeImpl implements NodeType {
 
     /**
      * Creates a node type instance.
-     * 
+     *
      * @param name
      *            The node type name
      * @param validEdgeTypes
      *            The valid edge types of edges originating from nodes of this
      *            type
      */
-    public NodeTypeImpl(String name, Set<EdgeType> validEdgeTypes) {
+    public NodeTypeImpl(String name, List<EdgeType> validEdgeTypes) {
         this.name = name;
         int i = 0;
         for (EdgeType et : validEdgeTypes)
@@ -40,5 +40,12 @@ public class NodeTypeImpl implements NodeType {
     @Override
     public Map<EdgeType, Integer> validEdgeTypes() {
         return validEdgeTypes;
+    }
+
+    @Override
+    public int indexOf(EdgeType edgeType) {
+        if (!validEdgeTypes.containsKey(edgeType))
+            return -1;
+        return validEdgeTypes.get(edgeType);
     }
 }

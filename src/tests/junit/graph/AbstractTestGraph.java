@@ -3,8 +3,6 @@ package tests.junit.graph;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -17,11 +15,9 @@ public abstract class AbstractTestGraph {
 
     private static final RecommendationType EDGE_TYPE = RecommendationType.PEOPLE_WHO_BOUGHT;
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        new HashSet<EdgeType>(
-                              Arrays
-                                  .asList(RecommendationType.PEOPLE_WHO_BOUGHT,
-                                          RecommendationType.PEOPLE_WHO_VIEWED));
+    private static final List<EdgeType> EDGE_TYPES =
+        Arrays.<EdgeType> asList(RecommendationType.PEOPLE_WHO_BOUGHT,
+                                 RecommendationType.PEOPLE_WHO_VIEWED);
     private static final NodeType NODE_TYPE =
         new NodeTypeImpl("Product", EDGE_TYPES);
 

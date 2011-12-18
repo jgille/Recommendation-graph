@@ -1,7 +1,9 @@
 package rectest.tests.misc;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import rectest.graph.*;
@@ -10,8 +12,8 @@ import rectest.recommendations.RecommendationType;
 
 public class TestGraphImporterImpl {
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        new HashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
+    private static final List<EdgeType> EDGE_TYPES =
+        new ArrayList<EdgeType>(EnumSet.allOf(RecommendationType.class));
 
     private static final NodeType NODE_TYPE = new NodeTypeImpl("Product",
                                                                EDGE_TYPES);

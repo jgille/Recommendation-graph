@@ -1,5 +1,10 @@
 package rectest.recommendations;
 
-public class ProductId {
+import rectest.graph.NodeId;
 
+public class ProductId<K> extends NodeId<K> {
+
+    public ProductId(K id) {
+        super(id, ProductNodeType.getInstance());
+    }
 }

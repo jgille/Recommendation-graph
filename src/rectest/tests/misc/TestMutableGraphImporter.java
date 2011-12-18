@@ -3,6 +3,7 @@ package rectest.tests.misc;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import rectest.graph.*;
@@ -11,11 +12,9 @@ import rectest.recommendations.RecommendationType;
 
 public class TestMutableGraphImporter {
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        new HashSet<EdgeType>(
-                              Arrays
-                                  .asList(RecommendationType.PEOPLE_WHO_BOUGHT,
-                                          RecommendationType.PEOPLE_WHO_VIEWED));
+    private static final List<EdgeType> EDGE_TYPES =
+        Arrays.<EdgeType>asList(RecommendationType.PEOPLE_WHO_BOUGHT,
+                                 RecommendationType.PEOPLE_WHO_VIEWED);
     private static final NodeType NODE_TYPE =
         new NodeTypeImpl("Product", EDGE_TYPES);
 

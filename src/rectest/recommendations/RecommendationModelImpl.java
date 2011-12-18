@@ -50,7 +50,7 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
                            ProductQuery<K> query,
                            Set<String> properties) {
         Traverser<K> traverser =
-            setupTraverser(keyParser.parseKey(sourceProduct), query);
+            setupTraverser(getProductId(sourceProduct), query);
         List<Product<K>> res = new ArrayList<Product<K>>();
         GraphCursor<K> cursor = traverser.traverse();
         try {
@@ -70,9 +70,20 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
         return getProductProperties(key, properties);
     }
 
+    private ProductId<K> getProductId(String id) {
+        K key = keyParser.parseKey(id);
+        return new ProductId<K>(key);
+    }
+
     private Traverser<K>
-        setupTraverser(K source, ProductQuery<K> query) {
-        return null; // TODO: Implement
+        setupTraverser(NodeId<K> source, ProductQuery<K> query) {
+        return productGraph.prepareTraversal(source,
+                                             query.getRecommendationType())
+            .maxReturnedEdges(query.getLimit())
+            .maxTraversedEdges(query.getMaxCursorSize())
+            .maxDepth(query.getMaxRelationDistance())
+            .edgeFilter(new Filter(query.getFilter()))
+            .build();
     }
 
     private class Filter implements EdgeFilter<K> {

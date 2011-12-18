@@ -3,9 +3,11 @@ package rectest.recommendations;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,8 +22,8 @@ import rectest.index.Key;
 
 public class PredictorImpl implements Predictor {
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        new HashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
+    private static final List<EdgeType> EDGE_TYPES =
+        new ArrayList<EdgeType>(EnumSet.allOf(RecommendationType.class));
 
     private static final NodeType NODE_TYPE = new NodeTypeImpl("Product",
                                                                EDGE_TYPES);

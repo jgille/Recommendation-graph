@@ -56,11 +56,11 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
 
     /**
      * Created a new mutable node.
-     *
+     * 
      * @param id
      *            The id of this node.
      * @param nodeStore
-     *            The container for this node ><and it's neighbors
+     *            The container for this node and it's neighbors
      */
     public MutableGraphNodeImpl(NodeId<K> id, MutableGraphNodeStore<K> nodeStore) {
         this.id = id;

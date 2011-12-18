@@ -2,7 +2,6 @@ package tests.junit.recommendation;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,16 +21,14 @@ import rectest.common.Marshallers;
 import rectest.common.filter.ProductFilter;
 import rectest.db.KVStore;
 import rectest.db.InMemoryKVStore;
-import rectest.graph.EdgeType;
 import rectest.graph.Graph;
 import rectest.graph.GraphImpl;
 import rectest.graph.NodeId;
-import rectest.graph.NodeType;
-import rectest.graph.NodeTypeImpl;
 import rectest.index.Key;
 import rectest.index.StringKeys;
 import rectest.recommendations.Product;
 import rectest.recommendations.KeyParser;
+import rectest.recommendations.ProductId;
 import rectest.recommendations.ProductMetadata;
 import rectest.recommendations.ProductMetadataImpl;
 import rectest.recommendations.ProductMetadataCache;
@@ -46,7 +43,7 @@ public class TestRecommendationModelImpl {
     private static final RecommendationType EDGE_TYPE =
         RecommendationType.PEOPLE_WHO_BOUGHT;
 
-    private static final KeyParser<Key<String>> PIP =
+    private static final KeyParser<Key<String>> KP =
         new KeyParser<Key<String>>() {
             public Key<String> parseKey(String id) {
                 return StringKeys.parseKey(id);
@@ -57,20 +54,14 @@ public class TestRecommendationModelImpl {
             }
         };
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        new HashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
-
-    private static final NodeType NODE_TYPE = new NodeTypeImpl("Product",
-                                                               EDGE_TYPES);
-
     private static final NodeId<Key<String>> N1 =
-        new NodeId<Key<String>>(PIP.parseKey("1"), NODE_TYPE);
+        new ProductId<Key<String>>(KP.parseKey("1"));
     private static final NodeId<Key<String>> N2 =
-        new NodeId<Key<String>>(PIP.parseKey("2"), NODE_TYPE);
+        new ProductId<Key<String>>(KP.parseKey("2"));
     private static final NodeId<Key<String>> N3 =
-        new NodeId<Key<String>>(PIP.parseKey("3"), NODE_TYPE);
+        new ProductId<Key<String>>(KP.parseKey("3"));
     private static final NodeId<Key<String>> N4 =
-        new NodeId<Key<String>>(PIP.parseKey("4"), NODE_TYPE);
+        new ProductId<Key<String>>(KP.parseKey("4"));
 
     private static final Float N1_N2 = 0.7f;
     private static final Float N1_N3 = 0.3f;
@@ -158,7 +149,7 @@ public class TestRecommendationModelImpl {
         return new RecommendationModelImpl<Key<String>>(productGraph,
                                                         productMetadata,
                                                         productMetadataCache,
-                                                        PIP);
+                                                        KP);
     }
 
     @Test
@@ -204,14 +195,14 @@ public class TestRecommendationModelImpl {
         assertNotNull(related);
         assertEquals(2, related.size());
         Product<Key<String>> r1 = related.get(0);
-        assertEquals(N3, r1.getId());
+        assertEquals(N3.getId(), r1.getId());
         assertEquals(3, r1.getProperty("index"));
         assertEquals("3", r1.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3", "cat4"), r1.getCategories());
 
         Product<Key<String>> r2 = related.get(1);
 
-        assertEquals(N4, r2.getId());
+        assertEquals(N4.getId(), r2.getId());
         assertEquals(4, r2.getProperty("index"));
         assertEquals("4", r2.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3"), r2.getCategories());

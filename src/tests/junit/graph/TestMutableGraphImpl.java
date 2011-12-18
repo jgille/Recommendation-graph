@@ -3,12 +3,11 @@ package tests.junit.graph;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import rectest.graph.*;
+import rectest.recommendations.ProductId;
 import rectest.recommendations.RecommendationType;
 
 import static org.junit.Assert.*;
@@ -23,39 +22,15 @@ public class TestMutableGraphImpl {
     private static final Set<EdgeType> EDGE_TYPES =
         Collections.<EdgeType> singleton(EDGE_TYPE);
 
-    private static final NodeType NODE_TYPE = new ProductNodeType();
-
     private static final List<NodeId<Integer>> NODES =
-        Arrays.asList(new NodeId<Integer>(0, NODE_TYPE),
-                      new NodeId<Integer>(1, NODE_TYPE),
-                      new NodeId<Integer>(2, NODE_TYPE),
-                      new NodeId<Integer>(3, NODE_TYPE),
-                      new NodeId<Integer>(4, NODE_TYPE),
-                      new NodeId<Integer>(5, NODE_TYPE),
-                      new NodeId<Integer>(6, NODE_TYPE),
-                      new NodeId<Integer>(7, NODE_TYPE)
-            );
-
-    private static class ProductNodeType implements NodeType {
-
-        private final Map<EdgeType, Integer> validEdgeTypes;
-
-        private ProductNodeType() {
-            this.validEdgeTypes = new HashMap<EdgeType, Integer>();
-            validEdgeTypes.put(RecommendationType.PEOPLE_WHO_BOUGHT, 0);
-            validEdgeTypes.put(RecommendationType.PEOPLE_WHO_VIEWED, 1);
-        }
-
-        @Override
-        public Map<EdgeType, Integer> validEdgeTypes() {
-            return validEdgeTypes;
-        }
-
-        @Override
-        public String name() {
-            return "Product";
-        }
-    };
+        Arrays.<NodeId<Integer>> asList(new ProductId<Integer>(0),
+                                        new ProductId<Integer>(1),
+                                        new ProductId<Integer>(2),
+                                        new ProductId<Integer>(3),
+                                        new ProductId<Integer>(4),
+                                        new ProductId<Integer>(5),
+                                        new ProductId<Integer>(6),
+                                        new ProductId<Integer>(7));
 
     private MutableGraph<Integer> buildGraph() {
         MutableGraph<Integer> graph = new MutableGraphImpl<Integer>(EDGE_TYPES);

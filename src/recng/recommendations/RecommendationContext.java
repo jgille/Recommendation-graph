@@ -27,7 +27,7 @@ public class RecommendationContext {
 
     public static synchronized void setup(String npDataFile,
                                           String clickDataFile,
-                                          ProductMetadata productMetadata) {
+                                          ProductData productMetadata) {
         if (INSTANCE != null)
             throw new RuntimeException("Already set up");
         KeyParser<Key<String>> pip =
@@ -45,7 +45,7 @@ public class RecommendationContext {
 
         Graph<Key<String>> productGraph =
             buildProductGraph(npDataFile, clickDataFile, pip);
-        ProductMetadataCache<Key<String>> productMetadataCache =
+        ProductCache<Key<String>> productMetadataCache =
             setupCache(productGraph.nodeCount());
         RecommendationModel<Key<String>> model =
             new RecommendationModelImpl<Key<String>>(productGraph,
@@ -63,7 +63,7 @@ public class RecommendationContext {
                                                     pip);
     }
 
-    private static ProductMetadataCache<Key<String>>
+    private static ProductCache<Key<String>>
         setupCache(int numberOfProducts) {
         CacheBuilder<Key<String>, Product<Key<String>>> builder =
             new CacheBuilder<Key<String>, Product<Key<String>>>();
@@ -79,6 +79,6 @@ public class RecommendationContext {
         builder.maxWeight(Runtime.getRuntime().maxMemory() / 4);
         builder.maxSize(numberOfProducts);
 
-        return new ProductMetadataCacheImpl<Key<String>>(builder.build());
+        return new ProductCacheImpl<Key<String>>(builder.build());
     }
 }

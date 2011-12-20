@@ -1,15 +1,14 @@
 package recng.common;
 
-
 /**
  * Metadata for a field (key) in a key/value pair.
  *
- * @author Jon Ivmark
+ * @author jon
+ * 
+ * @param <T>
+ *            The generic type of the mapped values for this field.
  */
 public interface FieldMetadata<T> {
-
-    public static final String IS_VALID = "__IS_VALID";
-    public static final String CATEGORIES = "__CATEGORIES";
 
     /**
      * Gets the field name.
@@ -17,8 +16,8 @@ public interface FieldMetadata<T> {
     String getFieldName();
 
     /**
-     * Returns a marshaller that can be used to marshal the value
-     * to and from a byte array representation.
+     * Returns a marshaller that can be used to marshal the value to and from a
+     * binary representation.
      */
     Marshaller<T> getMarshaller();
 

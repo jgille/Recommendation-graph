@@ -14,7 +14,6 @@ import gnu.trove.map.hash.TObjectIntHashMap;
  *
  * @author jon
  *
- * @param <K>
  */
 public class MutableGraphImpl<K> implements MutableGraph<K> {
 
@@ -63,7 +62,6 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
         public Graph<K> build() {
             return graph;
         }
-
     }
 
     @Override
@@ -76,23 +74,30 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
 
         int index = getPrimaryKey(source);
         MutableGraphNode<K> startNode = getNode(index);
-        if (startNode == null)
-            throw new IllegalArgumentException("Unable to find node: " + source);
         return new TraverserBuilderImpl<K>(startNode, edgeType);
     }
 
     @Override
     public void
         getEdges(Consumer<GraphEdge<K>, Void> consumer) {
-        for (MutableGraphNode<K> node : nodes) {
+        List<MutableGraphNode<K>> nodesCopy;
+        synchronized (lock) {
+            // Make a copy of the node list to avoid concurrency issues
+            nodesCopy =
+                new ArrayList<MutableGraphNode<K>>(nodes);
+        }
+        for (MutableGraphNode<K> node : nodesCopy) {
             for (EdgeType edgeType : getEdgeTypes()) {
                 Iterator<TraversableGraphEdge<K>> it =
                     node.traverseNeighbors(edgeType);
                 while (it.hasNext()) {
                     TraversableGraphEdge<K> edge = it.next();
+                    GraphNode<K> startNode = edge.getStartNode();
+                    GraphNode<K> endNode = edge.getEndNode();
+                    if (startNode == null || endNode == null)
+                        continue;
                     consumer.consume(new GraphEdge<K>
-                        (edge.getStartNode().getNodeId(),
-                         edge.getEndNode().getNodeId(),
+                        (startNode.getNodeId(), endNode.getNodeId(),
                          edgeType, edge.getWeight()));
                 }
             }
@@ -107,6 +112,7 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
     @Override
     public int edgeCount() {
         int edgeCount = 0;
+        // TODO: Add synchronization?
         for (MutableGraphNode<K> node : nodes)
             edgeCount += node.getEdgeCount();
         return edgeCount;
@@ -133,8 +139,7 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
 
     @Override
     public boolean updateEdge(NodeId<K> start, NodeId<K> end,
-                              EdgeType edgeType,
-                              float weight) {
+                              EdgeType edgeType, float weight) {
         if (start == null || end == null)
             throw new IllegalArgumentException("Null nodes not allowed");
         if (edgeType == null)
@@ -147,7 +152,7 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
             int startNodeIndex = getPrimaryKey(start);
             if (startNodeIndex < 0)
                 return false;
-            endNodeIndex = upsertNode(end);
+            endNodeIndex = getPrimaryKey(end);
             if (endNodeIndex < 0)
                 return false;
             startNode = getNode(startNodeIndex);
@@ -169,7 +174,7 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
             int startNodeIndex = getPrimaryKey(start);
             if (startNodeIndex < 0)
                 return false;
-            endNodeIndex = upsertNode(end);
+            endNodeIndex = getPrimaryKey(end);
             if (endNodeIndex < 0)
                 return false;
             startNode = getNode(startNodeIndex);
@@ -180,8 +185,7 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
 
     @Override
     public void setEdges(NodeId<K> start, EdgeType edgeType,
-                         List<NodeId<K>> endNodes,
-                         List<Float> weights) {
+                         List<NodeId<K>> endNodes, List<Float> weights) {
         if (endNodes == null || weights == null)
             throw new IllegalArgumentException("Null edge lists not allowed");
         if (endNodes.size() != weights.size())
@@ -206,9 +210,11 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
 
     @Override
     public int getPrimaryKey(NodeId<K> nodeId) {
-        if (!nodeIndex.contains(nodeId))
-            return -1;
-        return nodeIndex.get(nodeId);
+        synchronized (lock) {
+            if (!nodeIndex.contains(nodeId))
+                return -1;
+            return nodeIndex.get(nodeId);
+        }
     }
 
     /**
@@ -219,28 +225,28 @@ public class MutableGraphImpl<K> implements MutableGraph<K> {
      */
     @Override
     public MutableGraphNode<K> getNode(int primaryKey) {
-        if (primaryKey >= nodes.size() || primaryKey < 0)
-            return null;
-        return nodes.get(primaryKey);
+        synchronized (lock) {
+            if (primaryKey >= nodes.size() || primaryKey < 0)
+                return null;
+            return nodes.get(primaryKey);
+        }
     }
 
     /**
      * Creates a node if it does not already exist.
+     *
+     * Not thread safe and needs synchronization.
      */
     private int upsertNode(NodeId<K> nodeId) {
         if (nodeId == null)
             return -1;
-        synchronized (lock) {
-            if (nodeIndex.contains(nodeId))
-                return nodeIndex.get(nodeId);
-        }
+        if (nodeIndex.contains(nodeId))
+            return nodeIndex.get(nodeId);
         MutableGraphNode<K> node = new MutableGraphNodeImpl<K>(nodeId, this);
         int index;
-        synchronized (lock) {
-            index = nodes.size();
-            nodeIndex.put(nodeId, index);
-            nodes.add(node);
-        }
+        index = nodes.size();
+        nodeIndex.put(nodeId, index);
+        nodes.add(node);
         return index;
     }
 

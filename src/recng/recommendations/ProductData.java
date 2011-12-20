@@ -2,14 +2,14 @@ package recng.recommendations;
 
 import java.util.Map;
 
-import recng.common.FieldSet;
+import recng.common.TableMetadata;
 
-public interface ProductMetadata {
+public interface ProductData {
 
     public static final String IS_VALID_KEY = "__is_valid";
     public static final String CATEGORIES_KEY = "__categories";
 
-    Map<String, Object> getProductMetadata(String productId);
+    Map<String, Object> getProductData(String productId);
 
-    FieldSet getProductFields();
+    TableMetadata getProductFields();
 }

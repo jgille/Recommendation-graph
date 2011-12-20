@@ -10,7 +10,7 @@ import java.util.Set;
 import recng.cache.Cache;
 import recng.cache.CacheBuilder;
 import recng.common.FieldMetadata;
-import recng.common.FieldSet;
+import recng.common.TableMetadata;
 import recng.common.filter.ProductFilter;
 import recng.graph.EdgeFilter;
 import recng.graph.Graph;
@@ -24,9 +24,9 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
     // The product graph, i.e. the relations between products
     private final Graph<K> productGraph;
     // The backend (db) storage of product metadata
-    private final ProductMetadata pmd;
+    private final ProductData pmd;
     // Cached product metadata
-    private final ProductMetadataCache<K> pmdCache;
+    private final ProductCache<K> pmdCache;
     // Short lived cache used to avoid making duplicate db requests for the same
     // product in close succession
     private final Cache<K, Map<String, Object>> shortTermCache =
@@ -37,8 +37,8 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
     private final KeyParser<K> keyParser;
 
     public RecommendationModelImpl(Graph<K> productGraph,
-                                   ProductMetadata productMetadata,
-                                   ProductMetadataCache<K> productMetadataCache,
+                                   ProductData productMetadata,
+                                   ProductCache<K> productMetadataCache,
                                    KeyParser<K> keyParser) {
         this.productGraph = productGraph;
         this.pmd = productMetadata;
@@ -95,7 +95,7 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
         public Filter(ProductFilter<K> pFilter) {
             this.pFilter = pFilter;
             this.properties = new HashSet<String>(pFilter.getFilterProperties());
-            properties.add(FieldMetadata.IS_VALID);
+            properties.add(Product.IS_VALID_PROPERTY);
         }
 
         public boolean accepts(NodeId<K> start, NodeId<K> end) {
@@ -121,9 +121,9 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
                                             Set<String> properties) {
         Map<String, Object> metadata = shortTermCache.get(productId);
         if (metadata == null)
-            metadata = pmd.getProductMetadata(keyParser.toString(productId));
-        Boolean isValid = (Boolean) metadata.get(ProductMetadata.IS_VALID_KEY);
-        FieldSet fields = pmd.getProductFields();
+            metadata = pmd.getProductData(keyParser.toString(productId));
+        Boolean isValid = (Boolean) metadata.get(ProductData.IS_VALID_KEY);
+        TableMetadata fields = pmd.getProductFields();
         Product<K> product =
             new ProductImpl<K>(productId, isValid == null
                 || isValid.booleanValue(), fields);

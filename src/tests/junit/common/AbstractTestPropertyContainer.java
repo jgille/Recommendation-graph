@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
-import recng.common.FieldSet;
-import recng.common.FieldSetImpl;
+import recng.common.TableMetadata;
+import recng.common.TableMetadataImpl;
 import recng.common.Marshallers;
 import recng.common.PropertyContainer;
 
@@ -35,10 +35,10 @@ public abstract class AbstractTestPropertyContainer {
                                       Marshallers.STRING_MARSHALLER,
                                       FieldMetadata.Type.STRING, true);
 
-    protected abstract PropertyContainer<String> getPropertyContainer(FieldSet fs);
+    protected abstract PropertyContainer<String> getPropertyContainer(TableMetadata fs);
 
     @Test public void testGetSetContainsProperty() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).add(RELEASE_DATE).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).add(RELEASE_DATE).build();
         PropertyContainer<String> properties = getPropertyContainer(fs);
 
         assertFalse(properties.containsProperty(PRICE.getFieldName()));
@@ -65,7 +65,7 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test
     public void testInvalidKey() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         PropertyContainer<String> properties = getPropertyContainer(fs);
         boolean exception = false;
         try {
@@ -77,7 +77,7 @@ public abstract class AbstractTestPropertyContainer {
     }
 
     @Test public void testGetKeys() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         PropertyContainer<String> properties =  getPropertyContainer(fs);
         Set<String> fields = properties.getKeys();
         assertEquals(2, fields.size());
@@ -87,8 +87,8 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test
     public void testRepeatedProperty() {
-        FieldSet fs =
-            new FieldSetImpl.Builder().add(PRICE).add(CATEGORIES)
+        TableMetadata fs =
+            new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
                 .add(RELEASE_DATE).build();
         PropertyContainer<String> properties = getPropertyContainer(fs);
 

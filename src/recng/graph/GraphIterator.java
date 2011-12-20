@@ -49,7 +49,7 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
     // Avoid duplicates among returned end nodes
     private final Set<NodeId<K>> returnedNodes = new HashSet<NodeId<K>>();
     // Used to avoid using the same start node twice
-    private final Set<NodeId<K>> touchedNodes = new HashSet<NodeId<K>>();
+    private final Set<NodeId<K>> visitedNodes = new HashSet<NodeId<K>>();
 
     /**
      * Created an iterator originating at a start node.
@@ -99,6 +99,8 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
             TraversableGraphEdge<K> edge = edgeIterator.next();
             GraphNode<K> startNode = edge.getStartNode();
             GraphNode<K> endNode = edge.getEndNode();
+            if (startNode == null || endNode == null)
+                continue;
             EdgeId<K> edgeId =
                 new EdgeId<K>(startNode.getNodeId(), endNode.getNodeId());
             if (endNode.getNodeId().equals(sourceNode.getNodeId())
@@ -106,18 +108,18 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
                 continue; // Avoid loops
             traversedEdges.add(edgeId);
             traversedEdgeCount++;
-            boolean alreadyTouched = touchedNodes.contains(endNode.getNodeId());
-            touchedNodes.add(endNode.getNodeId());
-            if (!alreadyTouched &&
-                currentDepth < maxDepth) // TODO: Avoid re-adding already
-                                         // traversed nodes
-                neighborQueue.add(new NodeAndDepth<K>(edge.getEndNode(),
-                                                      currentDepth));
+
+            boolean alreadyVisited = visitedNodes.contains(endNode.getNodeId());
+            visitedNodes.add(endNode.getNodeId());
+            if (!alreadyVisited && currentDepth < maxDepth)
+                neighborQueue.add(new NodeAndDepth<K>(endNode, currentDepth));
+
             if (returnedNodes.contains(endNode.getNodeId())) // No duplicates
                 continue;
+
             // Check the filter
-            if (returnableFilter.accepts(edge.getStartNode().getNodeId(),
-                                         edge.getEndNode().getNodeId())) {
+            if (returnableFilter.accepts(startNode.getNodeId(),
+                                         endNode.getNodeId())) {
                 currentEdge = edge;
                 return true; // Yup, we have an edge to return
             }
@@ -168,6 +170,7 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
     }
 
     // Used to avoid traversing the same edge twice
+    // TODO: Use EdgeImpl instead
     private static class EdgeId<K> {
         private final NodeId<K> from, to;
 

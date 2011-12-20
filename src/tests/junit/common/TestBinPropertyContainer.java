@@ -1,14 +1,14 @@
 package tests.junit.common;
 
 import recng.common.BinPropertyContainer;
-import recng.common.FieldSet;
+import recng.common.TableMetadata;
 import recng.common.PropertyContainer;
 
 public class TestBinPropertyContainer extends
     AbstractTestPropertyContainer {
 
     @Override
-    protected PropertyContainer<String> getPropertyContainer(FieldSet fs) {
-        return BinPropertyContainer.build(fs, true);
+    protected PropertyContainer<String> getPropertyContainer(TableMetadata fs) {
+        return new BinPropertyContainer(fs, true);
     }
 }

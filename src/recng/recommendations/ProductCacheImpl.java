@@ -2,11 +2,11 @@ package recng.recommendations;
 
 import recng.cache.Cache;
 
-public class ProductMetadataCacheImpl<K> implements ProductMetadataCache<K> {
+public class ProductCacheImpl<K> implements ProductCache<K> {
 
     private final Cache<K, Product<K>> cache;
 
-    public ProductMetadataCacheImpl(Cache<K, Product<K>> cache) {
+    public ProductCacheImpl(Cache<K, Product<K>> cache) {
         this.cache = cache;
     }
 

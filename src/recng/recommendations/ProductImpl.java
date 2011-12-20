@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import recng.common.BinPropertyContainer;
-import recng.common.FieldSet;
+import recng.common.TableMetadata;
 import recng.common.WeightedPropertyContainer;
 
 public class ProductImpl<K> implements Product<K> {
@@ -12,9 +12,9 @@ public class ProductImpl<K> implements Product<K> {
     private final K id;
     private final WeightedPropertyContainer<String> properties;
 
-    public ProductImpl(K id, boolean isValid, FieldSet fields) {
+    public ProductImpl(K id, boolean isValid, TableMetadata fields) {
         this.id = id;
-        this.properties = BinPropertyContainer.build(fields, true);
+        this.properties = new BinPropertyContainer(fields, true);
         setIsValid(isValid);
     }
 
@@ -23,12 +23,12 @@ public class ProductImpl<K> implements Product<K> {
     }
 
     public boolean isValid() {
-        Boolean isValid = properties.getProperty(ProductMetadata.IS_VALID_KEY);
+        Boolean isValid = properties.getProperty(ProductData.IS_VALID_KEY);
         return isValid != null && isValid.booleanValue();
     }
 
     public void setIsValid(boolean isValid) {
-        properties.setProperty(ProductMetadata.IS_VALID_KEY, isValid);
+        properties.setProperty(ProductData.IS_VALID_KEY, isValid);
     }
 
     public <V> V getProperty(String key) {
@@ -60,11 +60,11 @@ public class ProductImpl<K> implements Product<K> {
     }
 
     public List<String> getCategories() {
-        return getRepeatedProperties(ProductMetadata.CATEGORIES_KEY);
+        return getRepeatedProperties(ProductData.CATEGORIES_KEY);
     }
 
     public void setCategories(List<String> categories) {
-        properties.setRepeatedProperties(ProductMetadata.CATEGORIES_KEY,
+        properties.setRepeatedProperties(ProductData.CATEGORIES_KEY,
                                          categories);
     }
 

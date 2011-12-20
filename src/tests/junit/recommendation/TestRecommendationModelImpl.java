@@ -15,8 +15,8 @@ import recng.cache.Cache;
 import recng.cache.CacheBuilder;
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
-import recng.common.FieldSet;
-import recng.common.FieldSetImpl;
+import recng.common.TableMetadata;
+import recng.common.TableMetadataImpl;
 import recng.common.Marshallers;
 import recng.common.filter.ProductFilter;
 import recng.db.InMemoryKVStore;
@@ -29,10 +29,10 @@ import recng.index.StringKeys;
 import recng.recommendations.KeyParser;
 import recng.recommendations.Product;
 import recng.recommendations.ProductId;
-import recng.recommendations.ProductMetadata;
-import recng.recommendations.ProductMetadataCache;
-import recng.recommendations.ProductMetadataCacheImpl;
-import recng.recommendations.ProductMetadataImpl;
+import recng.recommendations.ProductData;
+import recng.recommendations.ProductCache;
+import recng.recommendations.ProductCacheImpl;
+import recng.recommendations.ProductDataImpl;
 import recng.recommendations.ProductQuery;
 import recng.recommendations.RecommendationModel;
 import recng.recommendations.RecommendationModelImpl;
@@ -88,7 +88,7 @@ public class TestRecommendationModelImpl {
         return builder.build();
     }
 
-    private ProductMetadata createMetadata() {
+    private ProductData createMetadata() {
         KVStore<String, Map<String, Object>> db =
             new InMemoryKVStore<String, Map<String, Object>>();
         Map<String, Object> p1 = new HashMap<String, Object>();
@@ -132,20 +132,20 @@ public class TestRecommendationModelImpl {
             new FieldMetadataImpl<Boolean>("__is_valid",
                                            Marshallers.BOOLEAN_MARSHALLER,
                                            FieldMetadata.Type.BOOLEAN);
-        FieldSet fs =
-            new FieldSetImpl.Builder().add(name).add(index).add(categories)
+        TableMetadata fs =
+            new TableMetadataImpl.Builder().add(name).add(index).add(categories)
                 .add(isValid).build();
-        return new ProductMetadataImpl(db, fs);
+        return new ProductDataImpl(db, fs);
     }
 
     private RecommendationModel<Key<String>> getModel() {
         Graph<Key<String>> productGraph = buildGraph();
-        ProductMetadata productMetadata = createMetadata();
+        ProductData productMetadata = createMetadata();
         Cache<Key<String>, Product<Key<String>>> cache =
             new CacheBuilder<Key<String>, Product<Key<String>>>().maxSize(1)
                 .build();
-        ProductMetadataCache<Key<String>> productMetadataCache =
-            new ProductMetadataCacheImpl<Key<String>>(cache);
+        ProductCache<Key<String>> productMetadataCache =
+            new ProductCacheImpl<Key<String>>(cache);
         return new RecommendationModelImpl<Key<String>>(productGraph,
                                                         productMetadata,
                                                         productMetadataCache,

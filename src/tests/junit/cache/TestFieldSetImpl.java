@@ -7,12 +7,12 @@ import org.junit.Test;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
-import recng.common.FieldSet;
-import recng.common.FieldSetImpl;
+import recng.common.TableMetadata;
+import recng.common.TableMetadataImpl;
 import recng.common.Marshallers;
 
 /**
- * Tests for {@link recng.common.FieldSetImpl}.
+ * Tests for {@link recng.common.TableMetadataImpl}.
  *
  * @author Jon Ivmark
  */
@@ -28,7 +28,7 @@ public class TestFieldSetImpl {
                                       FieldMetadata.Type.STRING);
 
     @Test public void testBuilder() {
-        FieldSetImpl.Builder builder = new FieldSetImpl.Builder();
+        TableMetadataImpl.Builder builder = new TableMetadataImpl.Builder();
         builder.add(PRICE).build();
         boolean exception = false;
         try {
@@ -38,7 +38,7 @@ public class TestFieldSetImpl {
         }
         assertTrue(exception);
 
-        builder = new FieldSetImpl.Builder();
+        builder = new TableMetadataImpl.Builder();
         exception = false;
         try {
             builder.add(PRICE).add(PRICE);
@@ -49,7 +49,7 @@ public class TestFieldSetImpl {
     }
 
     @Test public void testGetFieldMetadata() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         assertEquals(PRICE, fs.getFieldMetadata(PRICE.getFieldName()));
         assertEquals(ISBN, fs.getFieldMetadata(ISBN.getFieldName()));
         boolean exception = false;
@@ -62,19 +62,19 @@ public class TestFieldSetImpl {
     }
 
     @Test public void testContains() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).build();
         assertTrue(fs.contains(PRICE.getFieldName()));
         assertFalse(fs.contains("foo"));
     }
 
     @Test public void testTypeOf() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         assertEquals(FieldMetadata.Type.INTEGER, fs.typeOf(PRICE.getFieldName()));
         assertEquals(FieldMetadata.Type.STRING, fs.typeOf(ISBN.getFieldName()));
     }
 
     @Test public void testGetFields() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         Set<String> fields = fs.getFields();
         assertEquals(2, fields.size());
         assertTrue(fs.contains(PRICE.getFieldName()));
@@ -82,13 +82,13 @@ public class TestFieldSetImpl {
     }
 
     @Test public void testOrdinal() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         assertEquals(0, fs.ordinal(PRICE.getFieldName()));
         assertEquals(1, fs.ordinal(ISBN.getFieldName()));
     }
 
     @Test public void testSize() {
-        FieldSet fs = new FieldSetImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
         assertEquals(2, fs.size());
    }
 }

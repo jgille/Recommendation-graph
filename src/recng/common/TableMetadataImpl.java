@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @author Jon Ivmark
  */
-public class FieldSetImpl implements FieldSet {
+public class TableMetadataImpl implements TableMetadata {
 
     private static class FM {
         private final FieldMetadata<?> fm;
@@ -37,7 +37,7 @@ public class FieldSetImpl implements FieldSet {
         private int currentOrdinal = 0;
         private boolean built = false;
 
-        public synchronized Builder addAll(FieldSet fs) {
+        public synchronized Builder addAll(TableMetadata fs) {
             for (String name : fs.getFields())
                 add(fs.getFieldMetadata(name));
             return this;
@@ -58,30 +58,21 @@ public class FieldSetImpl implements FieldSet {
             return fields.containsKey(fieldName);
         }
 
-        public synchronized FieldSet build() {
+        public synchronized TableMetadata build() {
             built = true;
-            return new FieldSetImpl(fields);
+            return new TableMetadataImpl(fields);
         }
     }
 
     private final Map<String, FM> fields;
 
-    private FieldSetImpl(Map<String, FM> fields) {
+    private TableMetadataImpl(Map<String, FM> fields) {
         this.fields = Collections.unmodifiableMap(fields);
     }
 
     @SuppressWarnings("unchecked")
         public <T> FieldMetadata<T> getFieldMetadata(String fieldName) {
         return (FieldMetadata<T>)getFM(fieldName).getFieldMetadata();
-    }
-
-    @SuppressWarnings("unchecked")
-        public <T> FieldMetadata<T> getFieldMetadataByOrdinal(int ordinal) {
-        for(FM fm : fields.values()) {
-            if(fm.ordinal() == ordinal)
-                return (FieldMetadata<T>)fm.getFieldMetadata();
-        }
-        return null;
     }
 
     public boolean contains(String fieldName) {
@@ -101,12 +92,16 @@ public class FieldSetImpl implements FieldSet {
      * insertion order is kept.
      */
     public int ordinal(String fieldName) {
+        if (!contains(fieldName))
+            throw new IllegalArgumentException("Unknown field name: "
+                + fieldName);
         return getFM(fieldName).ordinal();
     }
 
     private FM getFM(String fieldName) {
         if(!contains(fieldName))
-            throw new IllegalArgumentException("Unknown field name: " + fieldName);
+            throw new IllegalArgumentException("Unknown field name: "
+                + fieldName);
         return fields.get(fieldName);
     }
 

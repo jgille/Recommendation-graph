@@ -1,7 +1,7 @@
 package recng.recommendations;
 
 
-public interface ProductMetadataCache<K> {
+public interface ProductCache<K> {
 
     Product<K> getProduct(K productId);
 

@@ -31,7 +31,7 @@ import java.util.Set;
  */
 public class BinPropertyContainer implements WeightedPropertyContainer<String> {
 
-    protected final FieldSet fields;
+    private final TableMetadata fields;
     private byte[] data = null;
     protected long[] indexes;
     private final boolean useSparseIndexing;
@@ -44,7 +44,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer<String> {
      *            the index. This saves space, but can lead to a slight
      *            performance degradation for both reads and writes.
      */
-    private BinPropertyContainer(FieldSet fields, boolean useSparseIndexing) {
+    public BinPropertyContainer(TableMetadata fields, boolean useSparseIndexing) {
         this.fields = fields;
         this.useSparseIndexing = useSparseIndexing;
         if (!useSparseIndexing) {
@@ -53,20 +53,6 @@ public class BinPropertyContainer implements WeightedPropertyContainer<String> {
         } else {
             this.indexes = new long[0];
         }
-    }
-
-    /**
-     * Build a container to store properties in.
-     *
-     * @param fields The fields that this container can contain
-     * @param useSparseIndexing If true, fields with no corresponding value are
-     *                          never put in the index. This saves space, but can lead
-     *                          to a slight performance degradation for both reads and writes.
-     */
-    public static WeightedPropertyContainer<String>
-        build(FieldSet fields,
-              boolean useSparseIndexing) {
-        return new BinPropertyContainer(fields, true);
     }
 
     /**

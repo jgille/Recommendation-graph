@@ -7,7 +7,7 @@ class TraverserBuilderImpl<K> implements TraverserBuilder<K> {
     private EdgeFilter<K> returnableFilter =
         new EdgeFilter<K>() {
             public boolean accepts(NodeId<K> start, NodeId<K> end) {
-            return true;
+                return true;
         }
     };
     private int maxDepth = 1;

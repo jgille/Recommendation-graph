@@ -25,7 +25,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
                 pw = new PrintWriter(fw);
                 Exporter<T> exporter = new Exporter<T>(pw) {
                     @Override
-                    protected String serialize(NodeId<T> node) {
+                    protected String serialize(NodeID<T> node) {
                         return GraphExporterImpl.this.serialize(node);
                     }
                 };
@@ -64,11 +64,11 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
             return null;
         }
 
-        protected abstract String serialize(NodeId<K> node);
+        protected abstract String serialize(NodeID<K> node);
     };
 
     /**
      * Serialized a node to a string.
      */
-    protected abstract String serialize(NodeId<T> node);
+    protected abstract String serialize(NodeID<T> node);
 }

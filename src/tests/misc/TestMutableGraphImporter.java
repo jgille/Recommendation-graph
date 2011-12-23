@@ -28,9 +28,9 @@ public class TestMutableGraphImporter {
             new GraphImporterImpl<ID<String>>(builder, edgeTypes) {
 
                 @Override
-                protected NodeId<ID<String>> getNodeKey(String id) {
+                protected NodeID<ID<String>> getNodeKey(String id) {
                     ID<String> key = StringIDs.parseKey(id);
-                    return new NodeId<ID<String>>(key, NODE_TYPE);
+                    return new NodeID<ID<String>>(key, NODE_TYPE);
                 }
             };
         Graph<ID<String>> graph = importer.importGraph(file);

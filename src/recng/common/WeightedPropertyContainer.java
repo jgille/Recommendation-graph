@@ -7,6 +7,6 @@ import recng.cache.Weighted;
  *
  * @author Jon Ivmark
  */
-public interface WeightedPropertyContainer<K> extends PropertyContainer<K>, Weighted {
+public interface WeightedPropertyContainer extends PropertyContainer, Weighted {
 
 }

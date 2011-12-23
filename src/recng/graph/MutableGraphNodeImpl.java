@@ -20,7 +20,7 @@ import java.util.List;
 public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
 
     private final MutableGraphNodeStore<T> nodeStore;
-    private final NodeId<T> id;
+    private final NodeID<T> id;
     private TLongArrayList[] outEdges = null;
 
     /**
@@ -61,7 +61,7 @@ public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
      * @param nodeStore
      *            The container for this node and it's neighbors
      */
-    public MutableGraphNodeImpl(NodeId<T> id, MutableGraphNodeStore<T> nodeStore) {
+    public MutableGraphNodeImpl(NodeID<T> id, MutableGraphNodeStore<T> nodeStore) {
         this.id = id;
         this.nodeStore = nodeStore;
     }
@@ -101,7 +101,7 @@ public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
         return new NeighborIterator<T>(nodeStore, id, edgeType, edgeArray);
     }
 
-    public NodeId<T> getNodeId() {
+    public NodeID<T> getNodeId() {
         return id;
     }
 
@@ -263,7 +263,7 @@ public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
             Iterator<TraversableGraphEdge<T>> it = traverseNeighbors(edgeType);
             while (it.hasNext() && i++ < 5) {
                 TraversableGraphEdge<T> edge = it.next();
-                NodeId<T> end =
+                NodeID<T> end =
                     edge.getEndNode() != null ? edge.getEndNode().getNodeId()
                         : null;
                     sb.append("\n  - t: ").append(edgeType)
@@ -298,7 +298,7 @@ public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
         private int currentIndex;
 
         public NeighborIterator(MutableGraphNodeStore<K> nodeStore,
-                                NodeId<K> startNode,
+                                NodeID<K> startNode,
                                 EdgeType edgeType,
                                 long[] edges) {
             this.nodeStore = nodeStore;

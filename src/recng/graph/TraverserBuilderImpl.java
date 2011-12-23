@@ -14,7 +14,7 @@ class TraverserBuilderImpl<T> implements TraverserBuilder<T> {
     private final EdgeType edgeType;
     private EdgeFilter<T> returnableFilter =
         new EdgeFilter<T>() {
-            public boolean accepts(NodeId<T> start, NodeId<T> end) {
+            public boolean accepts(NodeID<T> start, NodeID<T> end) {
                 return true;
         }
     };

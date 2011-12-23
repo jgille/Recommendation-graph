@@ -19,5 +19,5 @@ interface GraphNode<T> {
     /**
      * Return the node id.
      */
-    NodeId<T> getNodeId();
+    NodeID<T> getNodeId();
 }

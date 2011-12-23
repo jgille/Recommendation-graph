@@ -40,11 +40,11 @@ public abstract class AbstractTestPropertyContainer {
                                       Marshallers.INTEGER_MARSHALLER,
                                       FieldMetadata.Type.INTEGER, true);
 
-    protected abstract PropertyContainer<String> getPropertyContainer(TableMetadata fs);
+    protected abstract PropertyContainer getPropertyContainer(TableMetadata fs);
 
     @Test public void testGetSetContainsProperty() {
         TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).add(RELEASE_DATE).build();
-        PropertyContainer<String> properties = getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
 
         assertFalse(properties.containsProperty(PRICE.getFieldName()));
         assertNull(properties.getProperty(PRICE.getFieldName()));
@@ -71,7 +71,7 @@ public abstract class AbstractTestPropertyContainer {
     @Test
     public void testInvalidKey() {
         TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
-        PropertyContainer<String> properties = getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
         boolean exception = false;
         try {
             properties.setProperty("foo", "bar");
@@ -83,7 +83,7 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test public void testGetKeys() {
         TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
-        PropertyContainer<String> properties =  getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
         Set<String> fields = properties.getKeys();
         assertEquals(2, fields.size());
         assertTrue(fs.contains(PRICE.getFieldName()));
@@ -95,7 +95,7 @@ public abstract class AbstractTestPropertyContainer {
         TableMetadata fs =
             new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
                 .add(RELEASE_DATE).build();
-        PropertyContainer<String> properties = getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
 
         properties.setProperty(PRICE.getFieldName(), 100);
         properties.setProperty(RELEASE_DATE.getFieldName(), 7777l);
@@ -154,7 +154,7 @@ public abstract class AbstractTestPropertyContainer {
         TableMetadata fs =
             new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
                 .add(RELEASE_DATE).build();
-        PropertyContainer<String> properties = getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
         properties.set(PRICE.getFieldName(), 1);
         assertEquals(1, properties.get(PRICE.getFieldName()));
     }
@@ -163,7 +163,7 @@ public abstract class AbstractTestPropertyContainer {
     public void testRepeatedNegativeIntProperty() {
         TableMetadata fs =
             new TableMetadataImpl.Builder().add(INT_LIST).build();
-        PropertyContainer<String> properties = getPropertyContainer(fs);
+        PropertyContainer properties = getPropertyContainer(fs);
         List<Integer> ints =
             Arrays.<Integer> asList(-1, -2, -Integer.MAX_VALUE);
         properties.setRepeatedProperties(INT_LIST.getFieldName(), ints);

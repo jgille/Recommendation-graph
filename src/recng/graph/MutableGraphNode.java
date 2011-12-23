@@ -3,7 +3,7 @@ package recng.graph;
 import java.util.List;
 
 /**
- * A mutable graph node. The identifiers of the nodes are {@link NodeId}
+ * A mutable graph node. The identifiers of the nodes are {@link NodeID}
  * instances, and the primary keys used internally in the graph are integers.
  *
  * @author jon

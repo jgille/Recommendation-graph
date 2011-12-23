@@ -14,7 +14,7 @@ public interface MutableGraphNodeStore<T> {
      * Gets the primary key of a node, often this will be an offset into an
      * array of all nodes in the store.
      */
-    int getPrimaryKey(NodeId<T> nodeId);
+    int getPrimaryKey(NodeID<T> nodeId);
 
     /**
      * Gets a node by it's primary key. Returns null if no such node exists.

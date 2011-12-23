@@ -12,7 +12,7 @@ public interface Graph<T> {
     /**
      * Returns an instance used to set up a graph traversal.
      */
-    TraverserBuilder<T> prepareTraversal(NodeId<T> source,
+    TraverserBuilder<T> prepareTraversal(NodeID<T> source,
                                          EdgeType eType);
 
     /**

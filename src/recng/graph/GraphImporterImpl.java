@@ -24,8 +24,8 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
     /**
      * Avoid using different instances for equivalent keys
      */
-    private final Cache<String, NodeId<T>> keyCache =
-        new CacheBuilder<String, NodeId<T>>()
+    private final Cache<String, NodeID<T>> keyCache =
+        new CacheBuilder<String, NodeID<T>>()
         .concurrencyLevel(1).maxSize(50000).build();
 
     public GraphImporterImpl(GraphBuilder<T> builder,
@@ -84,10 +84,10 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
         return builder.build();
     }
 
-    private NodeId<T> getKey(String id) {
+    private NodeID<T> getKey(String id) {
         if (keyCache.contains(id))
             return keyCache.get(id);
-        NodeId<T> key = getNodeKey(id);
+        NodeID<T> key = getNodeKey(id);
         keyCache.cache(id, key);
         return key;
     }
@@ -98,5 +98,5 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
      * TODO: This needs work, how do we distinguish between different node
      * types? Regex?
      */
-    protected abstract NodeId<T> getNodeKey(String id);
+    protected abstract NodeID<T> getNodeKey(String id);
 }

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import recng.graph.*;
-import recng.recommendations.ProductId;
+import recng.recommendations.ProductID;
 import recng.recommendations.RecommendationType;
 
 import static org.junit.Assert.*;
@@ -22,15 +22,15 @@ public class TestMutableGraphImpl {
     private static final Set<EdgeType> EDGE_TYPES =
         Collections.<EdgeType> singleton(EDGE_TYPE);
 
-    private static final List<NodeId<Integer>> NODES =
-        Arrays.<NodeId<Integer>> asList(new ProductId<Integer>(0),
-                                        new ProductId<Integer>(1),
-                                        new ProductId<Integer>(2),
-                                        new ProductId<Integer>(3),
-                                        new ProductId<Integer>(4),
-                                        new ProductId<Integer>(5),
-                                        new ProductId<Integer>(6),
-                                        new ProductId<Integer>(7));
+    private static final List<NodeID<Integer>> NODES =
+        Arrays.<NodeID<Integer>> asList(new ProductID<Integer>(0),
+                                        new ProductID<Integer>(1),
+                                        new ProductID<Integer>(2),
+                                        new ProductID<Integer>(3),
+                                        new ProductID<Integer>(4),
+                                        new ProductID<Integer>(5),
+                                        new ProductID<Integer>(6),
+                                        new ProductID<Integer>(7));
 
     private MutableGraph<Integer> buildGraph() {
         MutableGraph<Integer> graph = new MutableGraphImpl<Integer>(EDGE_TYPES);
@@ -65,8 +65,8 @@ public class TestMutableGraphImpl {
         EdgeFilter<Integer> filter = new EdgeFilter<Integer>() {
 
             @Override
-            public boolean accepts(NodeId<Integer> start, NodeId<Integer> end) {
-                return end.getId().intValue() > 2;
+            public boolean accepts(NodeID<Integer> start, NodeID<Integer> end) {
+                return end.getID().intValue() > 2;
             }
         };
 
@@ -156,8 +156,8 @@ public class TestMutableGraphImpl {
         Graph<Integer> graph = buildGraph();
         EdgeFilter<Integer> filter = new EdgeFilter<Integer>() {
             @Override
-            public boolean accepts(NodeId<Integer> start, NodeId<Integer> end) {
-                return !start.getId().equals(2) && !end.getId().equals(2);
+            public boolean accepts(NodeID<Integer> start, NodeID<Integer> end) {
+                return !start.getID().equals(2) && !end.getID().equals(2);
             }
         };
 
@@ -322,8 +322,8 @@ public class TestMutableGraphImpl {
         assertTrue(exception);
     }
 
-    private static GraphEdge<Integer> newEdge(NodeId<Integer> n1,
-                                              NodeId<Integer> n2,
+    private static GraphEdge<Integer> newEdge(NodeID<Integer> n1,
+                                              NodeID<Integer> n2,
                 float weight) {
         return new GraphEdge<Integer>(n1, n2, EDGE_TYPE, weight);
     }

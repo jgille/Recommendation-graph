@@ -5,13 +5,11 @@ import java.util.Set;
 
 /**
  * Methods for making product recommendations.
- * 
+ *
  * @author jon
- * 
- * @param <T>
- *            The generic type of the internally stored product IDs.
+ *
  */
-public interface RecommendationModel<T> {
+public interface RecommendationModel {
 
     /**
      * Gets products with a relation to the source product, according to a set
@@ -24,9 +22,9 @@ public interface RecommendationModel<T> {
      * @param properties
      *            The set of properties to include for the returned products
      */
-    List<Product<T>> getRelatedProducts(String sourceProduct,
-                                        ProductQuery<T> query,
-                                        Set<String> properties);
+    List<Product> getRelatedProducts(String sourceProduct,
+                                     ProductQuery query,
+                                     Set<String> properties);
 
     /**
      * Gets a product based on it's id.
@@ -37,6 +35,6 @@ public interface RecommendationModel<T> {
      *            The set of properties to get for the product
      * @return The product with the specified properties.
      */
-    Product<T> getProduct(String id, Set<String> properties);
+    Product getProduct(String id, Set<String> properties);
 
 }

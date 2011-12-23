@@ -16,7 +16,7 @@ import java.util.Set;
  * keeping track of which bytes belong to which field. Marshallers able to
  * translate the byte arrays into objects and vice versa are linked to each
  * field.
- * 
+ *
  * NOTE: All methods in this class may throw a ClassCastException if the
  * requested generic type does not match that of the field described in the
  * TableMetada for this container.
@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * @author Jon Ivmark
  */
-public class BinPropertyContainer implements WeightedPropertyContainer<String> {
+public class BinPropertyContainer implements WeightedPropertyContainer {
 
     private final TableMetadata fields;
     private byte[] data = null;

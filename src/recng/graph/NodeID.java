@@ -7,7 +7,7 @@ package recng.graph;
  *
  * @param <T>
  */
-public class NodeId<T> {
+public class NodeID<T> {
 
     private final T id;
     private final NodeType type;
@@ -21,12 +21,12 @@ public class NodeId<T> {
      * @param type
      *            The node type.
      */
-    public NodeId(T id, NodeType type) {
+    public NodeID(T id, NodeType type) {
         this.id = id;
         this.type = type;
     }
 
-    public T getId() {
+    public T getID() {
         return id;
     }
 
@@ -50,7 +50,7 @@ public class NodeId<T> {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        NodeId<T> node = (NodeId<T>) obj;
+        NodeID<T> node = (NodeID<T>) obj;
         return id.equals(node.id) && type.equals(node.type);
     }
 

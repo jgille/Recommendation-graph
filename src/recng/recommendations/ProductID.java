@@ -1,6 +1,6 @@
 package recng.recommendations;
 
-import recng.graph.NodeId;
+import recng.graph.NodeID;
 
 /**
  * Represent the ID of a product node in a graph.
@@ -10,9 +10,9 @@ import recng.graph.NodeId;
  * @param <T>
  *            The generic type of the product IDs.
  */
-public class ProductId<T> extends NodeId<T> {
+public class ProductID<T> extends NodeID<T> {
 
-    public ProductId(T id) {
+    public ProductID(T id) {
         super(id, ProductNodeType.getInstance());
     }
 }

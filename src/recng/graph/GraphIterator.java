@@ -47,9 +47,9 @@ public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
     // Avoid loops
     private final Set<EdgeId<T>> traversedEdges = new HashSet<EdgeId<T>>();
     // Avoid duplicates among returned end nodes
-    private final Set<NodeId<T>> returnedNodes = new HashSet<NodeId<T>>();
+    private final Set<NodeID<T>> returnedNodes = new HashSet<NodeID<T>>();
     // Used to avoid using the same start node twice
-    private final Set<NodeId<T>> visitedNodes = new HashSet<NodeId<T>>();
+    private final Set<NodeID<T>> visitedNodes = new HashSet<NodeID<T>>();
 
     /**
      * Created an iterator originating at a start node.
@@ -172,9 +172,9 @@ public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
     // Used to avoid traversing the same edge twice
     // TODO: Use EdgeImpl instead
     private static class EdgeId<K> {
-        private final NodeId<K> from, to;
+        private final NodeID<K> from, to;
 
-        private EdgeId(NodeId<K> from, NodeId<K> to) {
+        private EdgeId(NodeID<K> from, NodeID<K> to) {
             this.from = from;
             this.to = to;
         }

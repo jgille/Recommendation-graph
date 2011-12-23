@@ -7,21 +7,19 @@ import java.util.Set;
  * A key/value container.
  *
  * @author jon
- * 
- * @param <K>
- *            The generic type of the keys.
+ *
  */
-public interface PropertyContainer<K> {
+public interface PropertyContainer {
 
     /**
      * Gets an untyped property by it's key.
      */
-    Object get(K key);
+    Object get(String key);
 
     /**
      * Sets a property for a key, and return the previous value.
      */
-    Object set(K key, Object value);
+    Object set(String key, Object value);
 
     /**
      * Gets a property by it's key.
@@ -29,7 +27,7 @@ public interface PropertyContainer<K> {
      * NOTE: This will throw a CCE if the found value is not an instance of the
      * provided generic type.
      */
-    <V> V getProperty(K key);
+    <V> V getProperty(String key);
 
     /**
      * Sets a property for a key, and returns the previous value.
@@ -37,7 +35,7 @@ public interface PropertyContainer<K> {
      * NOTE: This will throw a CCE if the found value is not an instance of the
      * provided generic type.
      */
-    <V> V setProperty(K key, V value);
+    <V> V setProperty(String key, V value);
 
     /**
      * Gets a repeated property, i.e. a property list, by it's key.
@@ -45,7 +43,7 @@ public interface PropertyContainer<K> {
      * NOTE: This will throw a CCE if the found value can not be cast to a list
      * of the provided generic type.
      */
-    <V> List<V> getRepeatedProperties(K key);
+    <V> List<V> getRepeatedProperties(String key);
 
     /**
      * Sets a repeated property, i.e. a property list, for a key.
@@ -53,21 +51,21 @@ public interface PropertyContainer<K> {
      * NOTE: This will throw a CCE if the found value can not be cast to a list
      * of the provided generic type.
      */
-    <V> List<V> setRepeatedProperties(K key, List<V> values);
+    <V> List<V> setRepeatedProperties(String key, List<V> values);
 
     /**
      * Appends a property to a repeated property, possibly creating a new
      * repeated property if not found.
      */
-    <V> void addRepeatedProperty(K key, V value);
+    <V> void addRepeatedProperty(String key, V value);
 
     /**
      * Check if this container contains the provided key.
      */
-    boolean containsProperty(K key);
+    boolean containsProperty(String key);
 
     /**
      * Gets all keys for this container.
      */
-    Set<K> getKeys();
+    Set<String> getKeys();
 }

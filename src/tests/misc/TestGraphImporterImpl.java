@@ -30,8 +30,8 @@ public class TestGraphImporterImpl {
                                                edgeTypes) {
 
                 @Override
-                protected NodeId<ID<String>> getNodeKey(String id) {
-                    return new NodeId<ID<String>>(StringIDs.parseKey(id),
+                protected NodeID<ID<String>> getNodeKey(String id) {
+                    return new NodeID<ID<String>>(StringIDs.parseKey(id),
                                                    NODE_TYPE);
                 }
             };

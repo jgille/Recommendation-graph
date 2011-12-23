@@ -10,7 +10,7 @@ package recng.graph;
  */
 public interface GraphBuilder<T> {
 
-    GraphBuilder<T> addEdge(NodeId<T> from, NodeId<T> to, EdgeType edgeType,
+    GraphBuilder<T> addEdge(NodeID<T> from, NodeID<T> to, EdgeType edgeType,
                             float weight);
 
     Graph<T> build();

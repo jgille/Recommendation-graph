@@ -12,17 +12,17 @@ import recng.common.WeightedPropertyContainer;
  * @param <T>
  *            The generic type of the product ID.
  */
-public interface Product<T> extends WeightedPropertyContainer<String> {
+public interface Product extends WeightedPropertyContainer {
 
     /** The field name used to store the validity property. */
-    public static final String IS_VALID_PROPERTY = "__IS_VALID";
+    public static final String IS_VALID_PROPERTY = "__is_valid";
     /** The field name used to store the categories property. */
-    public static final String CATEGORIES_PROPERTY = "__CATEGORIES";
+    public static final String CATEGORIES_PROPERTY = "__categories";
 
     /**
      * Gets the product ID.
      */
-    T getId();
+    String getId();
 
     /**
      * Gets the validity of this product.

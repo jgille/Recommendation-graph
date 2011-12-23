@@ -18,8 +18,8 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 public class MutableGraphImpl<T> implements MutableGraph<T> {
 
     /** Maps node id -> internal primary key */
-    private final TObjectIntHashMap<NodeId<T>> nodeIndex =
-        new TObjectIntHashMap<NodeId<T>>();
+    private final TObjectIntHashMap<NodeID<T>> nodeIndex =
+        new TObjectIntHashMap<NodeID<T>>();
     /** All nodes in the graph. */
     private final ArrayList<MutableGraphNode<T>> nodes =
         new ArrayList<MutableGraphNode<T>>();
@@ -50,8 +50,8 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         }
 
         @Override
-        public GraphBuilder<T> addEdge(NodeId<T> from,
-                                       NodeId<T> to,
+        public GraphBuilder<T> addEdge(NodeID<T> from,
+                                       NodeID<T> to,
                                        EdgeType edgeType,
                                        float weight) {
             graph.addEdge(from, to, edgeType, weight);
@@ -65,7 +65,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public TraverserBuilder<T> prepareTraversal(NodeId<T> source,
+    public TraverserBuilder<T> prepareTraversal(NodeID<T> source,
                                                 EdgeType edgeType) {
         if (source == null)
             throw new IllegalArgumentException("Null source node not allowed");
@@ -119,7 +119,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public void addEdge(NodeId<T> start, NodeId<T> end, EdgeType edgeType,
+    public void addEdge(NodeID<T> start, NodeID<T> end, EdgeType edgeType,
                         float weight) {
         if (start == null || end == null)
             throw new IllegalArgumentException("Null nodes not allowed");
@@ -138,7 +138,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public boolean updateEdge(NodeId<T> start, NodeId<T> end,
+    public boolean updateEdge(NodeID<T> start, NodeID<T> end,
                               EdgeType edgeType, float weight) {
         if (start == null || end == null)
             throw new IllegalArgumentException("Null nodes not allowed");
@@ -162,7 +162,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public boolean removeEdge(NodeId<T> start, NodeId<T> end,
+    public boolean removeEdge(NodeID<T> start, NodeID<T> end,
                               EdgeType edgeType) {
         if (start == null || end == null)
             throw new IllegalArgumentException("Null nodes not allowed");
@@ -184,8 +184,8 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public void setEdges(NodeId<T> start, EdgeType edgeType,
-                         List<NodeId<T>> endNodes, List<Float> weights) {
+    public void setEdges(NodeID<T> start, EdgeType edgeType,
+                         List<NodeID<T>> endNodes, List<Float> weights) {
         if (endNodes == null || weights == null)
             throw new IllegalArgumentException("Null edge lists not allowed");
         if (endNodes.size() != weights.size())
@@ -199,7 +199,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         synchronized (lock) { // Create start and end nodes if necessary
             int startNodeIndex = upsertNode(start);
             startNode = getNode(startNodeIndex);
-            for (NodeId<T> endNode : endNodes) {
+            for (NodeID<T> endNode : endNodes) {
                 int index = upsertNode(endNode);
                 endNodeIndexes.add(index);
             }
@@ -209,7 +209,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public int getPrimaryKey(NodeId<T> nodeId) {
+    public int getPrimaryKey(NodeID<T> nodeId) {
         synchronized (lock) {
             if (!nodeIndex.contains(nodeId))
                 return -1;
@@ -237,7 +237,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
      *
      * Not thread safe and needs synchronization.
      */
-    private int upsertNode(NodeId<T> nodeId) {
+    private int upsertNode(NodeID<T> nodeId) {
         if (nodeId == null)
             return -1;
         if (nodeIndex.contains(nodeId))

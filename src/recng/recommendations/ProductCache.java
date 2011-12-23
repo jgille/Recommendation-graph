@@ -14,12 +14,12 @@ public interface ProductCache<K> {
      * Gets cached properties for a product. Node that the returned instance may
      * only contain a subset of the available product properties.
      */
-    Product<K> getProduct(K productId);
+    Product getProduct(K productId);
 
     /**
      * Caches product properties.
      */
-    void cacheProduct(Product<K> product);
+    void cacheProduct(K productId, Product product);
 
     /**
      * Clears the cache.

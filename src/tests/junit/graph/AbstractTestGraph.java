@@ -62,8 +62,8 @@ public abstract class AbstractTestGraph {
         EdgeFilter<Integer> filter = new EdgeFilter<Integer>() {
 
             @Override
-            public boolean accepts(NodeId<Integer> from, NodeId<Integer> to) {
-                return to.getId().intValue() > 2;
+            public boolean accepts(NodeID<Integer> from, NodeID<Integer> to) {
+                return to.getID().intValue() > 2;
             }
         };
 
@@ -152,8 +152,8 @@ public abstract class AbstractTestGraph {
 
         EdgeFilter<Integer> filter = new EdgeFilter<Integer>() {
             @Override
-            public boolean accepts(NodeId<Integer> start, NodeId<Integer> end) {
-                return !start.getId().equals(2) && !end.getId().equals(2);
+            public boolean accepts(NodeID<Integer> start, NodeID<Integer> end) {
+                return !start.getID().equals(2) && !end.getID().equals(2);
             }
         };
 
@@ -173,8 +173,8 @@ public abstract class AbstractTestGraph {
         newEdge(int n1,
                 int n2,
                 float weight) {
-        NodeId<Integer> node1 = getNodeId(n1);
-        NodeId<Integer> node2 = getNodeId(n2);
+        NodeID<Integer> node1 = getNodeId(n1);
+        NodeID<Integer> node2 = getNodeId(n2);
         return new GraphEdge<Integer>(node1, node2, EDGE_TYPE, weight);
     }
 
@@ -196,8 +196,8 @@ public abstract class AbstractTestGraph {
         assertEquals(expected, traverser.getPath());
     }
 
-    private static NodeId<Integer> getNodeId(int id) {
-        return new NodeId<Integer>(id, NODE_TYPE);
+    private static NodeID<Integer> getNodeId(int id) {
+        return new NodeID<Integer>(id, NODE_TYPE);
     }
 
     private AbstractTestGraph addEdge(GraphBuilder<Integer> builder,

@@ -16,7 +16,7 @@ import recng.graph.EdgeFilter;
 import recng.graph.Graph;
 import recng.graph.GraphCursor;
 import recng.graph.GraphEdge;
-import recng.graph.NodeId;
+import recng.graph.NodeID;
 import recng.graph.Traverser;
 import recng.recommendations.filter.ProductFilter;
 
@@ -29,7 +29,7 @@ import recng.recommendations.filter.ProductFilter;
  * @param <T>
  *            The generic type of the internally stored product IDs.
  */
-public class RecommendationModelImpl<T> implements RecommendationModel<T> {
+public class RecommendationModelImpl<T> implements RecommendationModel {
 
     // The product graph, i.e. the relations between products
     private final Graph<T> productGraph;
@@ -64,19 +64,19 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         this.idFactory = keyParser;
     }
 
-    public List<Product<T>>
+    public List<Product>
         getRelatedProducts(String sourceProduct,
-                           ProductQuery<T> query,
+                           ProductQuery query,
                            Set<String> properties) {
         Traverser<T> traverser =
             setupTraverser(getProductId(sourceProduct), query);
-        List<Product<T>> res = new ArrayList<Product<T>>();
+        List<Product> res = new ArrayList<Product>();
         GraphCursor<T> cursor = traverser.traverse();
         try {
             while (cursor.hasNext()) {
                 GraphEdge<T> edge = cursor.next();
-                NodeId<T> related = edge.getEndNode();
-                res.add(getProductProperties(related.getId(), properties));
+                NodeID<T> related = edge.getEndNode();
+                res.add(getProductProperties(related.getID(), properties));
             }
         } finally {
             cursor.close();
@@ -84,21 +84,21 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         return res;
     }
 
-    public Product<T> getProduct(String productId, Set<String> properties) {
+    public Product getProduct(String productId, Set<String> properties) {
         T key = idFactory.fromString(productId);
         return getProductProperties(key, properties);
     }
 
-    private ProductId<T> getProductId(String id) {
+    private ProductID<T> getProductId(String id) {
         T key = idFactory.fromString(id);
-        return new ProductId<T>(key);
+        return new ProductID<T>(key);
     }
 
     private ProductCache<T> setupCache(Graph<T> productGraph) {
-        CacheBuilder<T, Product<T>> builder = new CacheBuilder<T, Product<T>>();
-        builder.weigher(new Weigher<T, Product<T>>() {
+        CacheBuilder<T, Product> builder = new CacheBuilder<T, Product>();
+        builder.weigher(new Weigher<T, Product>() {
             @Override
-            public int weigh(int overhead, T key, Product<T> value) {
+            public int weigh(int overhead, T key, Product value) {
                 return overhead +
                     40 + // estimated (maximum) key size, bytes
                     value.getWeight();
@@ -111,8 +111,8 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         return new ProductCacheImpl<T>(builder.build());
     }
 
-    private Traverser<T> setupTraverser(NodeId<T> source,
-                                        ProductQuery<T> query) {
+    private Traverser<T> setupTraverser(NodeID<T> source,
+                                        ProductQuery query) {
         return productGraph.prepareTraversal(source,
                                              query.getRecommendationType())
             .maxReturnedEdges(query.getLimit())
@@ -122,9 +122,9 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
             .build();
     }
 
-    private Product<T> getProductProperties(T productId,
-                                            Set<String> properties) {
-        Product<T> cached = productCache.getProduct(productId);
+    private Product getProductProperties(T productId,
+                                         Set<String> properties) {
+        Product cached = productCache.getProduct(productId);
         if (cached == null)
             return fetchAndCacheProduct(productId, properties);
         for (String property : properties) {
@@ -134,8 +134,8 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         return cached;
     }
 
-    private Product<T> fetchAndCacheProduct(T productId,
-                                            Set<String> properties) {
+    private Product fetchAndCacheProduct(T productId,
+                                         Set<String> properties) {
         Map<String, Object> data = shortTermCache.get(productId);
         if (data == null)
             data = productData.getProductData(idFactory.toString(productId));
@@ -143,17 +143,18 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         boolean isValid =
             isValidProperty != null && isValidProperty.booleanValue();
         TableMetadata fields = productData.getProductFields();
-        Product<T> product = new ProductImpl<T>(productId, isValid, fields);
+        String id = idFactory.toString(productId);
+        Product product = new ProductImpl(id, isValid, fields);
         for (Map.Entry<String, Object> property : data.entrySet()) {
             String key = property.getKey();
             Object value = property.getValue();
             setProductProperty(product, fields.getFieldMetadata(key), value);
         }
-        productCache.cacheProduct(product);
+        productCache.cacheProduct(productId, product);
         return product;
     }
 
-    private void setProductProperty(Product<T> product,
+    private void setProductProperty(Product product,
                                     FieldMetadata<?> field,
                                     Object value) {
         if (field.isRepeated()) {
@@ -163,7 +164,7 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
         product.setProperty(field.getFieldName(), value);
     }
 
-    private void setRepeatedProductProperty(Product<T> product,
+    private void setRepeatedProductProperty(Product product,
                                             FieldMetadata<?> field,
                                             Object value) {
         FieldMetadata.Type type = field.getType();
@@ -217,19 +218,19 @@ public class RecommendationModelImpl<T> implements RecommendationModel<T> {
 
     private class OnlyValidFilter implements EdgeFilter<T> {
 
-        private final ProductFilter<T> pFilter;
+        private final ProductFilter pFilter;
         private final Set<String> properties;
 
-        public OnlyValidFilter(ProductFilter<T> pFilter) {
+        public OnlyValidFilter(ProductFilter pFilter) {
             this.pFilter = pFilter;
             this.properties =
                 new HashSet<String>(pFilter.getFilterProperties());
             properties.add(Product.IS_VALID_PROPERTY);
         }
 
-        public boolean accepts(NodeId<T> start, NodeId<T> end) {
-            Product<T> product =
-                getProductProperties(end.getId(), properties);
+        public boolean accepts(NodeID<T> start, NodeID<T> end) {
+            Product product =
+                getProductProperties(end.getID(), properties);
             return product.isValid() && pFilter.accepts(product);
         }
     }

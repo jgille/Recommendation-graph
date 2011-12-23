@@ -7,7 +7,7 @@ import recng.recommendations.filter.ProductFilter;
  *
  * @author Jon Ivmark
  */
-public interface ProductQuery<K> {
+public interface ProductQuery {
 
     /**
      * The maximum result size.
@@ -17,7 +17,7 @@ public interface ProductQuery<K> {
     /**
      * The filter used to decide if a product should be returned or not.
      */
-    ProductFilter<K> getFilter();
+    ProductFilter getFilter();
 
     /**
      * The maximum number of products to iterate before returning.

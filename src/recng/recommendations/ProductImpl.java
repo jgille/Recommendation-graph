@@ -15,14 +15,14 @@ import recng.common.WeightedPropertyContainer;
  * @param <T>
  *            The generic type of the product IDs.
  */
-public class ProductImpl<T> implements Product<T> {
+public class ProductImpl implements Product {
 
-    private final T id;
-    private final WeightedPropertyContainer<String> properties;
+    private final String id;
+    private final WeightedPropertyContainer properties;
 
     /**
      * Constructs a new product.
-     * 
+     *
      * @param id
      *            The product ID
      * @param isValid
@@ -30,14 +30,14 @@ public class ProductImpl<T> implements Product<T> {
      * @param fields
      *            The valid properties for this product.
      */
-    public ProductImpl(T id, boolean isValid, TableMetadata fields) {
+    public ProductImpl(String id, boolean isValid, TableMetadata fields) {
         this.id = id;
         this.properties = new BinPropertyContainer(fields, true);
         setIsValid(isValid);
     }
 
     @Override
-    public T getId() {
+    public String getId() {
         return id;
     }
 

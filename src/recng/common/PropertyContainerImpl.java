@@ -12,26 +12,24 @@ import java.util.Set;
  * A simple key/value container backed by a HashMap.
  *
  * @author jon
- * 
- * @param <K>
- *            The generic type of the keys.
+ *
  */
-public class PropertyContainerImpl<K> implements PropertyContainer<K> {
+public class PropertyContainerImpl implements PropertyContainer {
 
-    private Map<K, Object> properties = new HashMap<K, Object>();
+    private Map<String, Object> properties = new HashMap<String, Object>();
 
     @Override
-    public Object get(K key) {
+    public Object get(String key) {
         return properties.get(key);
     }
 
     @Override
-    public Object set(K key, Object value) {
+    public Object set(String key, Object value) {
         return properties.put(key, value);
     }
 
     @Override
-    public <V> V getProperty(K key) {
+    public <V> V getProperty(String key) {
         Object value = get(key);
         return implicitCast(value);
     }
@@ -41,38 +39,39 @@ public class PropertyContainerImpl<K> implements PropertyContainer<K> {
     }
 
     @Override
-    @SuppressWarnings("unchecked") public <V> V setProperty(K key, V value) {
+    @SuppressWarnings("unchecked")
+    public <V> V setProperty(String key, V value) {
         if (properties == null)
-            properties = new HashMap<K, Object>();
+            properties = new HashMap<String, Object>();
         return (V)properties.put(key, value);
     }
 
     @Override
-    public Set<K> getKeys() {
+    public Set<String> getKeys() {
         if (properties == null)
-            return Collections.<K>emptySet();
-        return new HashSet<K>(properties.keySet());
+            return Collections.<String> emptySet();
+        return new HashSet<String>(properties.keySet());
     }
 
     @Override
-    public boolean containsProperty(K key) {
+    public boolean containsProperty(String key) {
         return properties.containsKey(key);
     }
 
     @Override
-    public <V> List<V> getRepeatedProperties(K key) {
+    public <V> List<V> getRepeatedProperties(String key) {
         return getProperty(key);
     }
 
     @Override
-    public <V> List<V> setRepeatedProperties(K key, List<V> values) {
+    public <V> List<V> setRepeatedProperties(String key, List<V> values) {
         List<V> prev = getRepeatedProperties(key);
         setProperty(key, values);
         return prev;
     }
 
     @Override
-    public <V> void addRepeatedProperty(K key, V value) {
+    public <V> void addRepeatedProperty(String key, V value) {
         List<V> prev = getRepeatedProperties(key);
         if (prev == null) {
             prev = new ArrayList<V>();

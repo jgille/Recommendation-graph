@@ -22,20 +22,20 @@ import gnu.trove.list.array.TLongArrayList;
 public class GraphImpl<T> implements Graph<T> {
 
     /** Index node id -> internal primary key */
-    private final TObjectIntHashMap<NodeId<T>> nodeIndex;
+    private final TObjectIntHashMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph */
     private final ArrayList<Node> nodes = new ArrayList<Node>();
     /** All unique edge types that this graph contains. */
     private final Map<EdgeType, Integer> edgeTypes;
 
-    private GraphImpl(TObjectIntHashMap<NodeId<T>> nodeIndex,
-                      ArrayList<NodeId<T>> nodes,
+    private GraphImpl(TObjectIntHashMap<NodeID<T>> nodeIndex,
+                      ArrayList<NodeID<T>> nodes,
                       ArrayList<TLongArrayList[]> edges,
                       Map<EdgeType, Integer> edgeTypes) {
         this.nodeIndex = nodeIndex;
         this.edgeTypes = edgeTypes;
         int i = 0;
-        for (NodeId<T> nodeId : nodes) {
+        for (NodeID<T> nodeId : nodes) {
             TLongArrayList[] nodeEdges = edges.get(i);
             TLongArrayList[] edgeLists = new TLongArrayList[nodeEdges.length];
             int j = 0;
@@ -109,7 +109,7 @@ public class GraphImpl<T> implements Graph<T> {
     /**
      * Gets the primary key for a node.
      */
-    private int getNodeIndex(NodeId<T> id) {
+    private int getNodeIndex(NodeID<T> id) {
         if (!nodeIndex.contains(id))
             return -1;
         return nodeIndex.get(id);
@@ -123,7 +123,7 @@ public class GraphImpl<T> implements Graph<T> {
     }
 
     @Override
-    public TraverserBuilder<T> prepareTraversal(NodeId<T> source,
+    public TraverserBuilder<T> prepareTraversal(NodeID<T> source,
                                                 EdgeType edgeType) {
         int index = getNodeIndex(source);
         return new TraverserBuilderImpl<T>(getNode(index), edgeType);
@@ -168,10 +168,10 @@ public class GraphImpl<T> implements Graph<T> {
      * longs contains both the primary key of the end node and the edge weight.
      */
     private class Node implements GraphNode<T> {
-        private final NodeId<T> id;
+        private final NodeID<T> id;
         private final TLongArrayList[] edges;
 
-        private Node(NodeId<T> id, TLongArrayList[] edges) {
+        private Node(NodeID<T> id, TLongArrayList[] edges) {
             this.id = id;
             this.edges = edges;
         }
@@ -188,7 +188,7 @@ public class GraphImpl<T> implements Graph<T> {
         }
 
         @Override
-        public NodeId<T> getNodeId() {
+        public NodeID<T> getNodeId() {
             return id;
         }
 
@@ -202,7 +202,7 @@ public class GraphImpl<T> implements Graph<T> {
                     traverseNeighbors(edgeType);
                 while (it.hasNext() && i++ < 5) {
                     TraversableGraphEdge<T> edge = it.next();
-                    NodeId<T> end = edge.getEndNode().getNodeId();
+                    NodeID<T> end = edge.getEndNode().getNodeId();
                     sb.append("\n  - t: ").append(edgeType)
                         .append(", w: ").append(edge.getWeight())
                         .append(" -> N: ").append(end);
@@ -283,10 +283,10 @@ public class GraphImpl<T> implements Graph<T> {
     public static class Builder<T> implements GraphBuilder<T> {
 
         // Node id -> primary key mapping
-        private final TObjectIntHashMap<NodeId<T>> nodeIndex =
-            new TObjectIntHashMap<NodeId<T>>();
+        private final TObjectIntHashMap<NodeID<T>> nodeIndex =
+            new TObjectIntHashMap<NodeID<T>>();
         // All node ids
-        private final ArrayList<NodeId<T>> nodes = new ArrayList<NodeId<T>>();
+        private final ArrayList<NodeID<T>> nodes = new ArrayList<NodeID<T>>();
         // Out edges by node and edge type
         private final ArrayList<TLongArrayList[]> edges =
             new ArrayList<TLongArrayList[]>();
@@ -299,7 +299,7 @@ public class GraphImpl<T> implements Graph<T> {
         private int maxOrdinal = 0;
 
         @Override
-        public GraphBuilder<T> addEdge(NodeId<T> from, NodeId<T> to,
+        public GraphBuilder<T> addEdge(NodeID<T> from, NodeID<T> to,
                                        EdgeType edgeType,
                                        float weight) {
             // Add the nodes if necessary
@@ -316,7 +316,7 @@ public class GraphImpl<T> implements Graph<T> {
         /**
          * Adds a node if not already present.
          */
-        private int upsert(NodeId<T> node) {
+        private int upsert(NodeID<T> node) {
             if (nodeIndex.contains(node))
                 return nodeIndex.get(node);
             int index = nodes.size();

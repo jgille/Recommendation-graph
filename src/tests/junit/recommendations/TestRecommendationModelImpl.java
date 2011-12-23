@@ -20,12 +20,12 @@ import recng.db.InMemoryKVStore;
 import recng.db.KVStore;
 import recng.graph.Graph;
 import recng.graph.GraphImpl;
-import recng.graph.NodeId;
+import recng.graph.NodeID;
 import recng.index.ID;
 import recng.index.StringIDs;
 import recng.recommendations.IDFactory;
 import recng.recommendations.Product;
-import recng.recommendations.ProductId;
+import recng.recommendations.ProductID;
 import recng.recommendations.ProductDataStore;
 import recng.recommendations.ProductDataStoreImpl;
 import recng.recommendations.ProductQuery;
@@ -50,14 +50,14 @@ public class TestRecommendationModelImpl {
             }
         };
 
-    private static final NodeId<ID<String>> N1 =
-        new ProductId<ID<String>>(KP.fromString("1"));
-    private static final NodeId<ID<String>> N2 =
-        new ProductId<ID<String>>(KP.fromString("2"));
-    private static final NodeId<ID<String>> N3 =
-        new ProductId<ID<String>>(KP.fromString("3"));
-    private static final NodeId<ID<String>> N4 =
-        new ProductId<ID<String>>(KP.fromString("4"));
+    private static final NodeID<ID<String>> N1 =
+        new ProductID<ID<String>>(KP.fromString("1"));
+    private static final NodeID<ID<String>> N2 =
+        new ProductID<ID<String>>(KP.fromString("2"));
+    private static final NodeID<ID<String>> N3 =
+        new ProductID<ID<String>>(KP.fromString("3"));
+    private static final NodeID<ID<String>> N4 =
+        new ProductID<ID<String>>(KP.fromString("4"));
 
     private static final Float N1_N2 = 0.7f;
     private static final Float N1_N3 = 0.3f;
@@ -88,29 +88,29 @@ public class TestRecommendationModelImpl {
         KVStore<String, Map<String, Object>> db =
             new InMemoryKVStore<String, Map<String, Object>>();
         Map<String, Object> p1 = new HashMap<String, Object>();
-        p1.put("name", N1.getId().getID());
+        p1.put("name", N1.getID().getID());
         p1.put("index", 1);
         p1.put("__is_valid", true);
         p1.put("__categories", Arrays.<String> asList("cat1", "cat2"));
-        db.put(N1.getId().getID(), p1);
+        db.put(N1.getID().getID(), p1);
         Map<String, Object> p2 = new HashMap<String, Object>();
-        p2.put("name", N2.getId().getID());
+        p2.put("name", N2.getID().getID());
         p2.put("index", 2);
         p2.put("__categories", Arrays.<String> asList("cat2", "cat3"));
         p2.put("__is_valid", true);
-        db.put(N2.getId().getID(), p2);
+        db.put(N2.getID().getID(), p2);
         Map<String, Object> p3 = new HashMap<String, Object>();
-        p3.put("name", N3.getId().getID());
+        p3.put("name", N3.getID().getID());
         p3.put("index", 3);
         p3.put("__categories", Arrays.<String> asList("cat3", "cat4"));
         p3.put("__is_valid", true);
-        db.put(N3.getId().getID(), p3);
+        db.put(N3.getID().getID(), p3);
         Map<String, Object> p4 = new HashMap<String, Object>();
-        p4.put("name", N4.getId().getID());
+        p4.put("name", N4.getID().getID());
         p4.put("index", 4);
         p4.put("__categories", Arrays.<String> asList("cat3"));
         p4.put("__is_valid", true);
-        db.put(N4.getId().getID(), p4);
+        db.put(N4.getID().getID(), p4);
 
         FieldMetadata<String> name =
             new FieldMetadataImpl<String>("name",
@@ -134,7 +134,7 @@ public class TestRecommendationModelImpl {
         return new ProductDataStoreImpl(db, fs);
     }
 
-    private RecommendationModel<ID<String>> getModel() {
+    private RecommendationModel getModel() {
         Graph<ID<String>> productGraph = buildGraph();
         ProductDataStore productMetadata = createMetadata();
         return new RecommendationModelImpl<ID<String>>(productGraph,
@@ -144,14 +144,14 @@ public class TestRecommendationModelImpl {
 
     @Test
     public void testGetRelatedProducts() {
-        ProductQuery<ID<String>> query = new ProductQuery<ID<String>>() {
+        ProductQuery query = new ProductQuery() {
             public int getLimit() {
                 return 2;
             }
 
-            public ProductFilter<ID<String>> getFilter() {
-                return new ProductFilter<ID<String>>() {
-                    public boolean accepts(Product<ID<String>> product) {
+            public ProductFilter getFilter() {
+                return new ProductFilter() {
+                    public boolean accepts(Product product) {
                         Integer index = product.getProperty("index");
                         return index.intValue() > 2;
                     }
@@ -175,24 +175,24 @@ public class TestRecommendationModelImpl {
             }
 
         };
-        RecommendationModel<ID<String>> model = getModel();
+        RecommendationModel model = getModel();
         Set<String> properties = new HashSet<String>();
         properties.add("name");
         properties.add("index");
-        List<Product<ID<String>>> related =
-            model.getRelatedProducts(N1.getId().getID(), query, properties);
+        List<Product> related =
+            model.getRelatedProducts(N1.getID().getID(), query, properties);
 
         assertNotNull(related);
         assertEquals(2, related.size());
-        Product<ID<String>> r1 = related.get(0);
-        assertEquals(N3.getId(), r1.getId());
+        Product r1 = related.get(0);
+        assertEquals(N3.getID().getID(), r1.getId());
         assertEquals(3, r1.getProperty("index"));
         assertEquals("3", r1.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3", "cat4"), r1.getCategories());
 
-        Product<ID<String>> r2 = related.get(1);
+        Product r2 = related.get(1);
 
-        assertEquals(N4.getId(), r2.getId());
+        assertEquals(N4.getID().getID(), r2.getId());
         assertEquals(4, r2.getProperty("index"));
         assertEquals("4", r2.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3"), r2.getCategories());

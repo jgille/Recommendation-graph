@@ -10,20 +10,20 @@ import recng.graph.GraphBuilder;
 import recng.graph.GraphImporter;
 import recng.graph.GraphImporterImpl;
 import recng.graph.MutableGraphImpl;
-import recng.graph.NodeId;
+import recng.graph.NodeID;
 import recng.index.ID;
 import recng.index.StringIDs;
 
 public class RecommendationContext {
 
     private static RecommendationContext INSTANCE = null;
-    private final RecommendationModel<ID<String>> model;
+    private final RecommendationModel model;
 
-    private RecommendationContext(RecommendationModel<ID<String>> model) {
+    private RecommendationContext(RecommendationModel model) {
         this.model = model;
     }
 
-    public RecommendationModel<ID<String>> getModel() {
+    public RecommendationModel getModel() {
         return model;
     }
 
@@ -52,7 +52,7 @@ public class RecommendationContext {
 
         Graph<ID<String>> productGraph =
             importProductGraph(productGraphFile, keyParser);
-        RecommendationModel<ID<String>> model =
+        RecommendationModel model =
             new RecommendationModelImpl<ID<String>>(productGraph,
                                                      productData,
                                                      keyParser);
@@ -69,8 +69,8 @@ public class RecommendationContext {
             new GraphImporterImpl<ID<String>>(builder, edgeTypes) {
 
                 @Override
-                protected NodeId<ID<String>> getNodeKey(String id) {
-                    return new ProductId<ID<String>>(keyParser.fromString(id));
+                protected NodeID<ID<String>> getNodeKey(String id) {
+                    return new ProductID<ID<String>>(keyParser.fromString(id));
                 }
             };
         return importer.importGraph(file);

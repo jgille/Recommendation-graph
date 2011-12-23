@@ -12,13 +12,13 @@ import recng.recommendations.Product;
  * @param <K>
  *            The generic type of the product IDs.
  */
-public interface ProductFilter<K> {
+public interface ProductFilter {
 
     /**
      * Returns true if the provided product is accepted according to this
      * filter.
      */
-    boolean accepts(Product<K> product);
+    boolean accepts(Product product);
 
     /**
      * Gets the set of property names that this filter uses.

@@ -12,6 +12,6 @@ public interface EdgeFilter<T> {
     /**
      * Decides whether or not to accept an edge.
      */
-    boolean accepts(NodeId<T> startNode, NodeId<T> endNode);
+    boolean accepts(NodeID<T> startNode, NodeID<T> endNode);
 
 }

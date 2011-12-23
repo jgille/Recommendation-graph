@@ -8,7 +8,7 @@ public class TestBinPropertyContainer extends
     AbstractTestPropertyContainer {
 
     @Override
-    protected PropertyContainer<String> getPropertyContainer(TableMetadata fs) {
+    protected PropertyContainer getPropertyContainer(TableMetadata fs) {
         return new BinPropertyContainer(fs, true);
     }
 }

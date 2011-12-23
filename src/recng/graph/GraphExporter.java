@@ -5,8 +5,8 @@ package recng.graph;
  * 
  * @author jon
  */
-public interface GraphExporter<K> {
+public interface GraphExporter<T> {
 
-    void exportGraph(Graph<K> graph, String file);
+    void exportGraph(Graph<T> graph, String file);
 
 }

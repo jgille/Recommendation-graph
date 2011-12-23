@@ -21,19 +21,19 @@ public class TestMutableGraphImporter {
     public static void main(String[] args) {
         String file = args[0];
         Set<EdgeType> edgeTypes = new HashSet<EdgeType>();
-        GraphBuilder<Key<String>> builder =
-            new MutableGraphImpl.Builder<Key<String>>(edgeTypes);
+        GraphBuilder<ID<String>> builder =
+            new MutableGraphImpl.Builder<ID<String>>(edgeTypes);
         edgeTypes.addAll(EnumSet.allOf(RecommendationType.class));
-        GraphImporterImpl<Key<String>> importer =
-            new GraphImporterImpl<Key<String>>(builder, edgeTypes) {
+        GraphImporterImpl<ID<String>> importer =
+            new GraphImporterImpl<ID<String>>(builder, edgeTypes) {
 
                 @Override
-                protected NodeId<Key<String>> getNodeKey(String id) {
-                    Key<String> key = StringKeys.parseKey(id);
-                    return new NodeId<Key<String>>(key, NODE_TYPE);
+                protected NodeId<ID<String>> getNodeKey(String id) {
+                    ID<String> key = StringIDs.parseKey(id);
+                    return new NodeId<ID<String>>(key, NODE_TYPE);
                 }
             };
-        Graph<Key<String>> graph = importer.importGraph(file);
+        Graph<ID<String>> graph = importer.importGraph(file);
         importer = null;
         builder = null;
 

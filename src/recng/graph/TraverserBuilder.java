@@ -1,38 +1,38 @@
 package recng.graph;
 
 /**
- * A class used to build graph traversers.
- * 
- * @author jon
+ * Classes used to build graph traversers should implement this interface.
  *
- * @param <K>
+ * @author jon
+ * 
+ * @param <T>
  *            The type of the node ids in the graph.
  */
-public interface TraverserBuilder<K> {
+public interface TraverserBuilder<T> {
 
     /**
      * Specifies a filter used to decide if a traversed edge should be
      * included in the result.
      */
-    TraverserBuilder<K> edgeFilter(EdgeFilter<K> returnableFilter);
+    TraverserBuilder<T> edgeFilter(EdgeFilter<T> returnableFilter);
 
     /**
      * Specifies the maximum depth of the traversal.
      */
-    TraverserBuilder<K> maxDepth(int maxDepth);
+    TraverserBuilder<T> maxDepth(int maxDepth);
 
     /**
      * Specifies the maximum number of edges that may be returned.
      */
-    TraverserBuilder<K> maxReturnedEdges(int maxReturnedEdges);
+    TraverserBuilder<T> maxReturnedEdges(int maxReturnedEdges);
 
     /**
      * Specifies the maximum number of edges that may be traversed.
      */
-    TraverserBuilder<K> maxTraversedEdges(int maxTraversedEdges);
+    TraverserBuilder<T> maxTraversedEdges(int maxTraversedEdges);
 
     /**
      * Builds the traverser.
      */
-    Traverser<K> build();
+    Traverser<T> build();
 }

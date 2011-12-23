@@ -5,13 +5,14 @@ package recng.graph;
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
+ *            The generic type of the node IDs in the graph.
  */
-public interface GraphBuilder<K> {
+public interface GraphBuilder<T> {
 
-    GraphBuilder<K> addEdge(NodeId<K> from, NodeId<K> to, EdgeType edgeType,
+    GraphBuilder<T> addEdge(NodeId<T> from, NodeId<T> to, EdgeType edgeType,
                             float weight);
 
-    Graph<K> build();
+    Graph<T> build();
 
 }

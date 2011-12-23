@@ -15,18 +15,18 @@ import java.util.Set;
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
  *            The type of the node keys in the graph.
  */
-public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
+public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
 
-    private final GraphNode<K> sourceNode;
+    private final GraphNode<T> sourceNode;
     // Current out edges
-    private Iterator<TraversableGraphEdge<K>> edges;
+    private Iterator<TraversableGraphEdge<T>> edges;
     // The type of edges to traverse
     private final EdgeType edgeType;
     // A filter used to decide if and edge should be returned or not
-    private final EdgeFilter<K> returnableFilter;
+    private final EdgeFilter<T> returnableFilter;
     // The maximum depth (distance from the start node) to traverse
     private final int maxDepth;
     // The maximum number of edges to return
@@ -40,16 +40,16 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
     // The number of edges that have been traversed
     private int traversedEdgeCount = 0;
     // The next edge to return
-    private TraversableGraphEdge<K> currentEdge = null;
+    private TraversableGraphEdge<T> currentEdge = null;
     // Queued nodes used when we want to traverse at a depth > 1
-    private final LinkedList<NodeAndDepth<K>> neighborQueue =
-        new LinkedList<NodeAndDepth<K>>();
+    private final LinkedList<NodeAndDepth<T>> neighborQueue =
+        new LinkedList<NodeAndDepth<T>>();
     // Avoid loops
-    private final Set<EdgeId<K>> traversedEdges = new HashSet<EdgeId<K>>();
+    private final Set<EdgeId<T>> traversedEdges = new HashSet<EdgeId<T>>();
     // Avoid duplicates among returned end nodes
-    private final Set<NodeId<K>> returnedNodes = new HashSet<NodeId<K>>();
+    private final Set<NodeId<T>> returnedNodes = new HashSet<NodeId<T>>();
     // Used to avoid using the same start node twice
-    private final Set<NodeId<K>> visitedNodes = new HashSet<NodeId<K>>();
+    private final Set<NodeId<T>> visitedNodes = new HashSet<NodeId<T>>();
 
     /**
      * Created an iterator originating at a start node.
@@ -67,8 +67,8 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
      * @param maxTraversedEdges
      *            The maximum number of edges to traverse before returning.
      */
-    GraphIterator(GraphNode<K> sourceNode, EdgeType edgeType,
-                  EdgeFilter<K> returnableFilter, int maxDepth,
+    GraphIterator(GraphNode<T> sourceNode, EdgeType edgeType,
+                  EdgeFilter<T> returnableFilter, int maxDepth,
                   int maxReturnedEdges,
                   int maxTraversedEdges) {
         this.sourceNode = sourceNode;
@@ -86,7 +86,7 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
         return hasNext(edges);
     }
 
-    private boolean hasNext(Iterator<TraversableGraphEdge<K>> edgeIterator) {
+    private boolean hasNext(Iterator<TraversableGraphEdge<T>> edgeIterator) {
         if (returnedEdgeCount >= maxReturnedEdges)
             return false; // We've filled the quota
         if (traversedEdgeCount >= maxTraversedEdges)
@@ -96,13 +96,13 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
 
         // Iterate immediate out edges until a valid edge is found (if one exists)
         while (edgeIterator.hasNext()) {
-            TraversableGraphEdge<K> edge = edgeIterator.next();
-            GraphNode<K> startNode = edge.getStartNode();
-            GraphNode<K> endNode = edge.getEndNode();
+            TraversableGraphEdge<T> edge = edgeIterator.next();
+            GraphNode<T> startNode = edge.getStartNode();
+            GraphNode<T> endNode = edge.getEndNode();
             if (startNode == null || endNode == null)
                 continue;
-            EdgeId<K> edgeId =
-                new EdgeId<K>(startNode.getNodeId(), endNode.getNodeId());
+            EdgeId<T> edgeId =
+                new EdgeId<T>(startNode.getNodeId(), endNode.getNodeId());
             if (endNode.getNodeId().equals(sourceNode.getNodeId())
                 || traversedEdges.contains(edgeId))
                 continue; // Avoid loops
@@ -112,7 +112,7 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
             boolean alreadyVisited = visitedNodes.contains(endNode.getNodeId());
             visitedNodes.add(endNode.getNodeId());
             if (!alreadyVisited && currentDepth < maxDepth)
-                neighborQueue.add(new NodeAndDepth<K>(endNode, currentDepth));
+                neighborQueue.add(new NodeAndDepth<T>(endNode, currentDepth));
 
             if (returnedNodes.contains(endNode.getNodeId())) // No duplicates
                 continue;
@@ -128,7 +128,7 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
         // /dequeue a neighbor node and traverse it's out edges (thereby
         // descending on level deeper into the graph).
         if (!neighborQueue.isEmpty()) {
-            NodeAndDepth<K> neighbor = neighborQueue.removeFirst();
+            NodeAndDepth<T> neighbor = neighborQueue.removeFirst();
             currentDepth = neighbor.depth + 1;
             this.edges = neighbor.node.traverseNeighbors(edgeType);
             return hasNext();
@@ -136,14 +136,14 @@ public class GraphIterator<K> implements Iterator<GraphEdge<K>> {
         return false;
     }
 
-    public GraphEdge<K> next() {
+    public GraphEdge<T> next() {
         if (sourceNode == null)
             return null;
-        TraversableGraphEdge<K> next = currentEdge;
+        TraversableGraphEdge<T> next = currentEdge;
         currentEdge = null;
         returnedEdgeCount++;
         returnedNodes.add(next.getEndNode().getNodeId());
-        return new GraphEdge<K>(next.getStartNode().getNodeId(),
+        return new GraphEdge<T>(next.getStartNode().getNodeId(),
                                 next.getEndNode().getNodeId(), next.getType(),
                                 next.getWeight());
     }

@@ -6,14 +6,15 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import recng.index.Key;
-import recng.index.KeyFactory;
-import recng.index.PrefixIntSuffixKey;
+import recng.index.ID;
+import recng.index.IDPattern;
+import recng.index.IDFormatException;
+import recng.index.PrefixIntSuffixID;
 
 public class TestPrefixIntSuffixKey {
 
-    private Key<String> getKey(String id) {
-        return PrefixIntSuffixKey.Factory.getInstance().parse(id);
+    private ID<String> getKey(String id) {
+        return PrefixIntSuffixID.Parser.getInstance().parse(id);
     }
 
     @Test public void testInt() {
@@ -33,16 +34,16 @@ public class TestPrefixIntSuffixKey {
     }
 
     private void test(String id) {
-        Key<String> key = getKey(id);
-        assertEquals(id, key.getValue());
-        Map<Key<String>, String> map = new HashMap<Key<String>, String>();
+        ID<String> key = getKey(id);
+        assertEquals(id, key.getID());
+        Map<ID<String>, String> map = new HashMap<ID<String>, String>();
         map.put(key, id);
         assertEquals(map.get(key), id);
     }
 
     @Test
     public void testLeadingZeros() {
-        KeyFactory<String> factory = PrefixIntSuffixKey.Factory.getInstance();
+        IDPattern<String> factory = PrefixIntSuffixID.Parser.getInstance();
         String id1 = "a0123450cd";
         String id2 = "a00123450cd";
         assertTrue(factory.matches(id1));
@@ -51,13 +52,13 @@ public class TestPrefixIntSuffixKey {
     }
 
     @Test public void testInvalidId() {
-        KeyFactory<String> factory = PrefixIntSuffixKey.Factory.getInstance();
+        IDPattern<String> factory = PrefixIntSuffixID.Parser.getInstance();
         String id = "abc";
         assertFalse(factory.matches(id));
         boolean exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);
@@ -67,7 +68,7 @@ public class TestPrefixIntSuffixKey {
         exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);
@@ -77,7 +78,7 @@ public class TestPrefixIntSuffixKey {
         exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);

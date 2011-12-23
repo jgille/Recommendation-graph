@@ -2,13 +2,17 @@ package recng.index;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.regex.Pattern;
 
-public class UTF8StringKey implements Key<String> {
+/**
+ * Stores a String ID as an UTF8 byte array.
+ *
+ * @author jon
+ */
+public class UTF8StringID implements ID<String> {
 
     private final byte[] bytes;
 
-    private UTF8StringKey(String id) {
+    private UTF8StringID(String id) {
         try {
             this.bytes = id.getBytes("UTF8");
         } catch(UnsupportedEncodingException e) {
@@ -16,7 +20,7 @@ public class UTF8StringKey implements Key<String> {
         }
     }
 
-    public String getValue() {
+    public String getID() {
         try {
             return new String(bytes, "UTF8");
         } catch(UnsupportedEncodingException e) {
@@ -27,7 +31,7 @@ public class UTF8StringKey implements Key<String> {
     @Override public boolean equals(Object other) {
         if(other == null || other.getClass() != getClass())
             return false;
-        UTF8StringKey key = (UTF8StringKey)other;
+        UTF8StringID key = (UTF8StringID)other;
         byte[] ba = key.bytes;
         return Arrays.equals(bytes, ba);
     }
@@ -37,24 +41,23 @@ public class UTF8StringKey implements Key<String> {
     }
 
     @Override public String toString() {
-        return String.format("UTF8StringKey: %s", getValue());
+        return String.format("UTF8StringKey: %s", getID());
     }
 
-    public static class Factory implements KeyFactory<String> {
+    public static class Parser implements IDPattern<String> {
 
-        private static final Factory INSTANCE = new Factory();
-        private static final Pattern PATTERN = Pattern.compile(".*");
+        private static final Parser INSTANCE = new Parser();
 
-        public static KeyFactory<String> getInstance() {
+        public static IDPattern<String> getInstance() {
             return INSTANCE;
         }
 
         public boolean matches(String id) {
-            return PATTERN.matcher(id).matches();
+            return id != null;
         }
 
-        public Key<String> parse(String id) {
-            return new UTF8StringKey(id);
+        public ID<String> parse(String id) {
+            return new UTF8StringID(id);
         }
     }
 

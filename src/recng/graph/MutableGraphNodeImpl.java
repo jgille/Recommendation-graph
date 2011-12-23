@@ -8,20 +8,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An implementation of a mutable graph node.
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
  *            The type of the key for this node.
  */
-public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
+public class MutableGraphNodeImpl<T> implements MutableGraphNode<T> {
 
-    private final MutableGraphNodeStore<K> nodeStore;
-    private final NodeId<K> id;
+    private final MutableGraphNodeStore<T> nodeStore;
+    private final NodeId<T> id;
     private TLongArrayList[] outEdges = null;
 
     /**
@@ -56,13 +55,13 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
 
     /**
      * Created a new mutable node.
-     * 
+     *
      * @param id
      *            The id of this node.
      * @param nodeStore
      *            The container for this node and it's neighbors
      */
-    public MutableGraphNodeImpl(NodeId<K> id, MutableGraphNodeStore<K> nodeStore) {
+    public MutableGraphNodeImpl(NodeId<T> id, MutableGraphNodeStore<T> nodeStore) {
         this.id = id;
         this.nodeStore = nodeStore;
     }
@@ -73,12 +72,8 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
     private TLongArrayList getOutEdges(EdgeType edgeType) {
         if (edgeType == null || outEdges == null)
             return null;
-        // Check if the edge type is valid for this node type
-        Map<EdgeType, Integer> valid = id.getNodeType().validEdgeTypes();
-        if (!valid.containsKey(edgeType))
-            return null;
-        int edgeTypeIndex = valid.get(edgeType);
-        if (edgeTypeIndex >= outEdges.length)
+        int edgeTypeIndex = id.getNodeType().indexOf(edgeType);
+        if (edgeTypeIndex < 0 || edgeTypeIndex >= outEdges.length)
             return null; // No edges for this type found
         return outEdges[edgeTypeIndex];
     }
@@ -96,17 +91,17 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
     }
 
     @Override
-    public synchronized Iterator<TraversableGraphEdge<K>>
+    public synchronized Iterator<TraversableGraphEdge<T>>
     traverseNeighbors(EdgeType edgeType) {
         TLongArrayList edgeList = getOutEdges(edgeType);
         if (edgeList == null) // No out edges for this type
-            return new EmptyIterator<TraversableGraphEdge<K>>();
+            return new EmptyIterator<TraversableGraphEdge<T>>();
         // return a copy of the edges to avoid concurrency issues
         long[] edgeArray = edgeList.toArray();
-        return new NeighborIterator<K>(nodeStore, id, edgeType, edgeArray);
+        return new NeighborIterator<T>(nodeStore, id, edgeType, edgeArray);
     }
 
-    public NodeId<K> getNodeId() {
+    public NodeId<T> getNodeId() {
         return id;
     }
 
@@ -185,9 +180,9 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
     public synchronized void setEdges(EdgeType edgeType,
                                       List<Integer> endNodes,
                                       List<Float> weights) {
-        Map<EdgeType, Integer> valid = id.getNodeType().validEdgeTypes();
-        if (!valid.containsKey(edgeType))
-            return; // TODO: Throw exception?
+        int edgeTypeIndex = id.getNodeType().indexOf(edgeType);
+        if (edgeTypeIndex < 0)
+            return;
 
         TLongArrayList edges = new TLongArrayList(endNodes.size());
         int i = 0;
@@ -199,7 +194,6 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
         }
         if (edgeType.isWeighted()) // Keep weighted edges sorted
             edges.sort();
-        int edgeTypeIndex = id.getNodeType().validEdgeTypes().get(edgeType);
         // Create/expand array if necessary
         if (outEdges == null) {
             outEdges = new TLongArrayList[edgeTypeIndex + 1];
@@ -263,13 +257,13 @@ public class MutableGraphNodeImpl<K> implements MutableGraphNode<K> {
     public String toVerboseString() {
         // Return the id and at most 5 edges per edge type
         StringBuilder sb = new StringBuilder("N: ").append(getNodeId());
-        for (EdgeType edgeType : id.getNodeType().validEdgeTypes().keySet()) {
+        for (EdgeType edgeType : id.getNodeType().validEdgeTypes()) {
             int i = 0;
 
-            Iterator<TraversableGraphEdge<K>> it = traverseNeighbors(edgeType);
+            Iterator<TraversableGraphEdge<T>> it = traverseNeighbors(edgeType);
             while (it.hasNext() && i++ < 5) {
-                TraversableGraphEdge<K> edge = it.next();
-                NodeId<K> end =
+                TraversableGraphEdge<T> edge = it.next();
+                NodeId<T> end =
                     edge.getEndNode() != null ? edge.getEndNode().getNodeId()
                         : null;
                     sb.append("\n  - t: ").append(edgeType)

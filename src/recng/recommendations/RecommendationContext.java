@@ -1,21 +1,29 @@
 package recng.recommendations;
 
-import recng.cache.CacheBuilder;
-import recng.cache.Weigher;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+
+import recng.graph.EdgeType;
 import recng.graph.Graph;
-import recng.index.Key;
-import recng.index.StringKeys;
+import recng.graph.GraphBuilder;
+import recng.graph.GraphImporter;
+import recng.graph.GraphImporterImpl;
+import recng.graph.MutableGraphImpl;
+import recng.graph.NodeId;
+import recng.index.ID;
+import recng.index.StringIDs;
 
 public class RecommendationContext {
 
     private static RecommendationContext INSTANCE = null;
-    private final RecommendationModel<Key<String>> model;
+    private final RecommendationModel<ID<String>> model;
 
-    private RecommendationContext(RecommendationModel<Key<String>> model) {
+    private RecommendationContext(RecommendationModel<ID<String>> model) {
         this.model = model;
     }
 
-    public RecommendationModel<Key<String>> getModel() {
+    public RecommendationModel<ID<String>> getModel() {
         return model;
     }
 
@@ -25,60 +33,46 @@ public class RecommendationContext {
         return INSTANCE;
     }
 
-    public static synchronized void setup(String npDataFile,
-                                          String clickDataFile,
-                                          ProductData productMetadata) {
+    public static synchronized void setup(String productGraphFile,
+                                          ProductDataStore productData) {
         if (INSTANCE != null)
             throw new RuntimeException("Already set up");
-        KeyParser<Key<String>> pip =
-            new KeyParser<Key<String>>() {
+        IDFactory<ID<String>> keyParser =
+            new IDFactory<ID<String>>() {
                 @Override
-                public String toString(Key<String> productId) {
-                    return productId.getValue();
+                public String toString(ID<String> productId) {
+                    return productId.getID();
                 }
 
                 @Override
-                public Key<String> parseKey(String id) {
-                    return StringKeys.parseKey(id);
+                public ID<String> fromString(String id) {
+                    return StringIDs.parseKey(id);
                 }
             };
 
-        Graph<Key<String>> productGraph =
-            buildProductGraph(npDataFile, clickDataFile, pip);
-        ProductCache<Key<String>> productMetadataCache =
-            setupCache(productGraph.nodeCount());
-        RecommendationModel<Key<String>> model =
-            new RecommendationModelImpl<Key<String>>(productGraph,
-                                                     productMetadata,
-                                                     productMetadataCache,
-                                                     pip);
+        Graph<ID<String>> productGraph =
+            importProductGraph(productGraphFile, keyParser);
+        RecommendationModel<ID<String>> model =
+            new RecommendationModelImpl<ID<String>>(productGraph,
+                                                     productData,
+                                                     keyParser);
         INSTANCE = new RecommendationContext(model);
     }
 
-    private static Graph<Key<String>>
-        buildProductGraph(String npDataFile,
-                          String clickDataFile,
-                          KeyParser<Key<String>> pip) {
-        return new PredictorImpl().setupPredictions(npDataFile, clickDataFile,
-                                                    pip);
-    }
+    private static Graph<ID<String>>
+        importProductGraph(String file, final IDFactory<ID<String>> keyParser) {
+        Set<EdgeType> edgeTypes =
+            new HashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
+        GraphBuilder<ID<String>> builder =
+            new MutableGraphImpl.Builder<ID<String>>(edgeTypes);
+        GraphImporter<ID<String>> importer =
+            new GraphImporterImpl<ID<String>>(builder, edgeTypes) {
 
-    private static ProductCache<Key<String>>
-        setupCache(int numberOfProducts) {
-        CacheBuilder<Key<String>, Product<Key<String>>> builder =
-            new CacheBuilder<Key<String>, Product<Key<String>>>();
-
-        builder.weigher(new Weigher<Key<String>, Product<Key<String>>>() {
-            @Override
-            public int weigh(int overhead, Key<String> key, Product<Key<String>> value) {
-                return overhead +
-                    40 + //  estimated key size
-                    value.getWeight();
-            }
-        });
-        builder.maxWeight(Runtime.getRuntime().maxMemory() / 4);
-        builder.maxSize(numberOfProducts);
-
-        return new ProductCacheImpl<Key<String>>(builder.build());
+                @Override
+                protected NodeId<ID<String>> getNodeKey(String id) {
+                    return new ProductId<ID<String>>(keyParser.fromString(id));
+                }
+            };
+        return importer.importGraph(file);
     }
 }

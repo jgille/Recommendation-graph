@@ -3,6 +3,7 @@ package recng.graph;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Describes a type of node in a graph.
@@ -38,8 +39,8 @@ public class NodeTypeImpl implements NodeType {
     }
 
     @Override
-    public Map<EdgeType, Integer> validEdgeTypes() {
-        return validEdgeTypes;
+    public Set<EdgeType> validEdgeTypes() {
+        return validEdgeTypes.keySet();
     }
 
     @Override

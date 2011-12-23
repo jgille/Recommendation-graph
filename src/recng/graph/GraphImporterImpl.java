@@ -15,27 +15,27 @@ import recng.cache.CacheBuilder;
  *
  * @author jon
  */
-public abstract class GraphImporterImpl<K> implements GraphImporter<K> {
+public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
 
-    private final GraphBuilder<K> builder;
+    private final GraphBuilder<T> builder;
     private final Map<String, EdgeType> edgeTypes =
         new HashMap<String, EdgeType>();
 
     /**
      * Avoid using different instances for equivalent keys
      */
-    private final Cache<String, NodeId<K>> keyCache =
-        new CacheBuilder<String, NodeId<K>>()
+    private final Cache<String, NodeId<T>> keyCache =
+        new CacheBuilder<String, NodeId<T>>()
         .concurrencyLevel(1).maxSize(50000).build();
 
-    public GraphImporterImpl(GraphBuilder<K> builder,
+    public GraphImporterImpl(GraphBuilder<T> builder,
                              Collection<EdgeType> edgeTypes) {
         this.builder = builder;
         for (EdgeType edgeType : edgeTypes)
             this.edgeTypes.put(edgeType.name(), edgeType);
     }
 
-    public Graph<K> importGraph(String file) {
+    public Graph<T> importGraph(String file) {
         try {
             return importCSV(file);
         } catch (IOException e) {
@@ -43,7 +43,7 @@ public abstract class GraphImporterImpl<K> implements GraphImporter<K> {
         }
     }
 
-    private Graph<K> importCSV(String file) throws IOException {
+    private Graph<T> importCSV(String file) throws IOException {
         FileReader fr = null;
         BufferedReader br = null;
         try {
@@ -84,16 +84,19 @@ public abstract class GraphImporterImpl<K> implements GraphImporter<K> {
         return builder.build();
     }
 
-    private NodeId<K> getKey(String id) {
+    private NodeId<T> getKey(String id) {
         if (keyCache.contains(id))
             return keyCache.get(id);
-        NodeId<K> key = getNodeKey(id);
+        NodeId<T> key = getNodeKey(id);
         keyCache.cache(id, key);
         return key;
     }
 
     /**
      * Creates a node key from a string.
+     * 
+     * TODO: This needs work, how do we distinguish between different node
+     * types? Regex?
      */
-    protected abstract NodeId<K> getNodeKey(String id);
+    protected abstract NodeId<T> getNodeKey(String id);
 }

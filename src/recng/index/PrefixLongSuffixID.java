@@ -3,23 +3,31 @@ package recng.index;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PrefixLongSuffixKey extends PrefixSuffixKey implements Key<String> {
+/**
+ * Stores an id as a long together with a prefix and/or suffix as a shared
+ * String, thereby saving memory compared to storing it as a regular String.
+ * Uses a flyweight pattern where common prefixes/suffixes are shared between
+ * instances.
+ *
+ * @author jon
+ */
+public class PrefixLongSuffixID extends PrefixSuffixID implements ID<String> {
 
     private final long root;
 
-    private PrefixLongSuffixKey(String prefix, long root, String suffix) {
+    private PrefixLongSuffixID(String prefix, long root, String suffix) {
         super(prefix, suffix);
         this.root = root;
     }
 
-    public String getValue() {
+    public String getID() {
         return getPrefix() + root + getSuffix();
     }
 
     @Override public boolean equals(Object other) {
         if(other == null || other.getClass() != getClass())
             return false;
-        PrefixLongSuffixKey key = (PrefixLongSuffixKey)other;
+        PrefixLongSuffixID key = (PrefixLongSuffixID)other;
         if (root != key.root)
             return false;
         return super.equals(other);
@@ -34,13 +42,13 @@ public class PrefixLongSuffixKey extends PrefixSuffixKey implements Key<String> 
                              getSuffix());
     }
 
-    public static class Factory implements KeyFactory<String> {
+    public static class Parser implements IDPattern<String> {
 
-        private static final Factory INSTANCE = new Factory();
+        private static final Parser INSTANCE = new Parser();
         private static final Pattern PATTERN = Pattern
             .compile("(.{0,3})([1-9]\\d{9,18})(.{0,3})");
 
-        public static KeyFactory<String> getInstance() {
+        public static IDPattern<String> getInstance() {
             return INSTANCE;
         }
 
@@ -48,11 +56,11 @@ public class PrefixLongSuffixKey extends PrefixSuffixKey implements Key<String> 
             return PATTERN.matcher(id).matches();
         }
 
-        public Key<String> parse(String id) {
+        public ID<String> parse(String id) {
             Matcher m = PATTERN.matcher(id);
             if (!m.matches())
-                throw new KeyFormatException(String.format("Invalid key: %s", id));
-            return new PrefixLongSuffixKey(m.group(1),
+                throw new IDFormatException(String.format("Invalid key: %s", id));
+            return new PrefixLongSuffixID(m.group(1),
                                                 Long.parseLong(m.group(2)),
                                                 m.group(3));
         }

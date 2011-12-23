@@ -16,6 +16,10 @@ import java.util.Set;
  * keeping track of which bytes belong to which field. Marshallers able to
  * translate the byte arrays into objects and vice versa are linked to each
  * field.
+ * 
+ * NOTE: All methods in this class may throw a ClassCastException if the
+ * requested generic type does not match that of the field described in the
+ * TableMetada for this container.
  *
  * Repeated fields, i.e. lists, are stored in the same data array as the
  * primitive fields. Each repeated value if prepended with 2 bytes that
@@ -402,5 +406,15 @@ public class BinPropertyContainer implements WeightedPropertyContainer<String> {
         for (String key : getKeys())
             sb.append(key).append(" : ").append(getProperty(key)).append(", ");
         return sb.toString();
+    }
+
+    @Override
+    public Object get(String key) {
+        return getProperty(key);
+    }
+
+    @Override
+    public Object set(String key, Object value) {
+        return setProperty(key, value);
     }
 }

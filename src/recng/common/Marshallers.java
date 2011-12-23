@@ -80,6 +80,8 @@ public class Marshallers {
         public Date unmarshall(byte[] bytes) {
             return new Date(ByteBuffer.wrap(bytes).getLong());
         }
+
+            /* Note that this has to be synchronized due to the SDF. */
         public synchronized Date parse(String s) {
                 try {
                     return DF.parse(s);
@@ -135,14 +137,14 @@ public class Marshallers {
             try {
                 return value.getBytes("UTF8");
             } catch (UnsupportedEncodingException e) {
-                throw new IllegalArgumentException(e);
+                    throw new IllegalArgumentException(e.getMessage(), e);
             }
         }
         public String unmarshall(byte[] bytes) {
             try {
                 return new String(bytes, "UTF8");
             } catch (UnsupportedEncodingException e) {
-                throw new IllegalArgumentException(e);
+                    throw new IllegalArgumentException(e.getMessage(), e);
             }
         }
         public String parse(String s) {

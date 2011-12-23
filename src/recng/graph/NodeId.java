@@ -5,11 +5,11 @@ package recng.graph;
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
  */
-public class NodeId<K> {
+public class NodeId<T> {
 
-    private final K id;
+    private final T id;
     private final NodeType type;
 
     /**
@@ -21,12 +21,12 @@ public class NodeId<K> {
      * @param type
      *            The node type.
      */
-    public NodeId(K id, NodeType type) {
+    public NodeId(T id, NodeType type) {
         this.id = id;
         this.type = type;
     }
 
-    public K getId() {
+    public T getId() {
         return id;
     }
 
@@ -50,7 +50,7 @@ public class NodeId<K> {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        NodeId<K> node = (NodeId<K>) obj;
+        NodeId<T> node = (NodeId<T>) obj;
         return id.equals(node.id) && type.equals(node.type);
     }
 

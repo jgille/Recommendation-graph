@@ -12,9 +12,9 @@ import recng.common.Consumer;
  *
  * @author jon
  */
-public abstract class GraphExporterImpl<K> implements GraphExporter<K> {
+public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
 
-    public void exportGraph(Graph<K> graph, String file) {
+    public void exportGraph(Graph<T> graph, String file) {
         try {
             FileWriter fw = null;
             BufferedWriter bw = null;
@@ -23,9 +23,9 @@ public abstract class GraphExporterImpl<K> implements GraphExporter<K> {
                 fw = new FileWriter(file);
                 bw = new BufferedWriter(fw);
                 pw = new PrintWriter(fw);
-                Exporter<K> exporter = new Exporter<K>(pw) {
+                Exporter<T> exporter = new Exporter<T>(pw) {
                     @Override
-                    protected String serialize(NodeId<K> node) {
+                    protected String serialize(NodeId<T> node) {
                         return GraphExporterImpl.this.serialize(node);
                     }
                 };
@@ -70,5 +70,5 @@ public abstract class GraphExporterImpl<K> implements GraphExporter<K> {
     /**
      * Serialized a node to a string.
      */
-    protected abstract String serialize(NodeId<K> node);
+    protected abstract String serialize(NodeId<T> node);
 }

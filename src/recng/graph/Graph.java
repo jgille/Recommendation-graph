@@ -7,19 +7,19 @@ import recng.common.Consumer;
  *
  * @author Jon Ivmark
  */
-public interface Graph<K> {
+public interface Graph<T> {
 
     /**
      * Returns an instance used to set up a graph traversal.
      */
-    TraverserBuilder<K> prepareTraversal(NodeId<K> source,
+    TraverserBuilder<T> prepareTraversal(NodeId<T> source,
                                          EdgeType eType);
 
     /**
      * Gets all edges in the graph and passes them to the consumer.
      *
      */
-    void getEdges(Consumer<GraphEdge<K>, Void> consumer);
+    void getEdges(Consumer<GraphEdge<T>, Void> consumer);
 
     /**
      * Gets the number of nodes in this graph.

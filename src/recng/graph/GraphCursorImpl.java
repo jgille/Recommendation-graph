@@ -7,14 +7,14 @@ package recng.graph;
  * @author jon
  *
  */
-class GraphCursorImpl<K> implements GraphCursor<K>  {
+class GraphCursorImpl<T> implements GraphCursor<T>  {
     private boolean isClosed = false;
-    private final GraphIterator<K> iterator;
+    private final GraphIterator<T> iterator;
 
     /**
      * Creates a cursor from an iterator.
      */
-    public GraphCursorImpl(GraphIterator<K> iterator) {
+    public GraphCursorImpl(GraphIterator<T> iterator) {
         this.iterator = iterator;
     }
 
@@ -24,7 +24,7 @@ class GraphCursorImpl<K> implements GraphCursor<K>  {
         return iterator.hasNext();
     }
 
-    public GraphEdge<K> next() {
+    public GraphEdge<T> next() {
         if (isClosed)
             throw new IllegalStateException("This cursor has been closed");
         return iterator.next();

@@ -8,5 +8,8 @@ package recng.cache;
  */
 public interface Weighted {
 
+    /**
+     * Gets the weight of this object.
+     */
     int getWeight();
 }

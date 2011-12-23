@@ -5,8 +5,8 @@ package recng.graph;
  * 
  * @author jon
  */
-public interface GraphImporter<K> {
+public interface GraphImporter<T> {
 
-    Graph<K> importGraph(String file);
+    Graph<T> importGraph(String file);
 
 }

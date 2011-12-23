@@ -6,14 +6,62 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-
 /**
  * Metadata for a fixed set of fields.
  *
  * @author Jon Ivmark
  */
 public class TableMetadataImpl implements TableMetadata {
+    private final Map<String, FM> fields;
 
+    private TableMetadataImpl(Map<String, FM> fields) {
+        this.fields = Collections.unmodifiableMap(fields);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> FieldMetadata<T> getFieldMetadata(String fieldName) {
+        return (FieldMetadata<T>) getFM(fieldName).getFieldMetadata();
+    }
+
+    public boolean contains(String fieldName) {
+        return fields.containsKey(fieldName);
+    }
+
+    public FieldMetadata.Type typeOf(String fieldName) {
+        return getFM(fieldName).getFieldMetadata().getType();
+    }
+
+    public Set<String> getFields() {
+        return new HashSet<String>(fields.keySet());
+    }
+
+    /**
+     * The ordinal will be the position at which this field was created,
+     * insertion order is kept.
+     */
+    public int ordinal(String fieldName) {
+        if (!contains(fieldName))
+            throw new IllegalArgumentException("Unknown field name: "
+                + fieldName);
+        return getFM(fieldName).ordinal();
+    }
+
+    private FM getFM(String fieldName) {
+        if (!contains(fieldName))
+            throw new IllegalArgumentException("Unknown field name: "
+                + fieldName);
+        return fields.get(fieldName);
+    }
+
+    public int size() {
+        return fields.size();
+    }
+
+    /**
+     * Util class keeping track of a {@link FieldMetadata} instance and it's
+     * ordinal.
+     * 
+     */
     private static class FM {
         private final FieldMetadata<?> fm;
         private final int ordinal;
@@ -32,6 +80,11 @@ public class TableMetadataImpl implements TableMetadata {
         }
     }
 
+    /**
+     * A class used to build a {@link TableMetadata} instance.
+     *
+     * @author jon
+     */
     public static class Builder {
         private final Map<String, FM> fields = new HashMap<String, FM>();
         private int currentOrdinal = 0;
@@ -62,50 +115,5 @@ public class TableMetadataImpl implements TableMetadata {
             built = true;
             return new TableMetadataImpl(fields);
         }
-    }
-
-    private final Map<String, FM> fields;
-
-    private TableMetadataImpl(Map<String, FM> fields) {
-        this.fields = Collections.unmodifiableMap(fields);
-    }
-
-    @SuppressWarnings("unchecked")
-        public <T> FieldMetadata<T> getFieldMetadata(String fieldName) {
-        return (FieldMetadata<T>)getFM(fieldName).getFieldMetadata();
-    }
-
-    public boolean contains(String fieldName) {
-        return fields.containsKey(fieldName);
-    }
-
-    public FieldMetadata.Type typeOf(String fieldName) {
-        return getFM(fieldName).getFieldMetadata().getType();
-    }
-
-    public Set<String> getFields() {
-        return new HashSet<String>(fields.keySet());
-    }
-
-    /**
-     * The ordinal will be the position at which this field was created,
-     * insertion order is kept.
-     */
-    public int ordinal(String fieldName) {
-        if (!contains(fieldName))
-            throw new IllegalArgumentException("Unknown field name: "
-                + fieldName);
-        return getFM(fieldName).ordinal();
-    }
-
-    private FM getFM(String fieldName) {
-        if(!contains(fieldName))
-            throw new IllegalArgumentException("Unknown field name: "
-                + fieldName);
-        return fields.get(fieldName);
-    }
-
-    public int size() {
-        return fields.size();
     }
 }

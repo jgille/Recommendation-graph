@@ -9,55 +9,73 @@ import java.util.Set;
 
 import recng.cache.Cache;
 import recng.cache.CacheBuilder;
+import recng.cache.Weigher;
 import recng.common.FieldMetadata;
 import recng.common.TableMetadata;
-import recng.common.filter.ProductFilter;
 import recng.graph.EdgeFilter;
 import recng.graph.Graph;
 import recng.graph.GraphCursor;
 import recng.graph.GraphEdge;
 import recng.graph.NodeId;
 import recng.graph.Traverser;
+import recng.recommendations.filter.ProductFilter;
 
-public class RecommendationModelImpl<K> implements RecommendationModel<K> {
+/**
+ * Implementation of {@link RecommendationModel} backed by a {@link Graph} of
+ * product relations and a {@link ProductDataStore} with product data.
+ *
+ * @author jon
+ *
+ * @param <T>
+ *            The generic type of the internally stored product IDs.
+ */
+public class RecommendationModelImpl<T> implements RecommendationModel<T> {
 
     // The product graph, i.e. the relations between products
-    private final Graph<K> productGraph;
-    // The backend (db) storage of product metadata
-    private final ProductData pmd;
-    // Cached product metadata
-    private final ProductCache<K> pmdCache;
+    private final Graph<T> productGraph;
+    // The backend (db) storage of product data
+    private final ProductDataStore productData;
+    // Cached product data
+    private final ProductCache<T> productCache;
     // Short lived cache used to avoid making duplicate db requests for the same
     // product in close succession
-    private final Cache<K, Map<String, Object>> shortTermCache =
-        new CacheBuilder<K, Map<String, Object>>()
-            .maxSize(1000).build();
+    private final Cache<T, Map<String, Object>> shortTermCache =
+        new CacheBuilder<T, Map<String, Object>>().maxSize(100).build();
     // Converts a string representation of a product id to an internal
     // representation of the id.
-    private final KeyParser<K> keyParser;
+    private final IDFactory<T> idFactory;
 
-    public RecommendationModelImpl(Graph<K> productGraph,
-                                   ProductData productMetadata,
-                                   ProductCache<K> productMetadataCache,
-                                   KeyParser<K> keyParser) {
+    /**
+     *
+     * @param productGraph
+     *            A graph describing the relations between products.
+     * @param productData
+     *            An interface to product data backend.
+     * @param keyParser
+     *            Used to parse a String representation of a product id to
+     *            something else.
+     */
+    public RecommendationModelImpl(Graph<T> productGraph,
+                                   ProductDataStore productData,
+                                   IDFactory<T> keyParser) {
         this.productGraph = productGraph;
-        this.pmd = productMetadata;
-        this.pmdCache = productMetadataCache;
-        this.keyParser = keyParser;
+        this.productData = productData;
+        this.productCache = setupCache(productGraph);
+        this.idFactory = keyParser;
     }
 
-    public List<Product<K>>
+    public List<Product<T>>
         getRelatedProducts(String sourceProduct,
-                           ProductQuery<K> query,
+                           ProductQuery<T> query,
                            Set<String> properties) {
-        Traverser<K> traverser =
+        Traverser<T> traverser =
             setupTraverser(getProductId(sourceProduct), query);
-        List<Product<K>> res = new ArrayList<Product<K>>();
-        GraphCursor<K> cursor = traverser.traverse();
+        List<Product<T>> res = new ArrayList<Product<T>>();
+        GraphCursor<T> cursor = traverser.traverse();
         try {
             while (cursor.hasNext()) {
-                GraphEdge<K> edge = cursor.next();
-                NodeId<K> related = edge.getEndNode();
+                GraphEdge<T> edge = cursor.next();
+                NodeId<T> related = edge.getEndNode();
                 res.add(getProductProperties(related.getId(), properties));
             }
         } finally {
@@ -66,48 +84,47 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
         return res;
     }
 
-    public Product<K> getProduct(String productId, Set<String> properties) {
-        K key = keyParser.parseKey(productId);
+    public Product<T> getProduct(String productId, Set<String> properties) {
+        T key = idFactory.fromString(productId);
         return getProductProperties(key, properties);
     }
 
-    private ProductId<K> getProductId(String id) {
-        K key = keyParser.parseKey(id);
-        return new ProductId<K>(key);
+    private ProductId<T> getProductId(String id) {
+        T key = idFactory.fromString(id);
+        return new ProductId<T>(key);
     }
 
-    private Traverser<K>
-        setupTraverser(NodeId<K> source, ProductQuery<K> query) {
+    private ProductCache<T> setupCache(Graph<T> productGraph) {
+        CacheBuilder<T, Product<T>> builder = new CacheBuilder<T, Product<T>>();
+        builder.weigher(new Weigher<T, Product<T>>() {
+            @Override
+            public int weigh(int overhead, T key, Product<T> value) {
+                return overhead +
+                    40 + // estimated (maximum) key size, bytes
+                    value.getWeight();
+            }
+        });
+        // TODO: Must be configurable
+        builder.maxWeight(Runtime.getRuntime().maxMemory() / 4);
+        // Caching data for all nodes in the graph should suffice
+        builder.maxSize(productGraph.nodeCount());
+        return new ProductCacheImpl<T>(builder.build());
+    }
+
+    private Traverser<T> setupTraverser(NodeId<T> source,
+                                        ProductQuery<T> query) {
         return productGraph.prepareTraversal(source,
                                              query.getRecommendationType())
             .maxReturnedEdges(query.getLimit())
             .maxTraversedEdges(query.getMaxCursorSize())
             .maxDepth(query.getMaxRelationDistance())
-            .edgeFilter(new Filter(query.getFilter()))
+            .edgeFilter(new OnlyValidFilter(query.getFilter()))
             .build();
     }
 
-    private class Filter implements EdgeFilter<K> {
-
-        private final ProductFilter<K> pFilter;
-        private final Set<String> properties;
-
-        public Filter(ProductFilter<K> pFilter) {
-            this.pFilter = pFilter;
-            this.properties = new HashSet<String>(pFilter.getFilterProperties());
-            properties.add(Product.IS_VALID_PROPERTY);
-        }
-
-        public boolean accepts(NodeId<K> start, NodeId<K> end) {
-            Product<K> product =
-                getProductProperties(end.getId(), properties);
-            return product.isValid() && pFilter.accepts(product);
-        }
-    }
-
-    private Product<K> getProductProperties(K productId,
+    private Product<T> getProductProperties(T productId,
                                             Set<String> properties) {
-        Product<K> cached = pmdCache.getProduct(productId);
+        Product<T> cached = productCache.getProduct(productId);
         if (cached == null)
             return fetchAndCacheProduct(productId, properties);
         for (String property : properties) {
@@ -117,25 +134,26 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
         return cached;
     }
 
-    private Product<K> fetchAndCacheProduct(K productId,
+    private Product<T> fetchAndCacheProduct(T productId,
                                             Set<String> properties) {
-        Map<String, Object> metadata = shortTermCache.get(productId);
-        if (metadata == null)
-            metadata = pmd.getProductData(keyParser.toString(productId));
-        Boolean isValid = (Boolean) metadata.get(ProductData.IS_VALID_KEY);
-        TableMetadata fields = pmd.getProductFields();
-        Product<K> product =
-            new ProductImpl<K>(productId, isValid == null
-                || isValid.booleanValue(), fields);
-        for (Map.Entry<String, Object> property : metadata.entrySet()) {
+        Map<String, Object> data = shortTermCache.get(productId);
+        if (data == null)
+            data = productData.getProductData(idFactory.toString(productId));
+        Boolean isValidProperty = (Boolean) data.get(Product.IS_VALID_PROPERTY);
+        boolean isValid =
+            isValidProperty != null && isValidProperty.booleanValue();
+        TableMetadata fields = productData.getProductFields();
+        Product<T> product = new ProductImpl<T>(productId, isValid, fields);
+        for (Map.Entry<String, Object> property : data.entrySet()) {
             String key = property.getKey();
             Object value = property.getValue();
             setProductProperty(product, fields.getFieldMetadata(key), value);
         }
+        productCache.cacheProduct(product);
         return product;
     }
 
-    private void setProductProperty(Product<K> product,
+    private void setProductProperty(Product<T> product,
                                     FieldMetadata<?> field,
                                     Object value) {
         if (field.isRepeated()) {
@@ -145,7 +163,7 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
         product.setProperty(field.getFieldName(), value);
     }
 
-    private void setRepeatedProductProperty(Product<K> product,
+    private void setRepeatedProductProperty(Product<T> product,
                                             FieldMetadata<?> field,
                                             Object value) {
         FieldMetadata.Type type = field.getType();
@@ -195,5 +213,24 @@ public class RecommendationModelImpl<K> implements RecommendationModel<K> {
     @SuppressWarnings("unchecked")
     private <L> L implicitCast(Object value) {
         return (L)value;
+    }
+
+    private class OnlyValidFilter implements EdgeFilter<T> {
+
+        private final ProductFilter<T> pFilter;
+        private final Set<String> properties;
+
+        public OnlyValidFilter(ProductFilter<T> pFilter) {
+            this.pFilter = pFilter;
+            this.properties =
+                new HashSet<String>(pFilter.getFilterProperties());
+            properties.add(Product.IS_VALID_PROPERTY);
+        }
+
+        public boolean accepts(NodeId<T> start, NodeId<T> end) {
+            Product<T> product =
+                getProductProperties(end.getId(), properties);
+            return product.isValid() && pFilter.accepts(product);
+        }
     }
 }

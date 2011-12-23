@@ -8,10 +8,10 @@ import java.util.List;
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
  *            The type of the key for this node.
  */
-public interface MutableGraphNode<K> extends GraphNode<K> {
+public interface MutableGraphNode<T> extends GraphNode<T> {
 
     /**
      * Gets the total number of edges originating from this node.

@@ -5,10 +5,10 @@ package recng.graph;
  *
  * @author jon
  */
-public class GraphEdge<K> extends WeightedEdgeImpl<NodeId<K>, NodeId<K>>
-    implements WeightedEdge<NodeId<K>, NodeId<K>> {
-    public GraphEdge(NodeId<K> startNode,
-                     NodeId<K> endNode,
+public class GraphEdge<T> extends WeightedEdgeImpl<NodeId<T>, NodeId<T>>
+    implements WeightedEdge<NodeId<T>, NodeId<T>> {
+    public GraphEdge(NodeId<T> startNode,
+                     NodeId<T> endNode,
                      EdgeType type, float weight) {
         super(startNode, endNode, type, weight);
     }

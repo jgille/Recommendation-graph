@@ -6,14 +6,15 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import recng.index.Key;
-import recng.index.KeyFactory;
-import recng.index.PrefixLongSuffixKey;
+import recng.index.ID;
+import recng.index.IDPattern;
+import recng.index.IDFormatException;
+import recng.index.PrefixLongSuffixID;
 
 public class TestPrefixLongSuffixKey {
 
-    private Key<String> getKey(String id) {
-        return PrefixLongSuffixKey.Factory.getInstance().parse(id);
+    private ID<String> getKey(String id) {
+        return PrefixLongSuffixID.Parser.getInstance().parse(id);
     }
 
     @Test public void testLong() {
@@ -33,16 +34,16 @@ public class TestPrefixLongSuffixKey {
     }
 
     private void test(String id) {
-        Key<String> key = getKey(id);
-        assertEquals(id, key.getValue());
-        Map<Key<String>, String> map = new HashMap<Key<String>, String>();
+        ID<String> key = getKey(id);
+        assertEquals(id, key.getID());
+        Map<ID<String>, String> map = new HashMap<ID<String>, String>();
         map.put(key, id);
         assertEquals(map.get(key), id);
     }
 
     @Test
     public void testLeadingZeros() {
-        KeyFactory<String> factory = PrefixLongSuffixKey.Factory.getInstance();
+        IDPattern<String> factory = PrefixLongSuffixID.Parser.getInstance();
         String id1 = "a0123450437894cd";
         String id2 = "a00123450437894cd";
         assertTrue(factory.matches(id1));
@@ -51,13 +52,13 @@ public class TestPrefixLongSuffixKey {
     }
 
     @Test public void testInvalidId() {
-        KeyFactory<String> factory = PrefixLongSuffixKey.Factory.getInstance();
+        IDPattern<String> factory = PrefixLongSuffixID.Parser.getInstance();
         String id = "abc";
         assertFalse(factory.matches(id));
         boolean exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);
@@ -67,7 +68,7 @@ public class TestPrefixLongSuffixKey {
         exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);
@@ -77,7 +78,7 @@ public class TestPrefixLongSuffixKey {
         exception = false;
         try {
             factory.parse(id);
-        } catch (Key.KeyFormatException e) {
+        } catch (IDFormatException e) {
             exception = true;
         }
         assertTrue(exception);

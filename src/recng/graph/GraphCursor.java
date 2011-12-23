@@ -6,7 +6,7 @@ package recng.graph;
  * @author jon
  *
  */
-public interface GraphCursor<K> {
+public interface GraphCursor<T> {
 
     /**
      * Returns true if there are any more edges in this cursor.
@@ -18,7 +18,7 @@ public interface GraphCursor<K> {
      *
      * @return
      */
-    GraphEdge<K> next();
+    GraphEdge<T> next();
 
     /**
      * Closes the cursor. Should always be called in a finally block.

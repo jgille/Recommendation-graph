@@ -5,13 +5,20 @@ import java.util.Map;
 import recng.common.TableMetadata;
 import recng.db.KVStore;
 
-public class ProductDataImpl implements ProductData {
+/**
+ * An implementation of a product data store that is backed by a {@link KVStore}
+ * containing the product properties.
+ *
+ * @author jon
+ *
+ */
+public class ProductDataStoreImpl implements ProductDataStore {
 
     private final KVStore<String, Map<String, Object>> db;
     private final TableMetadata fields;
 
-    public ProductDataImpl(KVStore<String, Map<String, Object>> db,
-                               TableMetadata fields) {
+    public ProductDataStoreImpl(KVStore<String, Map<String, Object>> db,
+                                TableMetadata fields) {
         this.db = db;
         this.fields = fields;
     }

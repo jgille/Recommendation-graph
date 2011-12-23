@@ -9,13 +9,13 @@ import java.util.List;
  *
  * @author Jon Ivmark
  */
-public interface MutableGraph<K> extends Graph<K>, MutableGraphNodeStore<K> {
+public interface MutableGraph<T> extends Graph<T>, MutableGraphNodeStore<T> {
 
     /**
      * Adds an edge. This method will create nodes if they do not already exist
      * in the graph.
      */
-    void addEdge(NodeId<K> startNode, NodeId<K> endNode, EdgeType edgeType,
+    void addEdge(NodeId<T> startNode, NodeId<T> endNode, EdgeType edgeType,
                  float weight);
 
     /**
@@ -23,7 +23,7 @@ public interface MutableGraph<K> extends Graph<K>, MutableGraphNodeStore<K> {
      *
      * @return True if an edge was updated, false if no such edge was found.
      */
-    boolean updateEdge(NodeId<K> startNode, NodeId<K> endNode,
+    boolean updateEdge(NodeId<T> startNode, NodeId<T> endNode,
                        EdgeType edgeType, float weight);
 
     /**
@@ -32,13 +32,13 @@ public interface MutableGraph<K> extends Graph<K>, MutableGraphNodeStore<K> {
      * @return True if an edge was removed, false if no such edge was found.
      */
     boolean
-        removeEdge(NodeId<K> startNode, NodeId<K> endNode, EdgeType edgeType);
+        removeEdge(NodeId<T> startNode, NodeId<T> endNode, EdgeType edgeType);
 
     /**
      * Sets the edges for a node, replacing any previous edges of this edge
      * type. This method will create nodes if they do not already exist in the
      * graph.
      */
-    void setEdges(NodeId<K> startNode, EdgeType edgeType,
-                  List<NodeId<K>> endNodes, List<Float> weights);
+    void setEdges(NodeId<T> startNode, EdgeType edgeType,
+                  List<NodeId<T>> endNodes, List<Float> weights);
 }

@@ -7,67 +7,97 @@ import recng.common.BinPropertyContainer;
 import recng.common.TableMetadata;
 import recng.common.WeightedPropertyContainer;
 
-public class ProductImpl<K> implements Product<K> {
+/**
+ * An implementation representing a product and it's properties.
+ *
+ * @author jon
+ *
+ * @param <T>
+ *            The generic type of the product IDs.
+ */
+public class ProductImpl<T> implements Product<T> {
 
-    private final K id;
+    private final T id;
     private final WeightedPropertyContainer<String> properties;
 
-    public ProductImpl(K id, boolean isValid, TableMetadata fields) {
+    /**
+     * Constructs a new product.
+     * 
+     * @param id
+     *            The product ID
+     * @param isValid
+     *            Whether or not this product is valid.
+     * @param fields
+     *            The valid properties for this product.
+     */
+    public ProductImpl(T id, boolean isValid, TableMetadata fields) {
         this.id = id;
         this.properties = new BinPropertyContainer(fields, true);
         setIsValid(isValid);
     }
 
-    public K getId() {
+    @Override
+    public T getId() {
         return id;
     }
 
+    @Override
     public boolean isValid() {
-        Boolean isValid = properties.getProperty(ProductData.IS_VALID_KEY);
+        Boolean isValid = properties.getProperty(IS_VALID_PROPERTY);
         return isValid != null && isValid.booleanValue();
     }
 
+    @Override
     public void setIsValid(boolean isValid) {
-        properties.setProperty(ProductData.IS_VALID_KEY, isValid);
+        properties.setProperty(IS_VALID_PROPERTY, isValid);
     }
 
+    @Override
     public <V> V getProperty(String key) {
         return properties.getProperty(key);
     }
 
+    @Override
     public <V> V setProperty(String key, V value) {
         return properties.setProperty(key, value);
     }
 
+    @Override
     public boolean containsProperty(String key) {
         return properties.containsProperty(key);
     }
 
+    @Override
     public Set<String> getKeys() {
         return properties.getKeys();
     }
 
+    @Override
     public <V> List<V> getRepeatedProperties(String key) {
         return properties.getRepeatedProperties(key);
     }
 
+    @Override
     public <V> List<V> setRepeatedProperties(String key, List<V> values) {
         return properties.setRepeatedProperties(key, values);
     }
 
+    @Override
     public <V> void addRepeatedProperty(String key, V value) {
         properties.addRepeatedProperty(key, value);
     }
 
+    @Override
     public List<String> getCategories() {
-        return getRepeatedProperties(ProductData.CATEGORIES_KEY);
+        return getRepeatedProperties(CATEGORIES_PROPERTY);
     }
 
+    @Override
     public void setCategories(List<String> categories) {
-        properties.setRepeatedProperties(ProductData.CATEGORIES_KEY,
-                                         categories);
+        properties.setRepeatedProperties(CATEGORIES_PROPERTY, categories);
     }
 
+    @Override
     public int getWeight() {
         return properties.getWeight();
     }
@@ -77,5 +107,15 @@ public class ProductImpl<K> implements Product<K> {
         StringBuilder sb = new StringBuilder("Id: ").append(id);
         sb.append(". Properties: { ").append(properties).append(" }");
         return sb.toString();
+    }
+
+    @Override
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    @Override
+    public Object set(String key, Object value) {
+        return properties.set(key, value);
     }
 }

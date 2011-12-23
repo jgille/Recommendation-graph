@@ -6,6 +6,6 @@ package recng.graph;
  * @author jon
  * 
  */
-public interface ImmutableGraph<K> extends Graph<K> {
+public interface ImmutableGraph<T> extends Graph<T> {
 
 }

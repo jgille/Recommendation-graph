@@ -3,23 +3,31 @@ package recng.index;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PrefixIntSuffixKey extends PrefixSuffixKey implements Key<String> {
+/**
+ * Stores an id as an int together with a prefix and/or suffix as a shared
+ * String, thereby saving memory compared to storing it as a regular String.
+ * Uses a flyweight pattern where common prefixes/suffixes are shared between
+ * instances.
+ * 
+ * @author jon
+ */
+public class PrefixIntSuffixID extends PrefixSuffixID implements ID<String> {
 
     private final int root;
 
-    private PrefixIntSuffixKey(String prefix, int root, String suffix) {
+    private PrefixIntSuffixID(String prefix, int root, String suffix) {
         super(prefix, suffix);
         this.root = root;
     }
 
-    public String getValue() {
+    public String getID() {
         return getPrefix() + root + getSuffix();
     }
 
     @Override public boolean equals(Object other) {
         if(other == null || other.getClass() != getClass())
             return false;
-        PrefixIntSuffixKey key = (PrefixIntSuffixKey)other;
+        PrefixIntSuffixID key = (PrefixIntSuffixID)other;
         if (root != key.root)
             return false;
         return super.equals(other);
@@ -33,13 +41,13 @@ public class PrefixIntSuffixKey extends PrefixSuffixKey implements Key<String> {
         return String.format("PrefixIntSuffixKey: p:%s, i:%s, s:%s", getPrefix(), root, getSuffix());
     }
 
-    public static class Factory implements KeyFactory<String> {
+    public static class Parser implements IDPattern<String> {
 
-        private static final Factory INSTANCE = new Factory();
+        private static final Parser INSTANCE = new Parser();
         private static final Pattern PATTERN = Pattern
             .compile("(.{0,3})([1-9]\\d{0,8})(.{0,3})");
 
-        public static KeyFactory<String> getInstance() {
+        public static IDPattern<String> getInstance() {
             return INSTANCE;
         }
 
@@ -47,11 +55,11 @@ public class PrefixIntSuffixKey extends PrefixSuffixKey implements Key<String> {
             return PATTERN.matcher(id).matches();
         }
 
-        public Key<String> parse(String id) {
+        public ID<String> parse(String id) {
             Matcher m = PATTERN.matcher(id);
             if (!m.matches())
-                throw new KeyFormatException(String.format("Invalid key: %s", id));
-            return new PrefixIntSuffixKey(m.group(1),
+                throw new IDFormatException(String.format("Invalid key: %s", id));
+            return new PrefixIntSuffixID(m.group(1),
                                                 Integer.parseInt(m.group(2)),
                                                 m.group(3));
         }

@@ -35,6 +35,11 @@ public abstract class AbstractTestPropertyContainer {
                                       Marshallers.STRING_MARSHALLER,
                                       FieldMetadata.Type.STRING, true);
 
+    protected static final FieldMetadata<Integer> INT_LIST =
+        new FieldMetadataImpl<Integer>("IntList",
+                                      Marshallers.INTEGER_MARSHALLER,
+                                      FieldMetadata.Type.INTEGER, true);
+
     protected abstract PropertyContainer<String> getPropertyContainer(TableMetadata fs);
 
     @Test public void testGetSetContainsProperty() {
@@ -142,5 +147,28 @@ public abstract class AbstractTestPropertyContainer {
 
         assertEquals(100, properties.getProperty(PRICE.getFieldName()));
         assertEquals(7777l, properties.getProperty(RELEASE_DATE.getFieldName()));
+    }
+
+    @Test
+    public void testSetAndGet() {
+        TableMetadata fs =
+            new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
+                .add(RELEASE_DATE).build();
+        PropertyContainer<String> properties = getPropertyContainer(fs);
+        properties.set(PRICE.getFieldName(), 1);
+        assertEquals(1, properties.get(PRICE.getFieldName()));
+    }
+
+    @Test
+    public void testRepeatedNegativeIntProperty() {
+        TableMetadata fs =
+            new TableMetadataImpl.Builder().add(INT_LIST).build();
+        PropertyContainer<String> properties = getPropertyContainer(fs);
+        List<Integer> ints =
+            Arrays.<Integer> asList(-1, -2, -Integer.MAX_VALUE);
+        properties.setRepeatedProperties(INT_LIST.getFieldName(), ints);
+        List<Integer> res =
+            properties.getRepeatedProperties(INT_LIST.getFieldName());
+        assertEquals(ints, res);
     }
 }

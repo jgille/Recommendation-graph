@@ -1,46 +1,54 @@
 package recng.graph;
 
-class TraverserBuilderImpl<K> implements TraverserBuilder<K> {
+/**
+ * A class used to build graph traversers.
+ *
+ * @author jon
+ *
+ * @param <T>
+ *            The type of the node ids in the graph.
+ */
+class TraverserBuilderImpl<T> implements TraverserBuilder<T> {
 
-    private final GraphNode<K> startNode;
+    private final GraphNode<T> startNode;
     private final EdgeType edgeType;
-    private EdgeFilter<K> returnableFilter =
-        new EdgeFilter<K>() {
-            public boolean accepts(NodeId<K> start, NodeId<K> end) {
+    private EdgeFilter<T> returnableFilter =
+        new EdgeFilter<T>() {
+            public boolean accepts(NodeId<T> start, NodeId<T> end) {
                 return true;
         }
     };
     private int maxDepth = 1;
-    private int maxReturnedEdges = 20;
-    private int maxTraversedEdges = 500;
+    private int maxReturnedEdges = Integer.MAX_VALUE;
+    private int maxTraversedEdges = Integer.MAX_VALUE;
 
-    TraverserBuilderImpl(GraphNode<K> startNode, EdgeType edgeType) {
+    TraverserBuilderImpl(GraphNode<T> startNode, EdgeType edgeType) {
         this.startNode = startNode;
         this.edgeType = edgeType;
     }
 
-    public synchronized TraverserBuilder<K> edgeFilter(EdgeFilter<K> returnableFilter) {
+    public synchronized TraverserBuilder<T> edgeFilter(EdgeFilter<T> returnableFilter) {
         this.returnableFilter = returnableFilter;
         return this;
     }
 
-    public synchronized TraverserBuilder<K> maxDepth(int maxDepth) {
+    public synchronized TraverserBuilder<T> maxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
         return this;
     }
 
-    public synchronized TraverserBuilder<K> maxReturnedEdges(int maxReturnedEdges) {
+    public synchronized TraverserBuilder<T> maxReturnedEdges(int maxReturnedEdges) {
         this.maxReturnedEdges = maxReturnedEdges;
         return this;
     }
 
-    public synchronized TraverserBuilder<K> maxTraversedEdges(int maxTraversedEdges) {
+    public synchronized TraverserBuilder<T> maxTraversedEdges(int maxTraversedEdges) {
         this.maxTraversedEdges = maxTraversedEdges;
         return this;
     }
 
-    public synchronized Traverser<K> build() {
-        return new TraverserImpl<K>(startNode, edgeType, returnableFilter,
+    public synchronized Traverser<T> build() {
+        return new TraverserImpl<T>(startNode, edgeType, returnableFilter,
                                     maxDepth, maxReturnedEdges,
                                     maxTraversedEdges);
     }

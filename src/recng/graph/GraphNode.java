@@ -2,8 +2,22 @@ package recng.graph;
 
 import java.util.Iterator;
 
-interface GraphNode<K> {
-    Iterator<TraversableGraphEdge<K>> traverseNeighbors(EdgeType edgeType);
+/**
+ * A node in a graph.
+ *
+ * @author jon
+ * 
+ * @param <T>
+ *            The generic type of the node IDs
+ */
+interface GraphNode<T> {
+    /**
+     * Returns an iterator of this node's out edges.
+     */
+    Iterator<TraversableGraphEdge<T>> traverseNeighbors(EdgeType edgeType);
 
-    NodeId<K> getNodeId();
+    /**
+     * Return the node id.
+     */
+    NodeId<T> getNodeId();
 }

@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author Jon Ivmark
  */
-public interface Traverser<K> {
+public interface Traverser<T> {
 
     /**
      * Gets and iterator used to traverse product nodes connected to a product,
@@ -18,7 +18,7 @@ public interface Traverser<K> {
      * NOTE: Make sure you always close the cursor once you've started to
      * traverse it, i.e. close it in a finally block.
      */
-    GraphCursor<K> traverse();
+    GraphCursor<T> traverse();
 
     /**
      * Gets the entire traversal path according to the rules setup in the
@@ -26,5 +26,5 @@ public interface Traverser<K> {
      *
      * Neighbors are traversed ordered by descending edge weight.
      */
-    List<GraphEdge<K>> getPath();
+    List<GraphEdge<T>> getPath();
 }

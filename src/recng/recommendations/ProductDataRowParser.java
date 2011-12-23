@@ -3,11 +3,11 @@ package recng.recommendations;
 import java.util.Map;
 
 /**
- * Parses a row from a product (meta)data file.
- *
- * @author jon
+ * Parses a row from a product data file.
  * 
+ * @author jon
+ *
  */
-public interface PMDRowParser {
+public interface ProductDataRowParser {
     Map<String, Object> parseRow(String row);
 }

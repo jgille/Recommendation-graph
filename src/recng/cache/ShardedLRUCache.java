@@ -6,18 +6,17 @@ import java.util.List;
 /**
  * A cache that uses multiple LRUCaches to store the values. This strategy might
  * improve performance in a highly concurrent environment because of a more
- * granular locking.
- *
- * Each key will be assigned to a shard (an LRUCache instance)
- * based on the modulo of the hashcode of the key.
- *
- * Note that this class does not guarantee strict LRU eviction because of
- * the sharding. Non uniformly distributed hashcode values for the keys
- * will result some shards evicting keys more often than others. In these
- * cases, consider overriding getShardIndex(int).
- *
+ * granular locking/sychronization.
+ * 
+ * Each key will be assigned to a shard (an LRUCache instance) based on the
+ * modulo of the hashcode of the key.
+ * 
+ * Note that this class does not guarantee strict LRU eviction because of the
+ * sharding. Non uniformly distributed hashcode values for the keys will result
+ * some shards evicting keys more often than others.
+ * 
  * This class is thread safe.
- *
+ * 
  * @author Jon Ivmark
  */
 class ShardedLRUCache<K, V> implements Cache<K, V> {
@@ -40,7 +39,7 @@ class ShardedLRUCache<K, V> implements Cache<K, V> {
      *
      * Must return a value between 0 and shardCount - 1.
      */
-    protected int getShardIndex(K key) {
+    private int getShardIndex(K key) {
         if(key == null)
             throw new IllegalArgumentException("The key may not be null");
         return Math.abs(key.hashCode() % shards.size());

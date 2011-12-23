@@ -1,4 +1,4 @@
-package tests.junit.recommendation;
+package tests.junit.recommendations;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,57 +11,53 @@ import java.util.Set;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import recng.cache.Cache;
-import recng.cache.CacheBuilder;
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 import recng.common.Marshallers;
-import recng.common.filter.ProductFilter;
 import recng.db.InMemoryKVStore;
 import recng.db.KVStore;
 import recng.graph.Graph;
 import recng.graph.GraphImpl;
 import recng.graph.NodeId;
-import recng.index.Key;
-import recng.index.StringKeys;
-import recng.recommendations.KeyParser;
+import recng.index.ID;
+import recng.index.StringIDs;
+import recng.recommendations.IDFactory;
 import recng.recommendations.Product;
 import recng.recommendations.ProductId;
-import recng.recommendations.ProductData;
-import recng.recommendations.ProductCache;
-import recng.recommendations.ProductCacheImpl;
-import recng.recommendations.ProductDataImpl;
+import recng.recommendations.ProductDataStore;
+import recng.recommendations.ProductDataStoreImpl;
 import recng.recommendations.ProductQuery;
 import recng.recommendations.RecommendationModel;
 import recng.recommendations.RecommendationModelImpl;
 import recng.recommendations.RecommendationType;
+import recng.recommendations.filter.ProductFilter;
 
 public class TestRecommendationModelImpl {
 
     private static final RecommendationType EDGE_TYPE =
         RecommendationType.PEOPLE_WHO_BOUGHT;
 
-    private static final KeyParser<Key<String>> KP =
-        new KeyParser<Key<String>>() {
-            public Key<String> parseKey(String id) {
-                return StringKeys.parseKey(id);
+    private static final IDFactory<ID<String>> KP =
+        new IDFactory<ID<String>>() {
+            public ID<String> fromString(String id) {
+                return StringIDs.parseKey(id);
             }
 
-            public String toString(Key<String> productId) {
-                return productId.getValue();
+            public String toString(ID<String> productId) {
+                return productId.getID();
             }
         };
 
-    private static final NodeId<Key<String>> N1 =
-        new ProductId<Key<String>>(KP.parseKey("1"));
-    private static final NodeId<Key<String>> N2 =
-        new ProductId<Key<String>>(KP.parseKey("2"));
-    private static final NodeId<Key<String>> N3 =
-        new ProductId<Key<String>>(KP.parseKey("3"));
-    private static final NodeId<Key<String>> N4 =
-        new ProductId<Key<String>>(KP.parseKey("4"));
+    private static final NodeId<ID<String>> N1 =
+        new ProductId<ID<String>>(KP.fromString("1"));
+    private static final NodeId<ID<String>> N2 =
+        new ProductId<ID<String>>(KP.fromString("2"));
+    private static final NodeId<ID<String>> N3 =
+        new ProductId<ID<String>>(KP.fromString("3"));
+    private static final NodeId<ID<String>> N4 =
+        new ProductId<ID<String>>(KP.fromString("4"));
 
     private static final Float N1_N2 = 0.7f;
     private static final Float N1_N3 = 0.3f;
@@ -74,9 +70,9 @@ public class TestRecommendationModelImpl {
      * 1 -- w=0.7 --> 2; 1 -- w=0.3 --> 3; 2 -- w=0.6 --> 4; 2 -- w=0.4 --> 1; 3
      * -- w=1.0 --> 1; 4 -- w=1.0 --> 2;
      */
-    private Graph<Key<String>> buildGraph() {
-        GraphImpl.Builder<Key<String>> builder =
-            new GraphImpl.Builder<Key<String>>();
+    private Graph<ID<String>> buildGraph() {
+        GraphImpl.Builder<ID<String>> builder =
+            new GraphImpl.Builder<ID<String>>();
 
         builder.addEdge(N1, N3, EDGE_TYPE, N1_N3)
             .addEdge(N1, N2, EDGE_TYPE, N1_N2)
@@ -88,33 +84,33 @@ public class TestRecommendationModelImpl {
         return builder.build();
     }
 
-    private ProductData createMetadata() {
+    private ProductDataStore createMetadata() {
         KVStore<String, Map<String, Object>> db =
             new InMemoryKVStore<String, Map<String, Object>>();
         Map<String, Object> p1 = new HashMap<String, Object>();
-        p1.put("name", N1.getId().getValue());
+        p1.put("name", N1.getId().getID());
         p1.put("index", 1);
         p1.put("__is_valid", true);
         p1.put("__categories", Arrays.<String> asList("cat1", "cat2"));
-        db.put(N1.getId().getValue(), p1);
+        db.put(N1.getId().getID(), p1);
         Map<String, Object> p2 = new HashMap<String, Object>();
-        p2.put("name", N2.getId().getValue());
+        p2.put("name", N2.getId().getID());
         p2.put("index", 2);
         p2.put("__categories", Arrays.<String> asList("cat2", "cat3"));
         p2.put("__is_valid", true);
-        db.put(N2.getId().getValue(), p2);
+        db.put(N2.getId().getID(), p2);
         Map<String, Object> p3 = new HashMap<String, Object>();
-        p3.put("name", N3.getId().getValue());
+        p3.put("name", N3.getId().getID());
         p3.put("index", 3);
         p3.put("__categories", Arrays.<String> asList("cat3", "cat4"));
         p3.put("__is_valid", true);
-        db.put(N3.getId().getValue(), p3);
+        db.put(N3.getId().getID(), p3);
         Map<String, Object> p4 = new HashMap<String, Object>();
-        p4.put("name", N4.getId().getValue());
+        p4.put("name", N4.getId().getID());
         p4.put("index", 4);
         p4.put("__categories", Arrays.<String> asList("cat3"));
         p4.put("__is_valid", true);
-        db.put(N4.getId().getValue(), p4);
+        db.put(N4.getId().getID(), p4);
 
         FieldMetadata<String> name =
             new FieldMetadataImpl<String>("name",
@@ -135,33 +131,27 @@ public class TestRecommendationModelImpl {
         TableMetadata fs =
             new TableMetadataImpl.Builder().add(name).add(index).add(categories)
                 .add(isValid).build();
-        return new ProductDataImpl(db, fs);
+        return new ProductDataStoreImpl(db, fs);
     }
 
-    private RecommendationModel<Key<String>> getModel() {
-        Graph<Key<String>> productGraph = buildGraph();
-        ProductData productMetadata = createMetadata();
-        Cache<Key<String>, Product<Key<String>>> cache =
-            new CacheBuilder<Key<String>, Product<Key<String>>>().maxSize(1)
-                .build();
-        ProductCache<Key<String>> productMetadataCache =
-            new ProductCacheImpl<Key<String>>(cache);
-        return new RecommendationModelImpl<Key<String>>(productGraph,
+    private RecommendationModel<ID<String>> getModel() {
+        Graph<ID<String>> productGraph = buildGraph();
+        ProductDataStore productMetadata = createMetadata();
+        return new RecommendationModelImpl<ID<String>>(productGraph,
                                                         productMetadata,
-                                                        productMetadataCache,
                                                         KP);
     }
 
     @Test
     public void testGetRelatedProducts() {
-        ProductQuery<Key<String>> query = new ProductQuery<Key<String>>() {
+        ProductQuery<ID<String>> query = new ProductQuery<ID<String>>() {
             public int getLimit() {
                 return 2;
             }
 
-            public ProductFilter<Key<String>> getFilter() {
-                return new ProductFilter<Key<String>>() {
-                    public boolean accepts(Product<Key<String>> product) {
+            public ProductFilter<ID<String>> getFilter() {
+                return new ProductFilter<ID<String>>() {
+                    public boolean accepts(Product<ID<String>> product) {
                         Integer index = product.getProperty("index");
                         return index.intValue() > 2;
                     }
@@ -185,22 +175,22 @@ public class TestRecommendationModelImpl {
             }
 
         };
-        RecommendationModel<Key<String>> model = getModel();
+        RecommendationModel<ID<String>> model = getModel();
         Set<String> properties = new HashSet<String>();
         properties.add("name");
         properties.add("index");
-        List<Product<Key<String>>> related =
-            model.getRelatedProducts(N1.getId().getValue(), query, properties);
+        List<Product<ID<String>>> related =
+            model.getRelatedProducts(N1.getId().getID(), query, properties);
 
         assertNotNull(related);
         assertEquals(2, related.size());
-        Product<Key<String>> r1 = related.get(0);
+        Product<ID<String>> r1 = related.get(0);
         assertEquals(N3.getId(), r1.getId());
         assertEquals(3, r1.getProperty("index"));
         assertEquals("3", r1.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3", "cat4"), r1.getCategories());
 
-        Product<Key<String>> r2 = related.get(1);
+        Product<ID<String>> r2 = related.get(1);
 
         assertEquals(N4.getId(), r2.getId());
         assertEquals(4, r2.getProperty("index"));

@@ -2,22 +2,28 @@ package recng.index;
 
 import java.util.regex.Pattern;
 
-public class IntKey implements Key<String> {
+/**
+ * Stores an id as an int, saving memory by saving IDs such as "36287991" as a
+ * wrapped int instead of a String.
+ * 
+ * @author jon
+ */
+public class IntID implements ID<String> {
 
     private final int id;
 
-    private IntKey(int id) {
+    private IntID(int id) {
         this.id = id;
     }
 
-    public String getValue() {
+    public String getID() {
         return id + "";
     }
 
     @Override public boolean equals(Object other) {
         if(other == null || other.getClass() != getClass())
             return false;
-        IntKey key = (IntKey)other;
+        IntID key = (IntID)other;
         return id == key.id;
     }
 
@@ -29,13 +35,13 @@ public class IntKey implements Key<String> {
         return String.format("IntKey: %s", id);
     }
 
-    public static class Factory implements KeyFactory<String> {
+    public static class Parser implements IDPattern<String> {
 
-        private static final Factory INSTANCE = new Factory();
+        private static final Parser INSTANCE = new Parser();
         // One non zero digit followed by 0-8 digits
         private static final Pattern PATTERN = Pattern.compile("[1-9]\\d{0,8}");
 
-        public static KeyFactory<String> getInstance() {
+        public static IDPattern<String> getInstance() {
             return INSTANCE;
         }
 
@@ -43,10 +49,10 @@ public class IntKey implements Key<String> {
             return PATTERN.matcher(id).matches();
         }
 
-        public Key<String> parse(String id) {
+        public ID<String> parse(String id) {
             if (!matches(id))
-                throw new KeyFormatException(String.format("Invalid key: %s", id));
-            return new IntKey(Integer.parseInt(id));
+                throw new IDFormatException(String.format("Invalid key: %s", id));
+            return new IntID(Integer.parseInt(id));
         }
     }
 }

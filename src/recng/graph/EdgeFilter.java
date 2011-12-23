@@ -5,13 +5,13 @@ package recng.graph;
  *
  * @author jon
  *
- * @param <K>
+ * @param <T>
  */
-public interface EdgeFilter<K> {
+public interface EdgeFilter<T> {
 
     /**
      * Decides whether or not to accept an edge.
      */
-    boolean accepts(NodeId<K> startNode, NodeId<K> endNode);
+    boolean accepts(NodeId<T> startNode, NodeId<T> endNode);
 
 }

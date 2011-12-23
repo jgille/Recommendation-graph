@@ -8,6 +8,12 @@ import recng.graph.EdgeType;
 import recng.graph.NodeType;
 import recng.graph.NodeTypeImpl;
 
+/**
+ * A product node in a graph.
+ *
+ * @author jon
+ *
+ */
 public class ProductNodeType extends NodeTypeImpl implements
     NodeType {
 
@@ -20,6 +26,7 @@ public class ProductNodeType extends NodeTypeImpl implements
         return INSTANCE;
     }
 
+    // This is a singleton
     private ProductNodeType() {
         super("Product node", EDGE_TYPES);
     }

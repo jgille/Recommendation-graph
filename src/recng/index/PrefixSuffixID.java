@@ -3,14 +3,22 @@ package recng.index;
 import recng.cache.Cache;
 import recng.cache.CacheBuilder;
 
-abstract class PrefixSuffixKey {
+/**
+ * Base class for storing IDs with common prefixes/suffixes.
+ *
+ * Uses a flyweight pattern where common prefixes/suffixes are shared between
+ * instances.
+ *
+ * @author jon
+ */
+abstract class PrefixSuffixID {
 
     private static final Cache<String, String> STRING_CACHE =
-        new CacheBuilder<String, String>().maxSize(100).build();
+        new CacheBuilder<String, String>().maxSize(1000).build();
 
     private final String prefix, suffix;
 
-    protected PrefixSuffixKey(String prefix, String suffix) {
+    protected PrefixSuffixID(String prefix, String suffix) {
         this.prefix = getOrCacheString(prefix);
         this.suffix = getOrCacheString(suffix);
     }
@@ -33,7 +41,7 @@ abstract class PrefixSuffixKey {
     @Override public boolean equals(Object other) {
         if(other == null || other.getClass() != getClass())
             return false;
-        PrefixSuffixKey pid = (PrefixSuffixKey)other;
+        PrefixSuffixID pid = (PrefixSuffixID)other;
         return sameString(pid.getPrefix(), prefix) && sameString(pid.getSuffix(), suffix);
     }
 

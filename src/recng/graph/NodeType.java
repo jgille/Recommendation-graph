@@ -1,6 +1,6 @@
 package recng.graph;
 
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Describes a type of node in a graph.
@@ -17,12 +17,15 @@ public interface NodeType {
 
     /**
      * Gets the valid edge types of edges originating from nodes of this type.
-     *
-     * The integer values connected to each edge type are used as indexes in
-     * edge arrays and should be both unique and sequential (starting at 0).
      */
-    Map<EdgeType, Integer> validEdgeTypes();
+    Set<EdgeType> validEdgeTypes();
 
+    /**
+     * Gets the index of an edge type. Must return a value between 0 and
+     * validEdgeTypes().size() - 1 for all valid edge types, and must return
+     * unique indexes for all valid edge types. For invalid edge types, -1 is
+     * returned.
+     */
     int indexOf(EdgeType edgeType);
 
 }

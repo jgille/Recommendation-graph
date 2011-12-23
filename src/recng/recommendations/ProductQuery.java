@@ -1,6 +1,6 @@
 package recng.recommendations;
 
-import recng.common.filter.ProductFilter;
+import recng.recommendations.filter.ProductFilter;
 
 /**
  * A query used to fetch recommended products.

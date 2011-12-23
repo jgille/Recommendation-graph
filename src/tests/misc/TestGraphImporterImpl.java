@@ -20,22 +20,22 @@ public class TestGraphImporterImpl {
 
     public static void main(String[] args) {
         String file = args[0];
-        GraphBuilder<Key<String>> builder =
-            new GraphImpl.Builder<Key<String>>();
+        GraphBuilder<ID<String>> builder =
+            new GraphImpl.Builder<ID<String>>();
         Set<EdgeType> edgeTypes = new HashSet<EdgeType>();
         edgeTypes.addAll(EnumSet.allOf(RecommendationType.class));
-        GraphImporterImpl<Key<String>> importer =
-            new GraphImporterImpl<Key<String>>(
+        GraphImporterImpl<ID<String>> importer =
+            new GraphImporterImpl<ID<String>>(
                                                builder,
                                                edgeTypes) {
 
                 @Override
-                protected NodeId<Key<String>> getNodeKey(String id) {
-                    return new NodeId<Key<String>>(StringKeys.parseKey(id),
+                protected NodeId<ID<String>> getNodeKey(String id) {
+                    return new NodeId<ID<String>>(StringIDs.parseKey(id),
                                                    NODE_TYPE);
                 }
             };
-        Graph<Key<String>> graph = importer.importGraph(file);
+        Graph<ID<String>> graph = importer.importGraph(file);
         importer = null;
         builder = null;
 

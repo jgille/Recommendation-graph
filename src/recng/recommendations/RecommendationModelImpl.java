@@ -64,13 +64,13 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
         this.idFactory = keyParser;
     }
 
-    public List<Product>
+    public List<ImmutableProduct>
         getRelatedProducts(String sourceProduct,
                            ProductQuery query,
                            Set<String> properties) {
         Traverser<T> traverser =
             setupTraverser(getProductId(sourceProduct), query);
-        List<Product> res = new ArrayList<Product>();
+        List<ImmutableProduct> res = new ArrayList<ImmutableProduct>();
         GraphCursor<T> cursor = traverser.traverse();
         try {
             while (cursor.hasNext()) {
@@ -84,7 +84,8 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
         return res;
     }
 
-    public Product getProduct(String productId, Set<String> properties) {
+    public ImmutableProduct
+        getProduct(String productId, Set<String> properties) {
         T key = idFactory.fromString(productId);
         return getProductProperties(key, properties);
     }
@@ -122,8 +123,8 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
             .build();
     }
 
-    private Product getProductProperties(T productId,
-                                         Set<String> properties) {
+    private ImmutableProduct getProductProperties(T productId,
+                                                  Set<String> properties) {
         Product cached = productCache.getProduct(productId);
         if (cached == null)
             return fetchAndCacheProduct(productId, properties);
@@ -131,11 +132,11 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
             if (!cached.containsProperty(property))
                 return fetchAndCacheProduct(productId, properties);
         }
-        return cached;
+        return new ImmutableProductImpl(idFactory.toString(productId), cached);
     }
 
-    private Product fetchAndCacheProduct(T productId,
-                                         Set<String> properties) {
+    private ImmutableProduct fetchAndCacheProduct(T productId,
+                                                  Set<String> properties) {
         Map<String, Object> data = shortTermCache.get(productId);
         if (data == null)
             data = productData.getProductData(idFactory.toString(productId));
@@ -151,7 +152,7 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
             setProductProperty(product, fields.getFieldMetadata(key), value);
         }
         productCache.cacheProduct(productId, product);
-        return product;
+        return new ImmutableProductImpl(id, product);
     }
 
     private void setProductProperty(Product product,
@@ -229,7 +230,7 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
         }
 
         public boolean accepts(NodeID<T> start, NodeID<T> end) {
-            Product product =
+            ImmutableProduct product =
                 getProductProperties(end.getID(), properties);
             return product.isValid() && pFilter.accepts(product);
         }

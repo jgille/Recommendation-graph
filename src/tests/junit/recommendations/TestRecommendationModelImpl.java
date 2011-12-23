@@ -24,7 +24,7 @@ import recng.graph.NodeID;
 import recng.index.ID;
 import recng.index.StringIDs;
 import recng.recommendations.IDFactory;
-import recng.recommendations.Product;
+import recng.recommendations.ImmutableProduct;
 import recng.recommendations.ProductID;
 import recng.recommendations.ProductDataStore;
 import recng.recommendations.ProductDataStoreImpl;
@@ -151,7 +151,7 @@ public class TestRecommendationModelImpl {
 
             public ProductFilter getFilter() {
                 return new ProductFilter() {
-                    public boolean accepts(Product product) {
+                    public boolean accepts(ImmutableProduct product) {
                         Integer index = product.getProperty("index");
                         return index.intValue() > 2;
                     }
@@ -179,18 +179,18 @@ public class TestRecommendationModelImpl {
         Set<String> properties = new HashSet<String>();
         properties.add("name");
         properties.add("index");
-        List<Product> related =
+        List<ImmutableProduct> related =
             model.getRelatedProducts(N1.getID().getID(), query, properties);
 
         assertNotNull(related);
         assertEquals(2, related.size());
-        Product r1 = related.get(0);
+        ImmutableProduct r1 = related.get(0);
         assertEquals(N3.getID().getID(), r1.getId());
         assertEquals(3, r1.getProperty("index"));
         assertEquals("3", r1.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3", "cat4"), r1.getCategories());
 
-        Product r2 = related.get(1);
+        ImmutableProduct r2 = related.get(1);
 
         assertEquals(N4.getID().getID(), r2.getId());
         assertEquals(4, r2.getProperty("index"));

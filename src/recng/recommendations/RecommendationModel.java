@@ -22,9 +22,9 @@ public interface RecommendationModel {
      * @param properties
      *            The set of properties to include for the returned products
      */
-    List<Product> getRelatedProducts(String sourceProduct,
-                                     ProductQuery query,
-                                     Set<String> properties);
+    List<ImmutableProduct> getRelatedProducts(String sourceProduct,
+                                              ProductQuery query,
+                                              Set<String> properties);
 
     /**
      * Gets a product based on it's id.
@@ -35,6 +35,5 @@ public interface RecommendationModel {
      *            The set of properties to get for the product
      * @return The product with the specified properties.
      */
-    Product getProduct(String id, Set<String> properties);
-
+    ImmutableProduct getProduct(String id, Set<String> properties);
 }

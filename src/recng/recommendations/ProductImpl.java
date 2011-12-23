@@ -37,11 +37,6 @@ public class ProductImpl implements Product {
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
     public boolean isValid() {
         Boolean isValid = properties.getProperty(IS_VALID_PROPERTY);
         return isValid != null && isValid.booleanValue();

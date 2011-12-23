@@ -20,11 +20,6 @@ public interface Product extends WeightedPropertyContainer {
     public static final String CATEGORIES_PROPERTY = "__categories";
 
     /**
-     * Gets the product ID.
-     */
-    String getId();
-
-    /**
      * Gets the validity of this product.
      */
     boolean isValid();

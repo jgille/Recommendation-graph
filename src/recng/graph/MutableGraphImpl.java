@@ -40,19 +40,25 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
      */
     public static class Builder<T> implements GraphBuilder<T> {
 
-        private final MutableGraph<T> graph;
+        private final MutableGraphImpl<T> graph;
 
         public Builder(GraphMetadata metadata) {
             this.graph = new MutableGraphImpl<T>(metadata);
         }
 
         @Override
-        public GraphBuilder<T> addEdge(NodeID<T> from,
-                                       NodeID<T> to,
-                                       EdgeType edgeType,
-                                       float weight) {
-            graph.addEdge(from, to, edgeType, weight);
-            return this;
+        public int addNode(NodeID<T> node) {
+            return graph.upsertNode(node);
+        }
+
+        @Override
+        public void addEdge(int startNodeIndex,
+                            int endNodeIndex,
+                            EdgeType edgeType,
+                            float weight) {
+            NodeID<T> startNode = graph.getNode(startNodeIndex).getNodeId();
+            NodeID<T> endNode = graph.getNode(endNodeIndex).getNodeId();
+            graph.addEdge(startNode, endNode, edgeType, weight);
         }
 
         @Override
@@ -207,8 +213,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         startNode.setEdges(edgeType, endNodeIndexes, weights);
     }
 
-    @Override
-    public int getPrimaryKey(NodeID<T> nodeId) {
+    private int getPrimaryKey(NodeID<T> nodeId) {
         synchronized (lock) {
             if (!nodeIndex.contains(nodeId))
                 return -1;
@@ -222,8 +227,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
      * (add/update/removeEdge etc). Modifying the node directly may lead to
      * concurrency issues.
      */
-    @Override
-    public MutableGraphNode<T> getNode(int primaryKey) {
+    private MutableGraphNode<T> getNode(int primaryKey) {
         synchronized (lock) {
             if (primaryKey >= nodes.size() || primaryKey < 0)
                 return null;

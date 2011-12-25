@@ -79,12 +79,17 @@ public class TestRecommendationModelImpl {
         GraphImpl.Builder<ID<String>> builder =
             new GraphImpl.Builder<ID<String>>(GRAPH_METADATA);
 
-        builder.addEdge(N1, N3, EDGE_TYPE, N1_N3)
-            .addEdge(N1, N2, EDGE_TYPE, N1_N2)
-            .addEdge(N2, N1, EDGE_TYPE, N2_N1)
-            .addEdge(N2, N4, EDGE_TYPE, N2_N4)
-            .addEdge(N3, N1, EDGE_TYPE, N3_N1)
-            .addEdge(N4, N2, EDGE_TYPE, N4_N2);
+        int k1 = builder.addNode(N1);
+        int k2 = builder.addNode(N2);
+        int k3 = builder.addNode(N3);
+        int k4 = builder.addNode(N4);
+
+        builder.addEdge(k1, k3, EDGE_TYPE, N1_N3);
+        builder.addEdge(k1, k2, EDGE_TYPE, N1_N2);
+        builder.addEdge(k2, k1, EDGE_TYPE, N2_N1);
+        builder.addEdge(k2, k4, EDGE_TYPE, N2_N4);
+        builder.addEdge(k3, k1, EDGE_TYPE, N3_N1);
+        builder.addEdge(k4, k2, EDGE_TYPE, N4_N2);
 
         return builder.build();
     }

@@ -171,18 +171,6 @@ public class GraphImpl<T> implements Graph<T> {
             this.metadata = metadata;
         }
 
-        @Override
-        public GraphBuilder<T> addEdge(NodeID<T> from, NodeID<T> to,
-                                       EdgeType edgeType,
-                                       float weight) {
-            // Add the nodes if necessary
-            int fromIndex = upsert(from);
-            int toIndex = upsert(to);
-            addEdge(fromIndex, toIndex, edgeType, weight);
-            edgeCount++;
-            return this;
-        }
-
         /**
          * Adds a node if not already present.
          */
@@ -196,30 +184,38 @@ public class GraphImpl<T> implements Graph<T> {
             return index;
         }
 
+        @Override
+        public int addNode(NodeID<T> node) {
+            return upsert(node);
+        }
+
         /**
          * Adds an edge.
          */
-        private void addEdge(int from, int to, EdgeType edgeType, float weight) {
+        @Override
+        public void addEdge(int startNodeIndex, int endNodeIndex,
+                            EdgeType edgeType, float weight) {
             // The location of edges of a certain edge type is defines by the
             // ordinal of the edge type.
             int ordinal = edgeType.ordinal();
-            TLongArrayList[] outEdges = edges.get(from);
+            TLongArrayList[] outEdges = edges.get(startNodeIndex);
             // Expand array if necessary
             if (outEdges.length <= ordinal) {
                 outEdges = Arrays.copyOf(outEdges, ordinal + 1);
                 // Since the array has been recreated we need to set it in the
                 // list
-                edges.set(from, outEdges);
+                edges.set(startNodeIndex, outEdges);
             }
             // Get the edges for this edge type
             TLongArrayList typedEdges = outEdges[ordinal];
             // Create and store the internal edge representation
-            long edge = GraphImpl.createOutEdge(to, weight);
+            long edge = GraphImpl.createOutEdge(endNodeIndex, weight);
             if (typedEdges == null) {
                 typedEdges = new TLongArrayList();
                 outEdges[ordinal] = typedEdges;
             }
             typedEdges.add(edge);
+            edgeCount++;
         }
 
         @Override

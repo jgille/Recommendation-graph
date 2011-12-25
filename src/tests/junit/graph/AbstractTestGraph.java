@@ -201,10 +201,9 @@ public abstract class AbstractTestGraph {
                                       int startNode,
                                       int endNode,
                                       EdgeType edgeType, float weight) {
-
-        builder.addEdge(getNodeId(startNode),
-                        getNodeId(endNode),
-                        edgeType, weight);
+        int startNodeIndex = builder.addNode(getNodeId(startNode));
+        int endNodeIndex = builder.addNode(getNodeId(endNode));
+        builder.addEdge(startNodeIndex, endNodeIndex, edgeType, weight);
         return this;
     }
 }

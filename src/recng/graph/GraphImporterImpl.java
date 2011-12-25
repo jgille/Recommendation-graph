@@ -56,8 +56,10 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
                                                            + ") for line: "
                                                            + line);
                 int i = 0;
-                String from = fields[i++];
-                String to = fields[i++];
+                String startNode = fields[i++];
+                int startNodeIndex = builder.addNode(getNodeID(startNode));
+                String endNode = fields[i++];
+                int endNodeIndex = builder.addNode(getNodeID(endNode));
                 EdgeType edgeType = edgeTypes.get(fields[i++]);
                 if (edgeType == null)
                     throw new IllegalArgumentException(
@@ -65,7 +67,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
                                                            + line);
                 float weight =
                     fields.length > i ? Float.parseFloat(fields[i++]) : -1f;
-                builder.addEdge(getKey(from), getKey(to), edgeType,
+                builder.addEdge(startNodeIndex, endNodeIndex, edgeType,
                                 weight);
                 if (count % 10000 == 0)
                     System.out.println("Imported " + count + " edges");
@@ -80,7 +82,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
         return builder.build();
     }
 
-    private NodeID<T> getKey(String id) {
+    private NodeID<T> getNodeID(String id) {
         if (keyCache.contains(id))
             return keyCache.get(id);
         NodeID<T> key = getNodeKey(id);

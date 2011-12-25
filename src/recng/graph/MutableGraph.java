@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Jon Ivmark
  */
-public interface MutableGraph<T> extends Graph<T>, MutableGraphNodeStore<T> {
+public interface MutableGraph<T> extends Graph<T> {
 
     /**
      * Adds an edge. This method will create nodes if they do not already exist

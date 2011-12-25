@@ -10,10 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * An implementation of a mutable graph node.
- *
+ * A base implementation of a mutable graph node.
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The type of the key for this node.
  */
@@ -86,6 +86,7 @@ public abstract class AbstractMutableGraphNode<T> extends AbstractGraphNode<T>
         }
     }
 
+    @Override
     public synchronized boolean updateEdge(int endNodeIndex,
                                            EdgeType edgeType,
                                            float weight) {
@@ -125,6 +126,7 @@ public abstract class AbstractMutableGraphNode<T> extends AbstractGraphNode<T>
             edges.set(offset + i + 1, edges.get(offset + i));
     }
 
+    @Override
     public synchronized boolean removeEdge(int endNodeIndex,
                                            EdgeType edgeType) {
         int index = findEdge(edgeType, endNodeIndex);
@@ -135,6 +137,7 @@ public abstract class AbstractMutableGraphNode<T> extends AbstractGraphNode<T>
         return true;
     }
 
+    @Override
     public synchronized void setEdges(EdgeType edgeType,
                                       List<Integer> endNodes,
                                       List<Float> weights) {

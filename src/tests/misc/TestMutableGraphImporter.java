@@ -2,12 +2,9 @@ package tests.misc;
 
 import recng.graph.*;
 import recng.index.*;
-import recng.recommendations.ProductNodeType;
 import recng.recommendations.RecommendationGraphMetadata;
 
 public class TestMutableGraphImporter {
-
-    private static final NodeType NODE_TYPE = ProductNodeType.getInstance();
 
     public static void main(String[] args) {
         String file = args[0];
@@ -15,12 +12,13 @@ public class TestMutableGraphImporter {
         GraphBuilder<ID<String>> builder =
             new MutableGraphImpl.Builder<ID<String>>(metadata);
         GraphImporterImpl<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(builder) {
+            new GraphImporterImpl<ID<String>>(builder, metadata) {
 
                 @Override
-                protected NodeID<ID<String>> getNodeKey(String id) {
+                protected NodeID<ID<String>> getNodeKey(String id,
+                                                        NodeType nodeType) {
                     ID<String> key = StringIDs.parseKey(id);
-                    return new NodeID<ID<String>>(key, NODE_TYPE);
+                    return new NodeID<ID<String>>(key, nodeType);
                 }
             };
         Graph<ID<String>> graph = importer.importGraph(file);

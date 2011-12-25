@@ -7,6 +7,7 @@ import recng.graph.GraphImporterImpl;
 import recng.graph.GraphMetadata;
 import recng.graph.MutableGraphImpl;
 import recng.graph.NodeID;
+import recng.graph.NodeType;
 import recng.index.ID;
 import recng.index.StringIDs;
 
@@ -61,11 +62,13 @@ public class RecommendationContext {
         GraphBuilder<ID<String>> builder =
             new MutableGraphImpl.Builder<ID<String>>(metadata);
         GraphImporter<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(builder) {
+            new GraphImporterImpl<ID<String>>(builder, metadata) {
 
                 @Override
-                protected NodeID<ID<String>> getNodeKey(String id) {
-                    return new ProductID<ID<String>>(keyParser.fromString(id));
+                protected NodeID<ID<String>> getNodeKey(String id,
+                                                        NodeType nodeType) {
+                    return new NodeID<ID<String>>(keyParser.fromString(id),
+                                                  nodeType);
                 }
             };
         return importer.importGraph(file);

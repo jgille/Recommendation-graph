@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  * A base implementation of a mutable graph node.
- * 
+ *
  * @author jon
- * 
+ *
  * @param <T>
  *            The type of the key for this node.
  */
@@ -42,6 +42,16 @@ public abstract class AbstractMutableGraphNode<T> extends AbstractGraphNode<T>
      */
     public AbstractMutableGraphNode(NodeID<T> id) {
         super(id);
+    }
+
+    /**
+     * Created a new mutable node.
+     * 
+     * @param id
+     *            The id of this node.
+     */
+    public AbstractMutableGraphNode(NodeID<T> id, TLongArrayList[] outEdges) {
+        super(id, outEdges);
     }
 
     @Override

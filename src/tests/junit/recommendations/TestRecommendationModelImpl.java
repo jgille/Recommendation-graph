@@ -19,7 +19,7 @@ import recng.common.Marshallers;
 import recng.db.InMemoryKVStore;
 import recng.db.KVStore;
 import recng.graph.Graph;
-import recng.graph.GraphImpl;
+import recng.graph.ImmutableGraphImpl;
 import recng.graph.GraphMetadata;
 import recng.graph.NodeID;
 import recng.index.ID;
@@ -76,8 +76,8 @@ public class TestRecommendationModelImpl {
      * -- w=1.0 --> 1; 4 -- w=1.0 --> 2;
      */
     private Graph<ID<String>> buildGraph() {
-        GraphImpl.Builder<ID<String>> builder =
-            new GraphImpl.Builder<ID<String>>(GRAPH_METADATA);
+        ImmutableGraphImpl.Builder<ID<String>> builder =
+            new ImmutableGraphImpl.Builder<ID<String>>(GRAPH_METADATA);
 
         int k1 = builder.addNode(N1);
         int k2 = builder.addNode(N2);

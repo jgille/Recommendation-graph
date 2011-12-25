@@ -16,6 +16,13 @@ public interface Graph<T> {
                                          EdgeType eType);
 
     /**
+     * Gets all nodes (sorted by ascending primary key) in the graph and passes
+     * them to the consumer.
+     *
+     */
+    void getAllNodes(Consumer<NodeID<T>, Void> consumer);
+
+    /**
      * Gets all edges in the graph and passes them to the consumer.
      *
      */
@@ -30,6 +37,11 @@ public interface Graph<T> {
      * Gets the number of nodes in this graph.
      */
     int edgeCount();
+
+    /**
+     * Gets the primary key of a node, or -1 if no such node exists.
+     */
+    int getPrimaryKey(NodeID<T> nodeID);
 
     /**
      * Gets metadata about this graph.

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import recng.common.Consumer;
 
+import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 /**
@@ -16,11 +17,9 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 public class MutableGraphImpl<T> implements MutableGraph<T> {
 
     /** Maps node id -> internal primary key */
-    private final TObjectIntHashMap<NodeID<T>> nodeIndex =
-        new TObjectIntHashMap<NodeID<T>>();
+    private final TObjectIntHashMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph. */
-    private final ArrayList<MutableGraphNode<T>> nodes =
-        new ArrayList<MutableGraphNode<T>>();
+    private final List<MutableGraphNode<T>> nodes;
     /** Used for synchronization. */
     private final Object lock = new Object();
     private final GraphMetadata metadata;
@@ -30,40 +29,56 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
      *
      */
     public MutableGraphImpl(GraphMetadata metadata) {
+        this(metadata, new TObjectIntHashMap<NodeID<T>>(),
+             new ArrayList<NodeID<T>>(),
+             new ArrayList<TLongArrayList[]>());
+    }
+
+    private MutableGraphImpl(GraphMetadata metadata,
+                             TObjectIntHashMap<NodeID<T>> nodeIndex,
+                             List<NodeID<T>> nodes,
+                             List<TLongArrayList[]> edges) {
         this.metadata = metadata;
+        this.nodeIndex = nodeIndex;
+        this.nodes = new ArrayList<MutableGraphNode<T>>();
+        int i = 0;
+        for (NodeID<T> nodeId : nodes) {
+            TLongArrayList[] nodeEdges = edges.get(i);
+            TLongArrayList[] edgeLists = new TLongArrayList[nodeEdges.length];
+            int j = 0;
+            for (TLongArrayList el : nodeEdges) {
+                if (el == null) {
+                    edgeLists[j] = new TLongArrayList(0);
+                } else {
+                    edgeLists[j] = el;
+                }
+                j++;
+            }
+            Node node = new Node(nodeId, edgeLists);
+            this.nodes.add(node);
+            i++;
+        }
+
     }
 
     /**
-     * A class that can be used to build a mutable graph.
-     *
-     * @author jon
+     * A class used to build a graph.
      */
-    public static class Builder<T> implements GraphBuilder<T> {
-
-        private final MutableGraphImpl<T> graph;
+    public static class Builder<T> extends AbstractGraphBuilder<T> implements
+        GraphBuilder<T> {
 
         public Builder(GraphMetadata metadata) {
-            this.graph = new MutableGraphImpl<T>(metadata);
+            super(metadata);
         }
 
         @Override
-        public int addNode(NodeID<T> node) {
-            return graph.upsertNode(node);
-        }
-
-        @Override
-        public void addEdge(int startNodeIndex,
-                            int endNodeIndex,
-                            EdgeType edgeType,
-                            float weight) {
-            NodeID<T> startNode = graph.getNode(startNodeIndex).getNodeId();
-            NodeID<T> endNode = graph.getNode(endNodeIndex).getNodeId();
-            graph.addEdge(startNode, endNode, edgeType, weight);
-        }
-
-        @Override
-        public Graph<T> build() {
-            return graph;
+        protected Graph<T>
+            constructGraph(GraphMetadata metadata,
+                           TObjectIntHashMap<NodeID<T>> nodeIndex,
+                           List<NodeID<T>> nodes,
+                           List<TLongArrayList[]> nodeEdges) {
+            return new MutableGraphImpl<T>(metadata, nodeIndex, nodes,
+                                           nodeEdges);
         }
     }
 
@@ -78,6 +93,18 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         int index = getPrimaryKey(source);
         MutableGraphNode<T> startNode = getNode(index);
         return new TraverserBuilderImpl<T>(startNode, edgeType);
+    }
+
+    @Override
+    public void getAllNodes(Consumer<NodeID<T>, Void> consumer) {
+        List<MutableGraphNode<T>> nodesCopy;
+        synchronized (lock) {
+            // Make a copy of the node list to avoid concurrency issues
+            nodesCopy =
+                new ArrayList<MutableGraphNode<T>>(nodes);
+        }
+        for (MutableGraphNode<T> node : nodesCopy)
+            consumer.consume(node.getNodeId());
     }
 
     @Override
@@ -213,7 +240,8 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         startNode.setEdges(edgeType, endNodeIndexes, weights);
     }
 
-    private int getPrimaryKey(NodeID<T> nodeId) {
+    @Override
+    public int getPrimaryKey(NodeID<T> nodeId) {
         synchronized (lock) {
             if (!nodeIndex.contains(nodeId))
                 return -1;
@@ -222,10 +250,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     /**
-     * Gets a node by it's primary key. You should not modify a node gotten with
-     * this method, to modify it use the method in this class
-     * (add/update/removeEdge etc). Modifying the node directly may lead to
-     * concurrency issues.
+     * Gets a node by it's primary key.
      */
     private MutableGraphNode<T> getNode(int primaryKey) {
         synchronized (lock) {
@@ -271,6 +296,10 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
 
         private Node(NodeID<T> id) {
             super(id);
+        }
+
+        private Node(NodeID<T> id, TLongArrayList[] outEdges) {
+            super(id, outEdges);
         }
 
         @Override

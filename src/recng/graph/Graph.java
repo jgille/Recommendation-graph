@@ -19,7 +19,7 @@ public interface Graph<T> {
      * Gets all edges in the graph and passes them to the consumer.
      *
      */
-    void getEdges(Consumer<GraphEdge<T>, Void> consumer);
+    void getAllEdges(Consumer<GraphEdge<T>, Void> consumer);
 
     /**
      * Gets the number of nodes in this graph.
@@ -30,4 +30,9 @@ public interface Graph<T> {
      * Gets the number of nodes in this graph.
      */
     int edgeCount();
+
+    /**
+     * Gets metadata about this graph.
+     */
+    GraphMetadata getMetadata();
 }

@@ -20,6 +20,7 @@ import recng.db.InMemoryKVStore;
 import recng.db.KVStore;
 import recng.graph.Graph;
 import recng.graph.GraphImpl;
+import recng.graph.GraphMetadata;
 import recng.graph.NodeID;
 import recng.index.ID;
 import recng.index.StringIDs;
@@ -29,6 +30,7 @@ import recng.recommendations.ProductID;
 import recng.recommendations.ProductDataStore;
 import recng.recommendations.ProductDataStoreImpl;
 import recng.recommendations.ProductQuery;
+import recng.recommendations.RecommendationGraphMetadata;
 import recng.recommendations.RecommendationModel;
 import recng.recommendations.RecommendationModelImpl;
 import recng.recommendations.RecommendationType;
@@ -38,6 +40,9 @@ public class TestRecommendationModelImpl {
 
     private static final RecommendationType EDGE_TYPE =
         RecommendationType.PEOPLE_WHO_BOUGHT;
+
+    private static final GraphMetadata GRAPH_METADATA =
+        RecommendationGraphMetadata.getInstance();
 
     private static final IDFactory<ID<String>> KP =
         new IDFactory<ID<String>>() {
@@ -72,7 +77,7 @@ public class TestRecommendationModelImpl {
      */
     private Graph<ID<String>> buildGraph() {
         GraphImpl.Builder<ID<String>> builder =
-            new GraphImpl.Builder<ID<String>>();
+            new GraphImpl.Builder<ID<String>>(GRAPH_METADATA);
 
         builder.addEdge(N1, N3, EDGE_TYPE, N1_N3)
             .addEdge(N1, N2, EDGE_TYPE, N1_N2)

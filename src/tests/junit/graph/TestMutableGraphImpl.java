@@ -2,12 +2,10 @@ package tests.junit.graph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
 import recng.graph.*;
 import recng.recommendations.ProductID;
+import recng.recommendations.RecommendationGraphMetadata;
 import recng.recommendations.RecommendationType;
 
 import static org.junit.Assert.*;
@@ -19,8 +17,8 @@ public class TestMutableGraphImpl {
     private static final RecommendationType EDGE_TYPE =
         RecommendationType.PEOPLE_WHO_BOUGHT;
 
-    private static final Set<EdgeType> EDGE_TYPES =
-        Collections.<EdgeType> singleton(EDGE_TYPE);
+    private static final GraphMetadata GRAPH_METADATA =
+        RecommendationGraphMetadata.getInstance();
 
     private static final List<NodeID<Integer>> NODES =
         Arrays.<NodeID<Integer>> asList(new ProductID<Integer>(0),
@@ -33,7 +31,8 @@ public class TestMutableGraphImpl {
                                         new ProductID<Integer>(7));
 
     private MutableGraph<Integer> buildGraph() {
-        MutableGraph<Integer> graph = new MutableGraphImpl<Integer>(EDGE_TYPES);
+        MutableGraph<Integer> graph =
+            new MutableGraphImpl<Integer>(GRAPH_METADATA);
         graph.addEdge(NODES.get(0), NODES.get(1), EDGE_TYPE, 0f / 1);
         graph.addEdge(NODES.get(1), NODES.get(3), EDGE_TYPE, 1f / 3);
         graph.addEdge(NODES.get(1), NODES.get(2), EDGE_TYPE, 1f / 2);

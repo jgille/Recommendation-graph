@@ -3,7 +3,6 @@ package recng.graph;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +27,8 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
         new CacheBuilder<String, NodeID<T>>()
         .concurrencyLevel(1).maxSize(50000).build();
 
-    public GraphImporterImpl(GraphBuilder<T> builder,
-                             Collection<EdgeType> edgeTypes) {
+    public GraphImporterImpl(GraphBuilder<T> builder) {
         this.builder = builder;
-        for (EdgeType edgeType : edgeTypes)
-            this.edgeTypes.put(edgeType.name(), edgeType);
     }
 
     public Graph<T> importGraph(String file) {
@@ -94,7 +90,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
 
     /**
      * Creates a node key from a string.
-     * 
+     *
      * TODO: This needs work, how do we distinguish between different node
      * types? Regex?
      */

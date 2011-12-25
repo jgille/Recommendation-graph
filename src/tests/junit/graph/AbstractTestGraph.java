@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import recng.graph.*;
+import recng.recommendations.ProductNodeType;
 import recng.recommendations.RecommendationType;
 
 @SuppressWarnings("unchecked")
@@ -15,11 +16,7 @@ public abstract class AbstractTestGraph {
 
     private static final RecommendationType EDGE_TYPE = RecommendationType.PEOPLE_WHO_BOUGHT;
 
-    private static final List<EdgeType> EDGE_TYPES =
-        Arrays.<EdgeType> asList(RecommendationType.PEOPLE_WHO_BOUGHT,
-                                 RecommendationType.PEOPLE_WHO_VIEWED);
-    private static final NodeType NODE_TYPE =
-        new NodeTypeImpl("Product", EDGE_TYPES);
+    private static final NodeType NODE_TYPE = ProductNodeType.getInstance();
 
     private static final Integer N1 = 1;
     private static final Integer N2 = 2;

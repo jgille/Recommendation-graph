@@ -1,24 +1,18 @@
 package recng.recommendations;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import recng.graph.EdgeType;
 import recng.graph.NodeType;
 import recng.graph.NodeTypeImpl;
 
 /**
  * A product node in a graph.
  *
+ * TODO: This should probaly be contained in an enum.
+ *
  * @author jon
  *
  */
 public class ProductNodeType extends NodeTypeImpl implements
     NodeType {
-
-    private static final List<EdgeType> EDGE_TYPES =
-        new ArrayList<EdgeType>(EnumSet.allOf(RecommendationType.class));
 
     private static final ProductNodeType INSTANCE = new ProductNodeType();
 
@@ -28,6 +22,6 @@ public class ProductNodeType extends NodeTypeImpl implements
 
     // This is a singleton
     private ProductNodeType() {
-        super("Product node", EDGE_TYPES);
+        super("Product node", 0);
     }
 }

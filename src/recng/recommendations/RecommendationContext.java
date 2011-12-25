@@ -1,14 +1,10 @@
 package recng.recommendations;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
-
-import recng.graph.EdgeType;
 import recng.graph.Graph;
 import recng.graph.GraphBuilder;
 import recng.graph.GraphImporter;
 import recng.graph.GraphImporterImpl;
+import recng.graph.GraphMetadata;
 import recng.graph.MutableGraphImpl;
 import recng.graph.NodeID;
 import recng.index.ID;
@@ -61,12 +57,11 @@ public class RecommendationContext {
 
     private static Graph<ID<String>>
         importProductGraph(String file, final IDFactory<ID<String>> keyParser) {
-        Set<EdgeType> edgeTypes =
-            new HashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
+        GraphMetadata metadata = RecommendationGraphMetadata.getInstance();
         GraphBuilder<ID<String>> builder =
-            new MutableGraphImpl.Builder<ID<String>>(edgeTypes);
+            new MutableGraphImpl.Builder<ID<String>>(metadata);
         GraphImporter<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(builder, edgeTypes) {
+            new GraphImporterImpl<ID<String>>(builder) {
 
                 @Override
                 protected NodeID<ID<String>> getNodeKey(String id) {

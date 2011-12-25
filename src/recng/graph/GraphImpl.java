@@ -3,15 +3,10 @@ package recng.graph;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import recng.common.Consumer;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.iterator.TLongIterator;
 import gnu.trove.list.array.TLongArrayList;
 
 /**
@@ -25,15 +20,14 @@ public class GraphImpl<T> implements Graph<T> {
     private final TObjectIntHashMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph */
     private final ArrayList<Node> nodes = new ArrayList<Node>();
-    /** All unique edge types that this graph contains. */
-    private final Map<EdgeType, Integer> edgeTypes;
+    private final GraphMetadata metadata;
 
-    private GraphImpl(TObjectIntHashMap<NodeID<T>> nodeIndex,
+    private GraphImpl(GraphMetadata metadata,
+                      TObjectIntHashMap<NodeID<T>> nodeIndex,
                       ArrayList<NodeID<T>> nodes,
-                      ArrayList<TLongArrayList[]> edges,
-                      Map<EdgeType, Integer> edgeTypes) {
+                      ArrayList<TLongArrayList[]> edges) {
+        this.metadata = metadata;
         this.nodeIndex = nodeIndex;
-        this.edgeTypes = edgeTypes;
         int i = 0;
         for (NodeID<T> nodeId : nodes) {
             TLongArrayList[] nodeEdges = edges.get(i);
@@ -82,22 +76,6 @@ public class GraphImpl<T> implements Graph<T> {
     }
 
     /**
-     * The end node is in the last 4 bytes of the out edge.
-     */
-    private static int getEndNodeIndex(long edge) {
-        return (int) (edge & 0xffff);
-    }
-
-    /**
-     * The weight is in the last 4 bytes of the out edge.
-     */
-    private static float getWeight(long edge) {
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.putInt((int) (edge >> 32));
-        return buffer.getFloat(0);
-    }
-
-    /**
      * Gets a node from it's primary key.
      */
     private Node getNode(int index) {
@@ -115,13 +93,6 @@ public class GraphImpl<T> implements Graph<T> {
         return nodeIndex.get(id);
     }
 
-    /**
-     * All edge types currently in this graph.
-     */
-    private Set<EdgeType> getEdgeTypes() {
-        return edgeTypes.keySet();
-    }
-
     @Override
     public TraverserBuilder<T> prepareTraversal(NodeID<T> source,
                                                 EdgeType edgeType) {
@@ -131,9 +102,9 @@ public class GraphImpl<T> implements Graph<T> {
 
     @Override
     public void
-        getEdges(Consumer<GraphEdge<T>, Void> consumer) {
+        getAllEdges(Consumer<GraphEdge<T>, Void> consumer) {
         for (Node node : nodes) {
-            for (EdgeType edgeType : getEdgeTypes()) {
+            for (EdgeType edgeType : metadata.getEdgeTypes()) {
                 Iterator<TraversableGraphEdge<T>> it =
                     node.traverseNeighbors(edgeType);
                 while (it.hasNext()) {
@@ -161,119 +132,22 @@ public class GraphImpl<T> implements Graph<T> {
     }
 
     /**
-     * A node in the graph. Each node contains an id and an array of edge lists,
-     * one such list for each edge type.
-     *
-     * Individual (out) edges for the node are stored as longs, where these
-     * longs contains both the primary key of the end node and the edge weight.
+     * A node in the graph.
      */
-    private class Node implements GraphNode<T> {
-        private final NodeID<T> id;
-        private final TLongArrayList[] edges;
+    private class Node extends AbstractGraphNode<T> implements GraphNode<T> {
 
         private Node(NodeID<T> id, TLongArrayList[] edges) {
-            this.id = id;
-            this.edges = edges;
+            super(id, edges);
         }
 
         @Override
-        public Iterator<TraversableGraphEdge<T>>
-            traverseNeighbors(EdgeType edgeType) {
-            TLongArrayList edgeList = getEdges(edgeType);
-            if (edgeList == null) // No out edges for this type
-                return new EmptyIterator<TraversableGraphEdge<T>>();
-            return new NeighborIterator(GraphImpl.this.getNodeIndex(id),
-                                        edgeType,
-                                        edgeList.iterator());
+        protected int getPrimaryKey(NodeID<T> node) {
+            return GraphImpl.this.getNodeIndex(node);
         }
 
         @Override
-        public NodeID<T> getNodeId() {
-            return id;
-        }
-
-        @Override
-        public String toString() {
-            // Build a string representation of the first N out edges
-            StringBuilder sb = new StringBuilder("N: ").append(getNodeId());
-            for (EdgeType edgeType : GraphImpl.this.getEdgeTypes()) {
-                int i = 0;
-                Iterator<TraversableGraphEdge<T>> it =
-                    traverseNeighbors(edgeType);
-                while (it.hasNext() && i++ < 5) {
-                    TraversableGraphEdge<T> edge = it.next();
-                    NodeID<T> end = edge.getEndNode().getNodeId();
-                    sb.append("\n  - t: ").append(edgeType)
-                        .append(", w: ").append(edge.getWeight())
-                        .append(" -> N: ").append(end);
-                }
-
-                if (it.hasNext())
-                    sb.append("\n  Has more...");
-            }
-            return sb.toString();
-        }
-
-        /**
-         * Gets out edges for an edge type.
-         */
-        private TLongArrayList getEdges(EdgeType edgeType) {
-            if (!edgeTypes.containsKey(edgeType))
-                return null;
-            int ordinal = edgeTypes.get(edgeType);
-            if (ordinal >= edges.length)
-                return null;
-            return edges[ordinal];
-        }
-
-        /**
-         * Gets the total number of out edges for this node.
-         */
-        private int getEdgeCount() {
-            int edgeCount = 0;
-            for (TLongArrayList outEdges : edges) {
-                if (outEdges != null)
-                    edgeCount += outEdges.size();
-            }
-            return edgeCount;
-        }
-    }
-
-    /**
-     * An iterator used to iterate over the immediate out edges for a node.
-     */
-    private class NeighborIterator implements
-        Iterator<TraversableGraphEdge<T>> {
-
-        private final int startNodeIndex;
-        private final EdgeType edgeType;
-        private final TLongIterator edges;
-
-        public NeighborIterator(int startNodeIndex, EdgeType edgeType,
-                                TLongIterator edges) {
-            this.startNodeIndex = startNodeIndex;
-            this.edgeType = edgeType;
-            this.edges = edges;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return edges.hasNext();
-        }
-
-        @Override
-        public TraversableGraphEdge<T> next() {
-            long edge = edges.next();
-            int endNodeIndex = GraphImpl.getEndNodeIndex(edge);
-            float weight = GraphImpl.getWeight(edge);
-            Node start = GraphImpl.this.getNode(startNodeIndex);
-            Node end = GraphImpl.this.getNode(endNodeIndex);
-            return new TraversableGraphEdge<T>(start, end, edgeType, weight);
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
+        protected GraphNode<T> getNode(int primaryKey) {
+            return GraphImpl.this.getNode(primaryKey);
         }
     }
 
@@ -281,7 +155,7 @@ public class GraphImpl<T> implements Graph<T> {
      * A class used to build a graph.
      */
     public static class Builder<T> implements GraphBuilder<T> {
-
+        private final GraphMetadata metadata;
         // Node id -> primary key mapping
         private final TObjectIntHashMap<NodeID<T>> nodeIndex =
             new TObjectIntHashMap<NodeID<T>>();
@@ -290,13 +164,12 @@ public class GraphImpl<T> implements Graph<T> {
         // Out edges by node and edge type
         private final ArrayList<TLongArrayList[]> edges =
             new ArrayList<TLongArrayList[]>();
-        // All unique edge types
-        private final Map<EdgeType, Integer> edgeTypes =
-            new HashMap<EdgeType, Integer>();
         // Keeps track of the number of added edges
         private int edgeCount = 0;
-        // Keeps track of the edge type ordinal
-        private int maxOrdinal = 0;
+
+        public Builder(GraphMetadata metadata) {
+            this.metadata = metadata;
+        }
 
         @Override
         public GraphBuilder<T> addEdge(NodeID<T> from, NodeID<T> to,
@@ -305,9 +178,6 @@ public class GraphImpl<T> implements Graph<T> {
             // Add the nodes if necessary
             int fromIndex = upsert(from);
             int toIndex = upsert(to);
-            // Add the edge type and edge
-            if (!edgeTypes.containsKey(edgeType))
-                edgeTypes.put(edgeType, maxOrdinal++);
             addEdge(fromIndex, toIndex, edgeType, weight);
             edgeCount++;
             return this;
@@ -322,7 +192,7 @@ public class GraphImpl<T> implements Graph<T> {
             int index = nodes.size();
             nodeIndex.put(node, index);
             nodes.add(node);
-            edges.add(new TLongArrayList[edgeTypes.size()]);
+            edges.add(new TLongArrayList[metadata.getEdgeTypes().size()]);
             return index;
         }
 
@@ -332,7 +202,7 @@ public class GraphImpl<T> implements Graph<T> {
         private void addEdge(int from, int to, EdgeType edgeType, float weight) {
             // The location of edges of a certain edge type is defines by the
             // ordinal of the edge type.
-            int ordinal = edgeTypes.get(edgeType);
+            int ordinal = edgeType.ordinal();
             TLongArrayList[] outEdges = edges.get(from);
             // Expand array if necessary
             if (outEdges.length <= ordinal) {
@@ -362,10 +232,14 @@ public class GraphImpl<T> implements Graph<T> {
                         continue;
                     outEdges.trimToSize();
                     outEdges.sort();
-                    outEdges.reverse();
                 }
             }
-            return new GraphImpl<T>(nodeIndex, nodes, edges, edgeTypes);
+            return new GraphImpl<T>(metadata, nodeIndex, nodes, edges);
         }
+    }
+
+    @Override
+    public GraphMetadata getMetadata() {
+        return metadata;
     }
 }

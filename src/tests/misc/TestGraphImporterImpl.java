@@ -1,33 +1,28 @@
 package tests.misc;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import recng.graph.*;
 import recng.index.*;
+import recng.recommendations.ProductNodeType;
+import recng.recommendations.RecommendationGraphMetadata;
 import recng.recommendations.RecommendationType;
 
 public class TestGraphImporterImpl {
 
-    private static final List<EdgeType> EDGE_TYPES =
-        new ArrayList<EdgeType>(EnumSet.allOf(RecommendationType.class));
-
-    private static final NodeType NODE_TYPE = new NodeTypeImpl("Product",
-                                                               EDGE_TYPES);
+    private static final NodeType NODE_TYPE = ProductNodeType.getInstance();
 
     public static void main(String[] args) {
         String file = args[0];
+        GraphMetadata metadata = RecommendationGraphMetadata.getInstance();
         GraphBuilder<ID<String>> builder =
-            new GraphImpl.Builder<ID<String>>();
+            new GraphImpl.Builder<ID<String>>(metadata);
         Set<EdgeType> edgeTypes = new HashSet<EdgeType>();
         edgeTypes.addAll(EnumSet.allOf(RecommendationType.class));
-        GraphImporterImpl<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(
-                                               builder,
-                                               edgeTypes) {
+        GraphImporter<ID<String>> importer =
+            new GraphImporterImpl<ID<String>>(builder) {
 
                 @Override
                 protected NodeID<ID<String>> getNodeKey(String id) {

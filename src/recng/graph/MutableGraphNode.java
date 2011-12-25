@@ -14,11 +14,6 @@ import java.util.List;
 public interface MutableGraphNode<T> extends GraphNode<T> {
 
     /**
-     * Gets the total number of edges originating from this node.
-     */
-    int getEdgeCount();
-
-    /**
      * Adds a new edge originating from this node.
      *
      * @param endNodeIndex
@@ -66,9 +61,4 @@ public interface MutableGraphNode<T> extends GraphNode<T> {
                   List<Integer> endNodes,
                   List<Float> weights);
 
-    /**
-     * Returns a string describing this node in a more verbose way (for instance
-     * including edges) than the standard toString method.
-     */
-    String toVerboseString();
 }

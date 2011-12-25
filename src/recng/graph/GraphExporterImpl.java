@@ -29,7 +29,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
                         return GraphExporterImpl.this.serialize(node);
                     }
                 };
-                graph.getEdges(exporter);
+                graph.getAllEdges(exporter);
             } finally {
                 if (pw != null)
                     pw.close();
@@ -57,8 +57,8 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
             consume(GraphEdge<K> edge) {
             String line =
                 String.format("%s;%s;%s;%s", serialize(edge.getStartNode()),
-                              serialize(edge.getEndNode()), edge.getType()
-                                  .name(),
+                              serialize(edge.getEndNode()),
+                              edge.getType().name(),
                               edge.getWeight());
             pw.println(line);
             return null;

@@ -3,8 +3,6 @@ package recng.graph;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import recng.common.Consumer;
 
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -25,15 +23,14 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         new ArrayList<MutableGraphNode<T>>();
     /** Used for synchronization. */
     private final Object lock = new Object();
-    /** All unique edge types that this graph contains. */
-    private final Set<EdgeType> edgeTypes;
+    private final GraphMetadata metadata;
 
     /**
      * Creates an empty mutable graph.
      *
      */
-    public MutableGraphImpl(Set<EdgeType> edgeTypes) {
-        this.edgeTypes = edgeTypes;
+    public MutableGraphImpl(GraphMetadata metadata) {
+        this.metadata = metadata;
     }
 
     /**
@@ -45,8 +42,8 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
 
         private final MutableGraph<T> graph;
 
-        public Builder(Set<EdgeType> edgeTypes) {
-            this.graph = new MutableGraphImpl<T>(edgeTypes);
+        public Builder(GraphMetadata metadata) {
+            this.graph = new MutableGraphImpl<T>(metadata);
         }
 
         @Override
@@ -78,8 +75,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     }
 
     @Override
-    public void
-        getEdges(Consumer<GraphEdge<T>, Void> consumer) {
+    public void getAllEdges(Consumer<GraphEdge<T>, Void> consumer) {
         List<MutableGraphNode<T>> nodesCopy;
         synchronized (lock) {
             // Make a copy of the node list to avoid concurrency issues
@@ -87,7 +83,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
                 new ArrayList<MutableGraphNode<T>>(nodes);
         }
         for (MutableGraphNode<T> node : nodesCopy) {
-            for (EdgeType edgeType : getEdgeTypes()) {
+            for (EdgeType edgeType : metadata.getEdgeTypes()) {
                 Iterator<TraversableGraphEdge<T>> it =
                     node.traverseNeighbors(edgeType);
                 while (it.hasNext()) {
@@ -106,15 +102,18 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
 
     @Override
     public int nodeCount() {
-        return nodes.size();
+        synchronized (lock) {
+            return nodes.size();
+        }
     }
 
     @Override
     public int edgeCount() {
         int edgeCount = 0;
-        // TODO: Add synchronization?
-        for (MutableGraphNode<T> node : nodes)
-            edgeCount += node.getEdgeCount();
+        synchronized (lock) {
+            for (MutableGraphNode<T> node : nodes)
+                edgeCount += node.getEdgeCount();
+        }
         return edgeCount;
     }
 
@@ -242,7 +241,7 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
             return -1;
         if (nodeIndex.contains(nodeId))
             return nodeIndex.get(nodeId);
-        MutableGraphNode<T> node = new MutableGraphNodeImpl<T>(nodeId, this);
+        MutableGraphNode<T> node = new Node(nodeId);
         int index;
         index = nodes.size();
         nodeIndex.put(nodeId, index);
@@ -250,24 +249,34 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
         return index;
     }
 
-    /**
-     * All edge types currently in this graph.
-     */
-    private Set<EdgeType> getEdgeTypes() {
-        return edgeTypes;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("** MutableGraphImpl **\n");
+        sb.append("Node count: ").append(nodeCount());
+        sb.append("Edge count: ").append(edgeCount());
+        return sb.toString();
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("** MutableGraphImpl **");
-        int i = 0;
-        for (MutableGraphNode<T> node : nodes) {
-            sb.append("\n").append(node.toVerboseString());
-            if (i++ > 20) {
-                sb.append("\nHas more...");
-                break;
-            }
+    public GraphMetadata getMetadata() {
+        return metadata;
+    }
+
+    private class Node extends AbstractMutableGraphNode<T>
+        implements MutableGraphNode<T> {
+
+        private Node(NodeID<T> id) {
+            super(id);
         }
-        return sb.toString();
+
+        @Override
+        protected int getPrimaryKey(NodeID<T> node) {
+            return MutableGraphImpl.this.getPrimaryKey(node);
+        }
+
+        @Override
+        protected GraphNode<T> getNode(int primaryKey) {
+            return MutableGraphImpl.this.getNode(primaryKey);
+        }
     }
 }

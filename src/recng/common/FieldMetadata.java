@@ -4,11 +4,11 @@ package recng.common;
  * Metadata for a field (key) in a key/value pair.
  *
  * @author jon
- * 
+ *
  * @param <T>
  *            The generic type of the mapped values for this field.
  */
-public interface FieldMetadata<T> {
+public interface FieldMetadata {
 
     /**
      * Gets the field name.
@@ -19,7 +19,7 @@ public interface FieldMetadata<T> {
      * Returns a marshaller that can be used to marshal the value to and from a
      * binary representation.
      */
-    Marshaller<T> getMarshaller();
+    Marshaller getMarshaller();
 
     /**
      * Returns the type of the mapped value for this field.

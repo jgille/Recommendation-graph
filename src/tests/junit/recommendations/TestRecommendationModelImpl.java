@@ -14,7 +14,6 @@ import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
-import recng.common.Marshallers;
 import recng.db.InMemoryKVStore;
 import recng.db.KVStore;
 import recng.graph.Graph;
@@ -121,25 +120,18 @@ public class TestRecommendationModelImpl {
         p4.put("__is_valid", true);
         db.put(N4.getID().getID(), p4);
 
-        FieldMetadata<String> name =
-            new FieldMetadataImpl<String>("name",
-                                          Marshallers.STRING_MARSHALLER,
-                                          FieldMetadata.Type.STRING);
-        FieldMetadata<Integer> index =
-            new FieldMetadataImpl<Integer>("index",
-                                           Marshallers.INTEGER_MARSHALLER,
-                                           FieldMetadata.Type.INTEGER);
-        FieldMetadata<String> categories =
-            new FieldMetadataImpl<String>("__categories",
-                                          Marshallers.STRING_MARSHALLER,
-                                          FieldMetadata.Type.STRING, true);
-        FieldMetadata<Boolean> isValid =
-            new FieldMetadataImpl<Boolean>("__is_valid",
-                                           Marshallers.BOOLEAN_MARSHALLER,
-                                           FieldMetadata.Type.BOOLEAN);
+        FieldMetadata name =
+            new FieldMetadataImpl("name", FieldMetadata.Type.STRING);
+        FieldMetadata index =
+            new FieldMetadataImpl("index", FieldMetadata.Type.INTEGER);
+        FieldMetadata categories =
+            new FieldMetadataImpl("__categories", FieldMetadata.Type.STRING,
+                                  true);
+        FieldMetadata isValid =
+            new FieldMetadataImpl("__is_valid", FieldMetadata.Type.BOOLEAN);
         TableMetadata fs =
-            new TableMetadataImpl.Builder().add(name).add(index).add(categories)
-                .add(isValid).build();
+            new TableMetadataImpl(Arrays.asList(name, index, categories,
+                                                isValid));
         return new DataStoreImpl(db, fs);
     }
 
@@ -161,7 +153,7 @@ public class TestRecommendationModelImpl {
             public ProductFilter getFilter() {
                 return new ProductFilter() {
                     public boolean accepts(ImmutableProduct product) {
-                        Integer index = product.getProperty("index");
+                        Integer index = (Integer) product.getProperty("index");
                         return index.intValue() > 2;
                     }
 

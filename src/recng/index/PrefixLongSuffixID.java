@@ -46,7 +46,7 @@ public class PrefixLongSuffixID extends PrefixSuffixID implements ID<String> {
 
         private static final Parser INSTANCE = new Parser();
         private static final Pattern PATTERN = Pattern
-            .compile("(.{0,3})([1-9]\\d{9,18})(.{0,3})");
+            .compile("(\\w{0,3}?)([1-9]\\d{9,18})(\\D{0,3})");
 
         public static IDPattern<String> getInstance() {
             return INSTANCE;
@@ -60,9 +60,12 @@ public class PrefixLongSuffixID extends PrefixSuffixID implements ID<String> {
             Matcher m = PATTERN.matcher(id);
             if (!m.matches())
                 throw new IDFormatException(String.format("Invalid key: %s", id));
-            return new PrefixLongSuffixID(m.group(1),
-                                                Long.parseLong(m.group(2)),
-                                                m.group(3));
+            String prefix = m.group(1);
+            String longVal = m.group(2);
+            String suffix = m.group(3);
+            return new PrefixLongSuffixID(prefix,
+                                          Long.parseLong(longVal),
+                                          suffix);
         }
     }
 }

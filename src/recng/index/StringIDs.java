@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class StringIDs {
 
+    @SuppressWarnings("unchecked")
     private static final List<IDPattern<String>> PARSERS =
         Arrays.asList(IntID.Parser.getInstance(),
                       LongID.Parser.getInstance(),

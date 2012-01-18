@@ -2,8 +2,6 @@ package tests.junit.common;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -11,39 +9,34 @@ import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
-import recng.common.Marshallers;
 import recng.common.PropertyContainer;
 
 public abstract class AbstractTestPropertyContainer {
 
-    protected static final FieldMetadata<Integer> PRICE =
-        new FieldMetadataImpl<Integer>("Price",
-                                       Marshallers.INTEGER_MARSHALLER,
-                                       FieldMetadata.Type.INTEGER);
-    protected static final FieldMetadata<String> ISBN =
-        new FieldMetadataImpl<String>("ISBN",
-                                      Marshallers.STRING_MARSHALLER,
-                                      FieldMetadata.Type.STRING);
+    protected static final FieldMetadata PRICE =
+        new FieldMetadataImpl("Price",
+                              FieldMetadata.Type.INTEGER);
+    protected static final FieldMetadata ISBN =
+        new FieldMetadataImpl("ISBN",
+                              FieldMetadata.Type.STRING);
 
-    protected static final FieldMetadata<Long> RELEASE_DATE =
-        new FieldMetadataImpl<Long>("ReleaseDate",
-                                    Marshallers.LONG_MARSHALLER,
-                                    FieldMetadata.Type.LONG);
+    protected static final FieldMetadata RELEASE_DATE =
+        new FieldMetadataImpl("ReleaseDate",
+                              FieldMetadata.Type.LONG);
 
-    protected static final FieldMetadata<String> CATEGORIES =
-        new FieldMetadataImpl<String>("Categories",
-                                      Marshallers.STRING_MARSHALLER,
-                                      FieldMetadata.Type.STRING, true);
+    protected static final FieldMetadata CATEGORIES =
+        new FieldMetadataImpl("Categories",
+                              FieldMetadata.Type.STRING, true);
 
-    protected static final FieldMetadata<Integer> INT_LIST =
-        new FieldMetadataImpl<Integer>("IntList",
-                                      Marshallers.INTEGER_MARSHALLER,
-                                      FieldMetadata.Type.INTEGER, true);
+    protected static final FieldMetadata INT_LIST =
+        new FieldMetadataImpl("IntList",
+                              FieldMetadata.Type.INTEGER, true);
 
     protected abstract PropertyContainer getPropertyContainer(TableMetadata fs);
 
     @Test public void testGetSetContainsProperty() {
-        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).add(RELEASE_DATE).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN,
+                                                               RELEASE_DATE));
         PropertyContainer properties = getPropertyContainer(fs);
 
         assertFalse(properties.containsProperty(PRICE.getFieldName()));
@@ -70,7 +63,7 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test
     public void testInvalidKey() {
-        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         PropertyContainer properties = getPropertyContainer(fs);
         boolean exception = false;
         try {
@@ -82,9 +75,9 @@ public abstract class AbstractTestPropertyContainer {
     }
 
     @Test public void testGetKeys() {
-        TableMetadata fs = new TableMetadataImpl.Builder().add(PRICE).add(ISBN).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         PropertyContainer properties = getPropertyContainer(fs);
-        Set<String> fields = properties.getKeys();
+        List<String> fields = properties.getKeys();
         assertEquals(2, fields.size());
         assertTrue(fs.contains(PRICE.getFieldName()));
         assertTrue(fs.contains(ISBN.getFieldName()));
@@ -92,9 +85,8 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test
     public void testRepeatedProperty() {
-        TableMetadata fs =
-            new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
-                .add(RELEASE_DATE).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, CATEGORIES,
+                                                               RELEASE_DATE));
         PropertyContainer properties = getPropertyContainer(fs);
 
         properties.setProperty(PRICE.getFieldName(), 100);
@@ -102,14 +94,14 @@ public abstract class AbstractTestPropertyContainer {
         assertEquals(100, properties.getProperty(PRICE.getFieldName()));
         assertEquals(7777l, properties.getProperty(RELEASE_DATE.getFieldName()));
 
-        List<String> categories =
-            Arrays.<String> asList("cat0", "cat1", "cat2");
+        List<Object> categories =
+            Arrays.<Object> asList("cat0", "cat1", "cat2");
         assertFalse(properties.containsProperty(CATEGORIES.getFieldName()));
         assertNull(properties.getRepeatedProperties(CATEGORIES.getFieldName()));
         assertNull(properties.setRepeatedProperties(CATEGORIES.getFieldName(),
                                                     categories));
 
-        List<String> storedCategories =
+        List<Object> storedCategories =
             properties.getRepeatedProperties(CATEGORIES.getFieldName());
         assertNotNull(storedCategories);
         assertEquals(categories, storedCategories);
@@ -122,7 +114,7 @@ public abstract class AbstractTestPropertyContainer {
         storedCategories =
             properties.getRepeatedProperties(CATEGORIES.getFieldName());
         categories =
-            Arrays.<String> asList("cat0", "cat1", "cat2", "cat3", "cat4");
+            Arrays.<Object> asList("cat0", "cat1", "cat2", "cat3", "cat4");
 
         assertNotNull(storedCategories);
         assertEquals(categories, storedCategories);
@@ -151,23 +143,21 @@ public abstract class AbstractTestPropertyContainer {
 
     @Test
     public void testSetAndGet() {
-        TableMetadata fs =
-            new TableMetadataImpl.Builder().add(PRICE).add(CATEGORIES)
-                .add(RELEASE_DATE).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, CATEGORIES,
+                                                               RELEASE_DATE));
         PropertyContainer properties = getPropertyContainer(fs);
-        properties.set(PRICE.getFieldName(), 1);
-        assertEquals(1, properties.get(PRICE.getFieldName()));
+        properties.setProperty(PRICE.getFieldName(), 1);
+        assertEquals(1, properties.getProperty(PRICE.getFieldName()));
     }
 
     @Test
     public void testRepeatedNegativeIntProperty() {
-        TableMetadata fs =
-            new TableMetadataImpl.Builder().add(INT_LIST).build();
+        TableMetadata fs = new TableMetadataImpl(Arrays.asList(INT_LIST));
         PropertyContainer properties = getPropertyContainer(fs);
-        List<Integer> ints =
-            Arrays.<Integer> asList(-1, -2, -Integer.MAX_VALUE);
+        List<Object> ints =
+            Arrays.<Object> asList(-1, -2, -Integer.MAX_VALUE);
         properties.setRepeatedProperties(INT_LIST.getFieldName(), ints);
-        List<Integer> res =
+        List<Object> res =
             properties.getRepeatedProperties(INT_LIST.getFieldName());
         assertEquals(ints, res);
     }

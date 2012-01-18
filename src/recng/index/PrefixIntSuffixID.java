@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * String, thereby saving memory compared to storing it as a regular String.
  * Uses a flyweight pattern where common prefixes/suffixes are shared between
  * instances.
- * 
+ *
  * @author jon
  */
 public class PrefixIntSuffixID extends PrefixSuffixID implements ID<String> {
@@ -45,7 +45,7 @@ public class PrefixIntSuffixID extends PrefixSuffixID implements ID<String> {
 
         private static final Parser INSTANCE = new Parser();
         private static final Pattern PATTERN = Pattern
-            .compile("(.{0,3})([1-9]\\d{0,8})(.{0,3})");
+            .compile("(\\w{0,3}?)([1-9]\\d{0,8})(\\D{0,3})");
 
         public static IDPattern<String> getInstance() {
             return INSTANCE;
@@ -59,9 +59,12 @@ public class PrefixIntSuffixID extends PrefixSuffixID implements ID<String> {
             Matcher m = PATTERN.matcher(id);
             if (!m.matches())
                 throw new IDFormatException(String.format("Invalid key: %s", id));
-            return new PrefixIntSuffixID(m.group(1),
-                                                Integer.parseInt(m.group(2)),
-                                                m.group(3));
+            String prefix = m.group(1);
+            String intVal = m.group(2);
+            String suffix = m.group(3);
+            return new PrefixIntSuffixID(prefix,
+                                         Integer.parseInt(intVal),
+                                         suffix);
         }
     }
 }

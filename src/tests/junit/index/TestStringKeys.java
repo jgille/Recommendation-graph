@@ -13,63 +13,72 @@ import recng.index.UTF8StringID;
 
 public class TestStringKeys {
 
-    @Test public void testIntKey() {
+    @Test
+    public void testIntKey() {
         String id = "123";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(IntID.class == key.getClass());
     }
 
-    @Test public void testPrefixIntKey() {
+    @Test
+    public void testPrefixIntKey() {
         String id = "P123";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixIntSuffixID.class == key.getClass());
     }
 
-    @Test public void testIntSuffixKey() {
+    @Test
+    public void testIntSuffixKey() {
         String id = "123S";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixIntSuffixID.class == key.getClass());
     }
 
-    @Test public void testPrefixIntSuffixKey() {
+    @Test
+    public void testPrefixIntSuffixKey() {
         String id = "P123S";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixIntSuffixID.class == key.getClass());
     }
 
-    @Test public void testLongKey() {
+    @Test
+    public void testLongKey() {
         String id = "12345678912345";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(LongID.class == key.getClass());
     }
 
-    @Test public void testPrefixLongKey() {
+    @Test
+    public void testPrefixLongKey() {
         String id = "P12345678912345";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixLongSuffixID.class == key.getClass());
     }
 
-    @Test public void testLongSuffixKey() {
+    @Test
+    public void testLongSuffixKey() {
         String id = "12345678912345S";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixLongSuffixID.class == key.getClass());
     }
 
-    @Test public void testPrefixLongSuffixKey() {
+    @Test
+    public void testPrefixLongSuffixKey() {
         String id = "P12345678912345S";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());
         assertTrue(PrefixLongSuffixID.class == key.getClass());
     }
 
-    @Test public void testUTF8StringKey() {
+    @Test
+    public void testUTF8StringKey() {
         String id = "P1TP2F";
         ID<String> key = StringIDs.parseKey(id);
         assertEquals(id, key.getID());

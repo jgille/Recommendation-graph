@@ -47,8 +47,8 @@ public class CSVDataRowParser implements DataRowParser {
             String value = m.group(2);
             value = value.replace(ESCAPED_DOUBLE_QUOTE, "\"");
             value = value.replace("\\", ""); // Remove all escaping backslashes
-            FieldMetadata<?> fieldMetadata = metadata.getFieldMetadata(i++);
-            Marshaller<?> marshaller = fieldMetadata.getMarshaller();
+            FieldMetadata fieldMetadata = metadata.getFieldMetadata(i++);
+            Marshaller marshaller = fieldMetadata.getMarshaller();
             res.put(fieldMetadata.getFieldName(), marshaller.parse(value));
         }
         return res;

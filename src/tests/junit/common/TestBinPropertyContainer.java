@@ -9,6 +9,6 @@ public class TestBinPropertyContainer extends
 
     @Override
     protected PropertyContainer getPropertyContainer(TableMetadata fs) {
-        return new BinPropertyContainer(fs, true);
+        return new BinPropertyContainer.Factory(true).create(fs);
     }
 }

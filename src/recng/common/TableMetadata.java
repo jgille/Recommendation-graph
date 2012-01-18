@@ -1,6 +1,6 @@
 package recng.common;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Metadata describing a property container or table with a fixed set of
@@ -14,14 +14,14 @@ public interface TableMetadata {
      *
      * Will throw an exception if no metadata exists for this field.
      */
-    <T> FieldMetadata<T> getFieldMetadata(String fieldName);
+    FieldMetadata getFieldMetadata(String fieldName);
 
     /**
      * Gets metadata for a field ordinal.
      *
      * Will throw an exception if no metadata exists for this field.
      */
-    <T> FieldMetadata<T> getFieldMetadata(int ordinal);
+    FieldMetadata getFieldMetadata(int ordinal);
 
     /**
      * Checks if the field is valid.
@@ -29,14 +29,9 @@ public interface TableMetadata {
     boolean contains(String fieldName);
 
     /**
-     * Gets the type of the values corresponding to this field.
-     */
-    FieldMetadata.Type typeOf(String fieldName);
-
-    /**
      * Returns the names of the fields.
      */
-    Set<String> getFields();
+    List<String> getFields();
 
     /**
      * Returns the ordinal of this field. All implementing classes must

@@ -81,13 +81,14 @@ public class RecommendationManagerImpl implements RecommendationManager {
 
     private ProductFilter getFilter(String templateName, int subTemplate) {
 
+
         return new ProductFilter() {
             @Override
             public boolean accepts(ImmutableProduct product) {
                 Double price;
                 String name;
-                return (price = product.getProperty("Price")) < 0
-                    && (price = product.getProperty("Price")) <= 30;
+                return (price = (Double) product.getProperty("Price")) < 0
+                    && (price = (Double) product.getProperty("Price")) <= 30;
             }
         };
     }

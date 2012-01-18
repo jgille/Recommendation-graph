@@ -4,9 +4,9 @@ import java.util.List;
 
 /**
  * An immutable representation of a product.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public interface ImmutableProduct {
 
@@ -28,18 +28,15 @@ public interface ImmutableProduct {
     /**
      * Gets a property by it's key.
      *
-     * NOTE: This will throw a CCE if the found value is not an instance of the
-     * provided generic type.
      */
-    <V> V getProperty(String key);
+    Object getProperty(String key);
 
     /**
      * Gets a repeated property, i.e. a property list, by it's key.
-     *
-     * NOTE: This will throw a CCE if the found value can not be cast to a list
-     * of the provided generic type.
+     * 
+     * NOTE: This will throw a CCE if the found value can not be cast to a list.
      */
-    <V> List<V> getRepeatedProperties(String key);
+    List<Object> getRepeatedProperties(String key);
 
     /**
      * Check if this container contains the provided key.

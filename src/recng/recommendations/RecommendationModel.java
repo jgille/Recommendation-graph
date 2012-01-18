@@ -33,10 +33,9 @@ public interface RecommendationModel {
     ImmutableProduct getProduct(String id);
 
     /**
-     * Gets the status of this model, i.e. the number of products in the graph,
+     * Gets the status of this model, e.g. the number of products in the graph,
      * cache hit percentage, filter percentage etc.
-     *
-     * @return
+     * 
      */
     String getStatusString();
 }

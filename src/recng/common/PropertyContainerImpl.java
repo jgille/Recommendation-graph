@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A simple key/value container backed by a HashMap.
@@ -16,41 +14,22 @@ import java.util.Set;
  */
 public class PropertyContainerImpl implements PropertyContainer {
 
-    private Map<String, Object> properties = new HashMap<String, Object>();
+    private final Map<String, Object> properties = new HashMap<String, Object>();
 
     @Override
-    public Object get(String key) {
+    public Object getProperty(String key) {
         return properties.get(key);
     }
 
     @Override
-    public Object set(String key, Object value) {
+    public Object setProperty(String key, Object value) {
         return properties.put(key, value);
     }
-
     @Override
-    public <V> V getProperty(String key) {
-        Object value = get(key);
-        return implicitCast(value);
-    }
-
-    @SuppressWarnings("unchecked") private <V> V implicitCast(Object value) {
-        return (V)value;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <V> V setProperty(String key, V value) {
+    public List<String> getKeys() {
         if (properties == null)
-            properties = new HashMap<String, Object>();
-        return (V)properties.put(key, value);
-    }
-
-    @Override
-    public Set<String> getKeys() {
-        if (properties == null)
-            return Collections.<String> emptySet();
-        return new HashSet<String>(properties.keySet());
+            return Collections.<String> emptyList();
+        return new ArrayList<String>(properties.keySet());
     }
 
     @Override
@@ -58,23 +37,30 @@ public class PropertyContainerImpl implements PropertyContainer {
         return properties.containsKey(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <V> List<V> getRepeatedProperties(String key) {
-        return getProperty(key);
+    public List<Object> getRepeatedProperties(String key) {
+        Object prop = getProperty(key);
+        if (prop == null)
+            return null;
+        if (!(prop instanceof List))
+            throw new IllegalArgumentException("Can not cast " + prop
+                + " to a list.");
+        return (List<Object>) prop;
     }
 
     @Override
-    public <V> List<V> setRepeatedProperties(String key, List<V> values) {
-        List<V> prev = getRepeatedProperties(key);
+    public List<Object> setRepeatedProperties(String key, List<Object> values) {
+        List<Object> prev = getRepeatedProperties(key);
         setProperty(key, values);
         return prev;
     }
 
     @Override
-    public <V> void addRepeatedProperty(String key, V value) {
-        List<V> prev = getRepeatedProperties(key);
+    public void addRepeatedProperty(String key, Object value) {
+        List<Object> prev = getRepeatedProperties(key);
         if (prev == null) {
-            prev = new ArrayList<V>();
+            prev = new ArrayList<Object>();
         }
         prev.add(value);
         setRepeatedProperties(key, prev);

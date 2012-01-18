@@ -1,8 +1,7 @@
 package recng.recommendations.domain;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-
 import recng.common.BinPropertyContainer;
 import recng.common.TableMetadata;
 import recng.common.WeightedPropertyContainer;
@@ -32,13 +31,18 @@ public class ProductImpl implements Product {
      */
     public ProductImpl(String id, boolean isValid, TableMetadata fields) {
         this.id = id;
-        this.properties = new BinPropertyContainer(fields, false);
+        this.properties =
+            new BinPropertyContainer.Factory(false).create(fields);
         setIsValid(isValid);
+    }
+
+    private <E> E getAndCast(String field) {
+        return implicitCast(properties.getProperty(field));
     }
 
     @Override
     public boolean isValid() {
-        Boolean isValid = properties.getProperty(IS_VALID_PROPERTY);
+        Boolean isValid = getAndCast(IS_VALID_PROPERTY);
         return isValid == null || isValid.booleanValue();
     }
 
@@ -48,12 +52,12 @@ public class ProductImpl implements Product {
     }
 
     @Override
-    public <V> V getProperty(String key) {
+    public Object getProperty(String key) {
         return properties.getProperty(key);
     }
 
     @Override
-    public <V> V setProperty(String key, V value) {
+    public Object setProperty(String key, Object value) {
         return properties.setProperty(key, value);
     }
 
@@ -63,33 +67,36 @@ public class ProductImpl implements Product {
     }
 
     @Override
-    public Set<String> getKeys() {
+    public List<String> getKeys() {
         return properties.getKeys();
     }
 
     @Override
-    public <V> List<V> getRepeatedProperties(String key) {
+    public List<Object> getRepeatedProperties(String key) {
         return properties.getRepeatedProperties(key);
     }
 
     @Override
-    public <V> List<V> setRepeatedProperties(String key, List<V> values) {
+    public List<Object> setRepeatedProperties(String key, List<Object> values) {
         return properties.setRepeatedProperties(key, values);
     }
 
     @Override
-    public <V> void addRepeatedProperty(String key, V value) {
+    public void addRepeatedProperty(String key, Object value) {
         properties.addRepeatedProperty(key, value);
     }
 
     @Override
     public List<String> getCategories() {
-        return getRepeatedProperties(CATEGORIES_PROPERTY);
+        return implicitCast(getRepeatedProperties(CATEGORIES_PROPERTY));
     }
 
     @Override
     public void setCategories(List<String> categories) {
-        properties.setRepeatedProperties(CATEGORIES_PROPERTY, categories);
+        List<Object> catList = new ArrayList<Object>();
+        for (String category : categories)
+            catList.add(category);
+        properties.setRepeatedProperties(CATEGORIES_PROPERTY, catList);
     }
 
     @Override
@@ -104,13 +111,8 @@ public class ProductImpl implements Product {
         return sb.toString();
     }
 
-    @Override
-    public Object get(String key) {
-        return properties.get(key);
-    }
-
-    @Override
-    public Object set(String key, Object value) {
-        return properties.set(key, value);
+    @SuppressWarnings("unchecked")
+    private static <E> E implicitCast(Object value) {
+        return (E) value;
     }
 }

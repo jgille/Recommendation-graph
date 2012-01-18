@@ -1,71 +1,46 @@
 package recng.common;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * A key/value container.
  *
  * @author jon
- *
  */
 public interface PropertyContainer {
 
     /**
-     * Gets an untyped property by it's key.
+     * Gets a property for a key.
      */
-    Object get(String key);
+    Object getProperty(String key);
 
     /**
-     * Sets a property for a key, and return the previous value.
+     * Sets a property for a key.
      */
-    Object set(String key, Object value);
+    Object setProperty(String key, Object value);
 
     /**
-     * Gets a property by it's key.
-     *
-     * NOTE: This will throw a CCE if the found value is not an instance of the
-     * provided generic type.
+     * Gets repeated properties, i.e. a list of properties, for a key.
      */
-    <V> V getProperty(String key);
+    List<Object> getRepeatedProperties(String key);
 
     /**
-     * Sets a property for a key, and returns the previous value.
-     *
-     * NOTE: This will throw a CCE if the found value is not an instance of the
-     * provided generic type.
+     * Sets repeated properties, i.e. a list of properties, for a key.
      */
-    <V> V setProperty(String key, V value);
+    List<Object> setRepeatedProperties(String key, List<Object> values);
 
     /**
-     * Gets a repeated property, i.e. a property list, by it's key.
-     *
-     * NOTE: This will throw a CCE if the found values can not be cast to
-     * the provided generic type.
+     * Adds a property to a set of repeated properties.
      */
-    <V> List<V> getRepeatedProperties(String key);
+    void addRepeatedProperty(String key, Object value);
 
     /**
-     * Sets a repeated property, i.e. a property list, for a key.
-     *
-     * NOTE: This will throw a CCE if the found values can not be cast to
-     * the provided generic type.
-     */
-    <V> List<V> setRepeatedProperties(String key, List<V> values);
-
-    /**
-     * Appends a property to a repeated property, possibly creating a new
-     * repeated property if not found.
-     */
-    <V> void addRepeatedProperty(String key, V value);
-
-    /**
-     * Check if this container contains the provided key.
+     * Checks the existance of a key.
      */
     boolean containsProperty(String key);
 
     /**
      * Gets all keys for this container.
      */
-    Set<String> getKeys();
+    List<String> getKeys();
 }

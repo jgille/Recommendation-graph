@@ -24,6 +24,8 @@ abstract class PrefixSuffixID {
     }
 
     private static String getOrCacheString(String s) {
+        if (s == null)
+            return null;
         if(STRING_CACHE.contains(s))
             return STRING_CACHE.get(s);
         STRING_CACHE.cache(s, s);

@@ -20,10 +20,15 @@ public class Marshallers {
         // Prevent instantiation
     }
 
-    public static final Marshaller<Byte> BYTE_MARSHALLER =
-        new Marshaller<Byte>() {
-        public byte[] marshall(Byte value) {
-            return new byte[] {value};
+    public static final Marshaller BYTE_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Byte))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a byte");
+                return new byte[] { (Byte) value };
         }
         public Byte unmarshall(byte[] bytes) {
             return bytes[0];
@@ -33,10 +38,15 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Short> SHORT_MARSHALLER =
-        new Marshaller<Short>() {
-        public byte[] marshall(Short value) {
-            return ByteBuffer.allocate(2).putShort(value).array();
+    public static final Marshaller SHORT_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Short))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a short");
+                return ByteBuffer.allocate(2).putShort((Short) value).array();
         }
         public Short unmarshall(byte[] bytes) {
             return ByteBuffer.wrap(bytes).getShort();
@@ -46,11 +56,16 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Integer> INTEGER_MARSHALLER =
-        new Marshaller<Integer>() {
-        public byte[] marshall(Integer value) {
-            return ByteBuffer.allocate(4).putInt(value).array();
-        }
+    public static final Marshaller INTEGER_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Integer))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to an integer");
+                return ByteBuffer.allocate(4).putInt((Integer) value).array();
+            }
         public Integer unmarshall(byte[] bytes) {
             return ByteBuffer.wrap(bytes).getInt();
         }
@@ -59,10 +74,15 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Long> LONG_MARSHALLER =
-        new Marshaller<Long>() {
-        public byte[] marshall(Long value) {
-            return ByteBuffer.allocate(8).putLong(value).array();
+    public static final Marshaller LONG_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Long))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a long");
+                return ByteBuffer.allocate(8).putLong((Long) value).array();
         }
         public Long unmarshall(byte[] bytes) {
             return ByteBuffer.wrap(bytes).getLong();
@@ -72,10 +92,16 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Date> DATE_MARSHALLER =
-        new Marshaller<Date>() {
-        public byte[] marshall(Date value) {
-            return ByteBuffer.allocate(8).putLong(value.getTime()).array();
+    public static final Marshaller DATE_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Date))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a date");
+                return ByteBuffer.allocate(8).putLong(((Date) value).getTime())
+                    .array();
         }
         public Date unmarshall(byte[] bytes) {
             return new Date(ByteBuffer.wrap(bytes).getLong());
@@ -94,10 +120,15 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Float> FLOAT_MARSHALLER =
-        new Marshaller<Float>() {
-        public byte[] marshall(Float value) {
-            return ByteBuffer.allocate(4).putFloat(value).array();
+    public static final Marshaller FLOAT_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Float))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a float");
+                return ByteBuffer.allocate(4).putFloat((Float) value).array();
         }
         public Float unmarshall(byte[] bytes) {
             return ByteBuffer.wrap(bytes).getFloat();
@@ -107,10 +138,15 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Double> DOUBLE_MARSHALLER =
-        new Marshaller<Double>() {
-        public byte[] marshall(Double value) {
-            return ByteBuffer.allocate(8).putDouble(value).array();
+    public static final Marshaller DOUBLE_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Double))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a double");
+                return ByteBuffer.allocate(8).putDouble((Double) value).array();
         }
         public Double unmarshall(byte[] bytes) {
             return ByteBuffer.wrap(bytes).getDouble();
@@ -120,10 +156,16 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<Boolean> BOOLEAN_MARSHALLER =
-        new Marshaller<Boolean>() {
-        public byte[] marshall(Boolean value) {
-            return new byte[] {value.booleanValue() ? (byte)1 : (byte)0};
+    public static final Marshaller BOOLEAN_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof Boolean))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a boolean");
+                return new byte[] { ((Boolean) value).booleanValue() ? (byte) 1
+                    : (byte) 0 };
         }
         public Boolean unmarshall(byte[] bytes) {
             return bytes[0] == 1;
@@ -133,11 +175,16 @@ public class Marshallers {
         }
     };
 
-    public static final Marshaller<String> STRING_MARSHALLER =
-        new Marshaller<String>() {
-        public byte[] marshall(String value) {
+    public static final Marshaller STRING_MARSHALLER =
+        new Marshaller() {
+            public byte[] marshall(Object value) {
+                if (value == null)
+                    return null;
+                if (!(value instanceof String))
+                    throw new IllegalArgumentException("Can not cast " + value
+                        + " to a String");
             try {
-                return value.getBytes("UTF8");
+                    return ((String) value).getBytes("UTF8");
             } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e.getMessage(), e);
             }

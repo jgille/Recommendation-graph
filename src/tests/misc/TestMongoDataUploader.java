@@ -3,7 +3,8 @@ package tests.misc;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +13,6 @@ import com.mongodb.Mongo;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
-import recng.common.Marshallers;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 import recng.db.mongodb.MongoDataUploader;
@@ -43,11 +43,8 @@ public class TestMongoDataUploader {
     public static TableMetadata parseTableMetadata(String file)
         throws IOException {
         BufferedReader br = null;
-        TableMetadataImpl.Builder builder = new TableMetadataImpl.Builder();
-        builder
-            .add(new FieldMetadataImpl<String>("_id",
-                                               Marshallers.STRING_MARSHALLER,
-                                               FieldMetadata.Type.STRING));
+        List<FieldMetadata> fields = new ArrayList<FieldMetadata>();
+        fields.add(new FieldMetadataImpl("_id", FieldMetadata.Type.STRING));
         try {
             br = new BufferedReader(new FileReader(file));
             String line = null;
@@ -58,60 +55,19 @@ public class TestMongoDataUploader {
                 String fieldName = m.group(1);
                 String typeName = m.group(2).toUpperCase();
                 FieldMetadata.Type type = FieldMetadata.Type.valueOf(typeName);
-                builder.add(createFieldMetadata(fieldName, type));
+                fields.add(createFieldMetadata(fieldName, type));
             }
-            builder.add(createFieldMetadata("__is_valid",
-                                            FieldMetadata.Type.BOOLEAN));
+            fields.add(createFieldMetadata("__is_valid",
+                                           FieldMetadata.Type.BOOLEAN));
         } finally {
             if (br != null)
                 br.close();
         }
-        return builder.build();
+        return new TableMetadataImpl(fields);
     }
 
-    // TODO: Move to separate class
-    private static FieldMetadata<?>
+    private static FieldMetadata
         createFieldMetadata(String fieldName, FieldMetadata.Type type) {
-        switch (type) {
-        case BYTE:
-            return new FieldMetadataImpl<Byte>(fieldName,
-                                               Marshallers.BYTE_MARSHALLER,
-                                               type);
-        case SHORT:
-            return new FieldMetadataImpl<Short>(fieldName,
-                                                Marshallers.SHORT_MARSHALLER,
-                                                type);
-        case INTEGER:
-            return new FieldMetadataImpl<Integer>(
-                                                  fieldName,
-                                                  Marshallers.INTEGER_MARSHALLER,
-                                                  type);
-        case LONG:
-            return new FieldMetadataImpl<Long>(fieldName,
-                                               Marshallers.LONG_MARSHALLER,
-                                               type);
-        case FLOAT:
-            return new FieldMetadataImpl<Float>(fieldName,
-                                                Marshallers.FLOAT_MARSHALLER,
-                                                type);
-        case DOUBLE:
-            return new FieldMetadataImpl<Double>(fieldName,
-                                                 Marshallers.DOUBLE_MARSHALLER,
-                                                 type);
-        case BOOLEAN:
-            return new FieldMetadataImpl<Boolean>(
-                                                  fieldName,
-                                                  Marshallers.BOOLEAN_MARSHALLER,
-                                                  type);
-        case STRING:
-            return new FieldMetadataImpl<String>(fieldName,
-                                                 Marshallers.STRING_MARSHALLER,
-                                                 type);
-        case DATE:
-            return new FieldMetadataImpl<Date>(fieldName,
-                                               Marshallers.DATE_MARSHALLER,
-                                               type);
-        }
-        throw new IllegalArgumentException("Unknown type: " + type.name());
+        return new FieldMetadataImpl(fieldName, type);
     }
 }

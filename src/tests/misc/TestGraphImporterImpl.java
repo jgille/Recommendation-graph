@@ -209,11 +209,11 @@ public class TestGraphImporterImpl {
                 }
                 // PropertyContainer props = new PropertyContainerImpl();
                 PropertyContainer props =
-                    new BinPropertyContainer(metadata, false);
+                    new BinPropertyContainer.Factory(false).create(metadata);
                 for (String key : dbo.keySet()) {
                     if ("_id".equals(key))
                         continue;
-                    props.set(key, dbo.get(key));
+                    props.setProperty(key, dbo.get(key));
                 }
                 cache.cache(node.getID(), props);
                 return null;

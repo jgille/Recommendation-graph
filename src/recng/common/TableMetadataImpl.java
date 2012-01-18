@@ -1,10 +1,9 @@
 package recng.common;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Metadata for a fixed set of fields.
@@ -12,41 +11,43 @@ import java.util.Set;
  * @author Jon Ivmark
  */
 public class TableMetadataImpl implements TableMetadata {
-    private final Map<String, FM> field2FieldMetadata;
-    private final Map<Integer, FieldMetadata<?>> ordinal2FieldMetadata;
+    private final Map<String, Integer> index = new HashMap<String, Integer>();
+    private final List<FieldMetadata> fields = new ArrayList<FieldMetadata>();
 
-    private TableMetadataImpl(Map<String, FM> fields) {
-        this.field2FieldMetadata = Collections.unmodifiableMap(fields);
-        this.ordinal2FieldMetadata = new HashMap<Integer, FieldMetadata<?>>();
-        for (FM fm : fields.values())
-            ordinal2FieldMetadata.put(fm.ordinal, fm.metadata);
+    public TableMetadataImpl(List<FieldMetadata> fieldMetadata) {
+        int i = 0;
+        for (FieldMetadata field : fieldMetadata) {
+            index.put(field.getFieldName(), i++);
+            fields.add(field);
+        }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> FieldMetadata<T> getFieldMetadata(String fieldName) {
-        return (FieldMetadata<T>) getFM(fieldName).getFieldMetadata();
+    public FieldMetadata getFieldMetadata(String fieldName) {
+        if (!index.containsKey(fieldName))
+            return null;
+        int ordinal = index.get(fieldName);
+        return getFieldMetadata(ordinal);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> FieldMetadata<T> getFieldMetadata(int ordinal) {
-        return (FieldMetadata<T>) ordinal2FieldMetadata.get(ordinal);
+    public FieldMetadata getFieldMetadata(int ordinal) {
+        if (ordinal < 0 || ordinal >= fields.size())
+            throw new IllegalArgumentException("Invalid ordinal: " + ordinal);
+        return fields.get(ordinal);
     }
 
     @Override
     public boolean contains(String fieldName) {
-        return field2FieldMetadata.containsKey(fieldName);
+        return index.containsKey(fieldName);
     }
 
     @Override
-    public FieldMetadata.Type typeOf(String fieldName) {
-        return getFM(fieldName).getFieldMetadata().getType();
-    }
-
-    @Override
-    public Set<String> getFields() {
-        return new HashSet<String>(field2FieldMetadata.keySet());
+    public List<String> getFields() {
+        List<String> res = new ArrayList<String>();
+        for (FieldMetadata fm : fields)
+            res.add(fm.getFieldName());
+        return res;
     }
 
     /**
@@ -58,78 +59,20 @@ public class TableMetadataImpl implements TableMetadata {
         if (!contains(fieldName))
             throw new IllegalArgumentException("Unknown field name: "
                 + fieldName);
-        return getFM(fieldName).ordinal();
-    }
-
-    private FM getFM(String fieldName) {
-        if (!contains(fieldName))
-            throw new IllegalArgumentException("Unknown field name: "
-                + fieldName);
-        return field2FieldMetadata.get(fieldName);
+        return index.get(fieldName);
     }
 
     @Override
     public int size() {
-        return field2FieldMetadata.size();
+        return index.size();
     }
 
-    /**
-     * Util class keeping track of a {@link FieldMetadata} instance and it's
-     * ordinal.
-     *
-     */
-    private static class FM {
-        private final FieldMetadata<?> metadata;
-        private final int ordinal;
-
-        public FM(FieldMetadata<?> metadata, int ordinal) {
-            this.metadata = metadata;
-            this.ordinal = ordinal;
-        }
-
-        public FieldMetadata<?> getFieldMetadata() {
-            return metadata;
-        }
-
-        public int ordinal() {
-            return ordinal;
-        }
-    }
-
-    /**
-     * A class used to build a {@link TableMetadata} instance.
-     *
-     * @author jon
-     */
-    public static class Builder {
-        private final Map<String, FM> fields = new HashMap<String, FM>();
-        private int currentOrdinal = 0;
-        private boolean built = false;
-
-        public synchronized Builder addAll(TableMetadata fs) {
-            for (String name : fs.getFields())
-                add(fs.getFieldMetadata(name));
-            return this;
-        }
-
-        public synchronized Builder add(FieldMetadata<?> fm) {
-            String fieldName = fm.getFieldName();
-            if(fields.containsKey(fieldName))
-                throw new IllegalArgumentException(fieldName + " has already been added.");
-            if(built)
-                throw new IllegalStateException("This builder has already been used " +
-                                                "to build a field metadata instance");
-            fields.put(fieldName, new FM(fm, currentOrdinal++));
-            return this;
-        }
-
-        public synchronized boolean containsField(String fieldName) {
-            return fields.containsKey(fieldName);
-        }
-
-        public synchronized TableMetadata build() {
-            built = true;
-            return new TableMetadataImpl(fields);
-        }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (FieldMetadata field : fields)
+            sb.append("\n").append(field);
+        sb.append("\n]");
+        return sb.toString();
     }
 }

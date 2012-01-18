@@ -1,7 +1,6 @@
 package recng.recommendations;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +48,7 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
     // representation of the id.
     private final IDFactory<T> idFactory;
 
-    // Statistics counters
+    // Statistics counters. TODO: Move to a separate class
     private final AtomicInteger getRelatedcalls = new AtomicInteger();
     private final AtomicInteger traversed = new AtomicInteger();
     private final AtomicInteger filtered = new AtomicInteger();
@@ -62,18 +61,19 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
      *            A graph describing the relations between products.
      * @param productData
      *            An interface to product data backend.
-     * @param keyParser
+     * @param idFactory
      *            Used to parse a String representation of a product id to
      *            something else.
      */
     public RecommendationModelImpl(Graph<T> productGraph,
                                    DataStore productData,
-                                   IDFactory<T> keyParser) {
+                                   IDFactory<T> idFactory) {
         this.productGraph = productGraph;
         this.productData = productData;
         this.productCache = setupCache(productGraph);
-        this.idFactory = keyParser;
+        this.idFactory = idFactory;
 
+        // Warm up the cache
         productGraph.getAllNodes(new Consumer<NodeID<T>, Void>() {
 
             @Override
@@ -189,7 +189,7 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
     }
 
     private void setProductProperty(Product product,
-                                    FieldMetadata<?> field,
+                                    FieldMetadata field,
                                     Object value) {
         if (field.isRepeated()) {
             setRepeatedProductProperty(product, field, value);
@@ -199,50 +199,12 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
     }
 
     private void setRepeatedProductProperty(Product product,
-                                            FieldMetadata<?> field,
+                                            FieldMetadata field,
                                             Object value) {
         FieldMetadata.Type type = field.getType();
         String key = field.getFieldName();
-        switch (type) {
-        case BYTE:
-            List<Byte> bytes = implicitCast(value);
-            product.setRepeatedProperties(key, bytes);
-            break;
-        case SHORT:
-            List<Short> shorts = implicitCast(value);
-            product.setRepeatedProperties(key, shorts);
-            break;
-        case INTEGER:
-            List<Integer> integers = implicitCast(value);
-            product.setRepeatedProperties(key, integers);
-            break;
-        case LONG:
-            List<Long> longs = implicitCast(value);
-            product.setRepeatedProperties(key, longs);
-            break;
-        case FLOAT:
-            List<Float> floats = implicitCast(value);
-            product.setRepeatedProperties(key, floats);
-            break;
-        case DOUBLE:
-            List<Double> doubles = implicitCast(value);
-            product.setRepeatedProperties(key, doubles);
-            break;
-        case BOOLEAN:
-            List<Boolean> booleans = implicitCast(value);
-            product.setRepeatedProperties(key, booleans);
-            break;
-        case STRING:
-            List<String> strings = implicitCast(value);
-            product.setRepeatedProperties(key, strings);
-            break;
-        case DATE:
-            List<Date> dates = implicitCast(value);
-            product.setRepeatedProperties(key, dates);
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown type: " + type);
-        }
+        List<Object> valueList = implicitCast(value);
+        product.setRepeatedProperties(key, valueList);
     }
 
     @SuppressWarnings("unchecked")

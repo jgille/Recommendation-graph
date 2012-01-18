@@ -44,16 +44,16 @@ public class ImmutableProductImpl implements ImmutableProduct {
     }
 
     @Override
-    public <V> V getProperty(String key) {
+    public Object getProperty(String key) {
         return product.getProperty(key);
     }
 
     @Override
-    public <V> List<V> getRepeatedProperties(String key) {
-        List<V> properties = product.getRepeatedProperties(key);
+    public List<Object> getRepeatedProperties(String key) {
+        List<Object> properties = product.getRepeatedProperties(key);
         if (properties == null)
             return null;
-        return new ArrayList<V>(properties);
+        return new ArrayList<Object>(properties);
     }
 
     @Override

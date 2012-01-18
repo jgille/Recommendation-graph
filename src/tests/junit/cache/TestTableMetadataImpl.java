@@ -15,7 +15,7 @@ import recng.common.TableMetadataImpl;
  *
  * @author Jon Ivmark
  */
-public class TestFieldSetImpl {
+public class TestTableMetadataImpl {
 
     private static final FieldMetadata PRICE =
         new FieldMetadataImpl("Price",

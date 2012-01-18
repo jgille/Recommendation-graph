@@ -1,12 +1,9 @@
 package tests.junit.recommendations;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -34,6 +31,12 @@ import recng.recommendations.graph.ProductID;
 import recng.recommendations.graph.RecommendationGraphMetadata;
 import recng.recommendations.graph.RecommendationType;
 
+/**
+ * Tests {@link RecommendationModelImpl}.
+ * 
+ * @author jon
+ * 
+ */
 public class TestRecommendationModelImpl {
 
     private static final RecommendationType EDGE_TYPE =
@@ -155,10 +158,6 @@ public class TestRecommendationModelImpl {
                     public boolean accepts(ImmutableProduct product) {
                         Integer index = (Integer) product.getProperty("index");
                         return index.intValue() > 2;
-                    }
-
-                    public Set<String> getFilterProperties() {
-                        return Collections.<String> emptySet();
                     }
                 };
             }

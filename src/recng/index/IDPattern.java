@@ -1,10 +1,10 @@
 package recng.index;
 
 /**
- * Used to created ID wrappers that might store the String ID more efficently.
- *
+ * Used to create ID wrappers that might store the original ID more efficently.
+ * 
  * @author jon
- *
+ * 
  * @param <K>
  */
 public interface IDPattern<K> {

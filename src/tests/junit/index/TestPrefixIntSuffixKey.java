@@ -11,6 +11,12 @@ import recng.index.IDPattern;
 import recng.index.IDFormatException;
 import recng.index.PrefixIntSuffixID;
 
+/**
+ * Tests IDs matching the {@link PrefixIntSuffixID} pattern.
+ * 
+ * @author jon
+ * 
+ */
 public class TestPrefixIntSuffixKey {
 
     private ID<String> getKey(String id) {

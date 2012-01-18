@@ -11,6 +11,12 @@ import recng.index.ID;
 import recng.index.IDPattern;
 import recng.index.IDFormatException;
 
+/**
+ * Tests IDs matching the {@link IntID} pattern.
+ * 
+ * @author jon
+ * 
+ */
 public class TestIntKey {
 
     private ID<String> getKey(String id) {

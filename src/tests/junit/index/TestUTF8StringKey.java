@@ -9,6 +9,12 @@ import org.junit.Test;
 import recng.index.ID;
 import recng.index.UTF8StringID;
 
+/**
+ * Tests IDs matching the {@link UTF8StringID} pattern.
+ * 
+ * @author jon
+ * 
+ */
 public class TestUTF8StringKey {
 
     private ID<String> getKey(String id) {

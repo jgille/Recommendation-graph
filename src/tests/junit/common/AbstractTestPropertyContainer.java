@@ -11,6 +11,12 @@ import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 import recng.common.PropertyContainer;
 
+/**
+ * Base class for testing {@link PropertyContainer}s.
+ * 
+ * @author jon
+ * 
+ */
 public abstract class AbstractTestPropertyContainer {
 
     protected static final FieldMetadata PRICE =

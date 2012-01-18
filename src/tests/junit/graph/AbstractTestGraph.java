@@ -11,6 +11,12 @@ import recng.graph.*;
 import recng.recommendations.domain.ProductNodeType;
 import recng.recommendations.graph.RecommendationType;
 
+/**
+ * Base class for testing {@link Graph}s.
+ *
+ * @author jon
+ *
+ */
 public abstract class AbstractTestGraph {
 
     private static final RecommendationType EDGE_TYPE = RecommendationType.PEOPLE_WHO_BOUGHT;
@@ -29,6 +35,11 @@ public abstract class AbstractTestGraph {
     private static final Float N3_N1 = 1.0f;
     private static final Float N4_N2 = 1.0f;
 
+    /**
+     * Gets a builder used to create the graph.
+     * 
+     * @return
+     */
     protected abstract <K> GraphBuilder<K> getGraphBuilder();
 
     /**
@@ -53,6 +64,7 @@ public abstract class AbstractTestGraph {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testEdgeFilter() {
         Graph<Integer> graph = buildGraph();
         EdgeFilter<Integer> filter = new EdgeFilter<Integer>() {
@@ -66,11 +78,13 @@ public abstract class AbstractTestGraph {
         Traverser<Integer> traverser =
             graph.prepareTraversal(getNodeId(N1), EDGE_TYPE).edgeFilter(filter)
                 .build();
+
         List<GraphEdge<Integer>> expected =
             Arrays.asList(newEdge(N1, N3, N1_N3));
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSimpleTraversal() {
         Graph<Integer> graph = buildGraph();
@@ -84,6 +98,7 @@ public abstract class AbstractTestGraph {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxReturnedEdges() {
         Graph<Integer> graph = buildGraph();
@@ -97,6 +112,7 @@ public abstract class AbstractTestGraph {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxTraversedEdges() {
         Graph<Integer> graph = buildGraph();
@@ -110,6 +126,7 @@ public abstract class AbstractTestGraph {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxDepth() {
         Graph<Integer> graph = buildGraph();
@@ -127,6 +144,7 @@ public abstract class AbstractTestGraph {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCombination() {
         GraphBuilder<Integer> builder = getGraphBuilder();

@@ -3,6 +3,12 @@ package recng.recommendations;
 import recng.index.ID;
 import recng.index.StringIDs;
 
+/**
+ * A factory for creating {@link ID}s containing Strings.
+ * 
+ * @author jon
+ * 
+ */
 public class StringIDFactory implements IDFactory<ID<String>> {
 
     @Override

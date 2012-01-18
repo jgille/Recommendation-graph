@@ -11,6 +11,12 @@ import recng.index.IDPattern;
 import recng.index.IDFormatException;
 import recng.index.LongID;
 
+/**
+ * Tests IDs matching the {@link LongID} pattern.
+ *
+ * @author jon
+ *
+ */
 public class TestLongKey {
 
     private ID<String> getKey(String id) {

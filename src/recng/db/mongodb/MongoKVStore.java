@@ -11,6 +11,12 @@ import com.mongodb.Mongo;
 
 import recng.db.KVStore;
 
+/**
+ * A key/value store backed by mongodb.
+ *
+ * @author jon
+ *
+ */
 public class MongoKVStore implements KVStore<String, Map<String, Object>> {
 
     private DBCollection col = null;
@@ -29,6 +35,7 @@ public class MongoKVStore implements KVStore<String, Map<String, Object>> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> get(String key) {
         if (col == null)
@@ -48,6 +55,7 @@ public class MongoKVStore implements KVStore<String, Map<String, Object>> {
         col.save(dbo);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> remove(String key) {
         if (col == null)

@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-import org.apache.jmeter.samplers.SampleResult;
 
 import recng.common.TableMetadata;
 import recng.db.KVStore;
@@ -34,44 +32,60 @@ import recng.recommendations.RecommendationModelImpl;
 import recng.recommendations.StringIDFactory;
 import recng.recommendations.data.DataStore;
 import recng.recommendations.data.DataStoreImpl;
-import recng.recommendations.domain.ImmutableProduct;
 import recng.recommendations.graph.ProductID;
 import recng.recommendations.graph.RecommendationGraphMetadata;
 import tests.misc.TestMongoDataUploader;
 
-public class RecommendationSampler extends AbstractJavaSamplerClient {
+/**
+ * A simple {@link AbstractJavaSamplerClient} used to load test a
+ * {@link RecommendationManager}.
+ *
+ * @author jon
+ *
+ */
+public class RecommendationSamplerImpl extends AbstractRecommendationSampler {
 
-    private static final TestRunner RUNNER = new TestRunner();
-    private static final AtomicBoolean DONE = new AtomicBoolean(false);
+    private static TestRunner runner;
+
+    // I can not get JMeter to store default variables. For now I keep these.
+    private static final String DEFAULT_CUSTOMER =
+        "suomalainen"; // TODO: Eh...
+    private static final String DEFAULT_DIR =
+        String.format("/home/jon/%s", DEFAULT_CUSTOMER); // TODO: Eh...
+
+    private static final Object LOCK = new Object();
 
     @Override
-    public void setupTest(JavaSamplerContext arg0) {
-        DONE.getAndSet(false);
+    public void setupTest(JavaSamplerContext ctx) {
+        synchronized (LOCK) {
+            Map<String, String> config =
+                new HashMap<String, String>();
+            config.put("graph", ctx.getParameter("graph",
+                                                 String.format("%s/graph.csv",
+                                                               DEFAULT_DIR)));
+            config.put("metadata",
+                       ctx.getParameter("metadata",
+                                        String.format("%s/productformat",
+                                                      DEFAULT_DIR)));
+            config.put("products",
+                       ctx.getParameter("products",
+                                        String.format("%s/products",
+                                                      DEFAULT_DIR)));
+            config.put("db",
+                       ctx.getParameter("customer", DEFAULT_CUSTOMER));
+            System.out.println("Config = " + config);
+            if (runner == null)
+                runner = new TestRunner(config);
+        }
     }
 
     @Override
-    public void teardownTest(JavaSamplerContext arg0) {
-        if (!DONE.getAndSet(true))
-            System.out.println(RUNNER.manager);
+    protected RecommendationManager getManager() {
+        return runner.getManager();
     }
-
     @Override
-    public SampleResult runTest(JavaSamplerContext ctx) {
-        SampleResult sr = new SampleResult();
-        sr.sampleStart();
-        List<ImmutableProduct> rec = RUNNER
-            .getRecommendation(new HashMap<String, String>());
-        // System.out.println(rec);
-        sr.setResponseMessage(rec + "");
-        sr.sampleEnd();
-        sr.setSuccessful(true);
-        return sr;
-    }
-
-    private String getResponse(String product,
-                               List<ImmutableProduct> recommendation) {
-        return recommendation == null ? product + " -> Null" :
-            product + " ->\n" + recommendation.toString();
+    protected String getNextProduct() {
+        return runner.getNextProduct();
     }
 
     private static class TestRunner {
@@ -79,27 +93,14 @@ public class RecommendationSampler extends AbstractJavaSamplerClient {
         private final List<String> products;
         private final AtomicInteger current = new AtomicInteger();
 
-        private static final String CUSTOMER = "suomalainen";
-
-        private TestRunner() {
+        private TestRunner(Map<String, String> config) {
             try {
                 System.out.println("Setting up test runner");
-                Map<String, String> config = new HashMap<String, String>();
-                config.put("graph_file",
-                           String.format("/home/jon/%s/graph.csv", CUSTOMER));
-                config.put("metadata_file",
-                           String
-                               .format("/home/jon/%s/productformat", CUSTOMER));
-                config.put("db", CUSTOMER);
-
-                System.out.println("Setting up test manager");
                 this.manager =
                     new RecommendationManagerImpl(setupModel(config));
                 System.out.println("Getting clicks");
                 this.products =
-                    getClicks(String.format("/home/jon/%s/shuf_click",
-                                            CUSTOMER),
-                              100000);
+                    getInputProducts(config.get("products"), 100000);
                 System.out.println("Done");
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -129,7 +130,7 @@ public class RecommendationSampler extends AbstractJavaSamplerClient {
                     }
             };
         long t0 = System.currentTimeMillis();
-        String file = config.get("graph_file");
+            String file = config.get("graph");
         Graph<ID<String>> graph = importer.importGraph(file);
         long t1 = System.currentTimeMillis();
         System.out.println("Done with graph import. Imported "
@@ -143,7 +144,7 @@ public class RecommendationSampler extends AbstractJavaSamplerClient {
         private DataStore setupDataStore(Map<String, String> config)
             throws IOException {
             TableMetadata metadata =
-                readTableMetadata(config.get("metadata_file"));
+                readTableMetadata(config.get("metadata"));
             final KVStore<String, Map<String, Object>> mongoStore =
                 new MongoKVStore();
             Map<String, String> mongoProperties = new HashMap<String, String>();
@@ -158,13 +159,6 @@ public class RecommendationSampler extends AbstractJavaSamplerClient {
             return TestMongoDataUploader.parseTableMetadata(file);
         }
 
-        private List<ImmutableProduct>
-            getRecommendation(Map<String, String> params) {
-            if (!params.containsKey("ProductID"))
-                params.put("ProductID", getNextProduct());
-            return manager.getRelatedProducts(params);
-        }
-
         private String getNextProduct() {
             int index = current.getAndIncrement();
             if (index >= products.size()) {
@@ -174,25 +168,27 @@ public class RecommendationSampler extends AbstractJavaSamplerClient {
             return products.get(index);
         }
 
-        private static List<String> getClicks(String clickFile, int limit)
+        private static List<String> getInputProducts(String clickFile, int limit)
             throws IOException {
-            List<String> clicks = new ArrayList<String>();
+            List<String> products = new ArrayList<String>();
             BufferedReader reader =
                 new BufferedReader(new FileReader(clickFile));
             String prev = null;
             String line;
-            while ((line = reader.readLine()) != null && clicks.size() < limit) {
+            while ((line = reader.readLine()) != null && products.size() < limit) {
                 String[] columns = line.split(";");
                 if (columns.length != 2)
                     continue;
                 String product = columns[1].replaceAll("\"", "");
                 if (!product.equals(prev))
-                    clicks.add(product);
+                    products.add(product);
                 prev = product;
             }
-            // Collections.shuffle(clicks);
-            return clicks;
+            return products;
         }
 
+        private RecommendationManager getManager() {
+            return manager;
+        }
     }
 }

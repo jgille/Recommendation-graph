@@ -9,10 +9,10 @@ import gnu.trove.list.array.TLongArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
 /**
- * A mutable graph.
- *
+ * A mutable graph implementation.
+ * 
  * @author jon
- *
+ * 
  */
 public class MutableGraphImpl<T> implements MutableGraph<T> {
 
@@ -22,11 +22,11 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
     private final List<MutableGraphNode<T>> nodes;
     /** Used for synchronization. */
     private final Object lock = new Object();
+    /** Metadata about this graph. */
     private final GraphMetadata metadata;
 
     /**
      * Creates an empty mutable graph.
-     *
      */
     public MutableGraphImpl(GraphMetadata metadata) {
         this(metadata, new TObjectIntHashMap<NodeID<T>>(),
@@ -59,27 +59,6 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
             i++;
         }
 
-    }
-
-    /**
-     * A class used to build a graph.
-     */
-    public static class Builder<T> extends AbstractGraphBuilder<T> implements
-        GraphBuilder<T> {
-
-        public Builder(GraphMetadata metadata) {
-            super(metadata);
-        }
-
-        @Override
-        protected Graph<T>
-            constructGraph(GraphMetadata metadata,
-                           TObjectIntHashMap<NodeID<T>> nodeIndex,
-                           List<NodeID<T>> nodes,
-                           List<TLongArrayList[]> nodeEdges) {
-            return new MutableGraphImpl<T>(metadata, nodeIndex, nodes,
-                                           nodeEdges);
-        }
     }
 
     @Override
@@ -314,4 +293,26 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
             return MutableGraphImpl.this.getNode(primaryKey);
         }
     }
+
+    /**
+     * A class used to build a graph.
+     */
+    public static class Builder<T> extends AbstractGraphBuilder<T> implements
+        GraphBuilder<T> {
+
+        public Builder(GraphMetadata metadata) {
+            super(metadata);
+        }
+
+        @Override
+        protected Graph<T>
+            constructGraph(GraphMetadata metadata,
+                           TObjectIntHashMap<NodeID<T>> nodeIndex,
+                           List<NodeID<T>> nodes,
+                           List<TLongArrayList[]> nodeEdges) {
+            return new MutableGraphImpl<T>(metadata, nodeIndex, nodes,
+                                           nodeEdges);
+        }
+    }
+
 }

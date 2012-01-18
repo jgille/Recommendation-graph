@@ -7,8 +7,6 @@ import recng.recommendations.domain.ImmutableProduct;
  *
  * @author jon
  *
- * @param <K>
- *            The generic type of the product IDs.
  */
 public interface ProductFilter {
 

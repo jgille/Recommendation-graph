@@ -8,6 +8,12 @@ import org.junit.Test;
 import recng.db.KVStore;
 import recng.db.nio.ByteBufferKVStore;
 
+/**
+ * Tests {@link ByteBufferKVStore}.
+ * 
+ * @author jon
+ * 
+ */
 public class TestByteBufferKVStore {
 
     @Test

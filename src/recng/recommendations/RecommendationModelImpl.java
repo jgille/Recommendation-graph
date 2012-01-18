@@ -201,7 +201,6 @@ public class RecommendationModelImpl<T> implements RecommendationModel {
     private void setRepeatedProductProperty(Product product,
                                             FieldMetadata field,
                                             Object value) {
-        FieldMetadata.Type type = field.getType();
         String key = field.getFieldName();
         List<Object> valueList = implicitCast(value);
         product.setRepeatedProperties(key, valueList);

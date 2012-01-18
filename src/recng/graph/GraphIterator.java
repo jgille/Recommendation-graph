@@ -20,6 +20,7 @@ import java.util.Set;
  */
 public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
 
+    // Start node
     private final GraphNode<T> sourceNode;
     // Current out edges
     private Iterator<TraversableGraphEdge<T>> edges;

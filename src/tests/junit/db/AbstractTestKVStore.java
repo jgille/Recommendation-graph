@@ -5,6 +5,12 @@ import org.junit.Test;
 
 import recng.db.KVStore;
 
+/**
+ * Base class for testing {@link KVStore}s.
+ * 
+ * @author jon
+ * 
+ */
 public abstract class AbstractTestKVStore {
 
     protected abstract KVStore<String, String> getKVStore();

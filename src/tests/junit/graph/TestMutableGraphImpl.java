@@ -11,6 +11,12 @@ import recng.recommendations.graph.RecommendationType;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+/**
+ * Tests {@link MutableGraphImpl}.
+ * 
+ * @author jon
+ * 
+ */
 public class TestMutableGraphImpl {
 
     private static final RecommendationType EDGE_TYPE =
@@ -19,6 +25,7 @@ public class TestMutableGraphImpl {
     private static final GraphMetadata GRAPH_METADATA =
         RecommendationGraphMetadata.getInstance();
 
+    @SuppressWarnings("unchecked")
     private static final List<NodeID<Integer>> NODES =
         Arrays.<NodeID<Integer>> asList(new ProductID<Integer>(0),
                                         new ProductID<Integer>(1),
@@ -57,6 +64,7 @@ public class TestMutableGraphImpl {
         assertEquals(14, graph.edgeCount());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testEdgeFilter() {
         MutableGraph<Integer> graph = buildGraph();
@@ -76,6 +84,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSimpleTraversal() {
         Graph<Integer> graph = buildGraph();
@@ -109,6 +118,7 @@ public class TestMutableGraphImpl {
         assertTrue(exception);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxReturnedEdges() {
         Graph<Integer> graph = buildGraph();
@@ -122,6 +132,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxTravesredEdges() {
         Graph<Integer> graph = buildGraph();
@@ -135,6 +146,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testMaxDepth() {
         Graph<Integer> graph = buildGraph();
@@ -149,6 +161,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCombination() {
         Graph<Integer> graph = buildGraph();
@@ -170,6 +183,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testAddEdge() {
         MutableGraph<Integer> graph = buildGraph();
@@ -209,6 +223,7 @@ public class TestMutableGraphImpl {
         assertTrue(exception);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testUpdateEdge() {
         MutableGraph<Integer> graph = buildGraph();
@@ -253,6 +268,7 @@ public class TestMutableGraphImpl {
         assertTrue(exception);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testRemoveEdge() {
         MutableGraph<Integer> graph = buildGraph();
@@ -267,6 +283,7 @@ public class TestMutableGraphImpl {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testSetEdges() {
         MutableGraph<Integer> graph = buildGraph();

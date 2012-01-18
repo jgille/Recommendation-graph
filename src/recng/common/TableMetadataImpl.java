@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Metadata for a fixed set of fields.
- *
+ * Metadata for a table with a fixed set of fields.
+ * 
  * @author Jon Ivmark
  */
 public class TableMetadataImpl implements TableMetadata {

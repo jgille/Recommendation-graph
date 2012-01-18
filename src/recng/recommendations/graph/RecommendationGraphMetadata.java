@@ -11,13 +11,21 @@ import recng.graph.GraphMetadataImpl;
 import recng.graph.NodeType;
 import recng.recommendations.domain.ProductNodeType;
 
+/**
+ * Metadata for a recommendation graph.
+ *
+ * @author jon
+ *
+ */
 public class RecommendationGraphMetadata extends GraphMetadataImpl implements
     GraphMetadata {
 
     private static final Set<NodeType> NODE_TYPES =
         Collections.<NodeType> singleton(ProductNodeType.getInstance());
+
     private static final Set<EdgeType> EDGE_TYPES =
         new LinkedHashSet<EdgeType>(EnumSet.allOf(RecommendationType.class));
+
     private static final GraphMetadata INSTANCE =
         new RecommendationGraphMetadata(NODE_TYPES, EDGE_TYPES);
 

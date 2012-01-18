@@ -4,6 +4,12 @@ import recng.common.BinPropertyContainer;
 import recng.common.TableMetadata;
 import recng.common.PropertyContainer;
 
+/**
+ * Tests {@link BinPropertyContainer}.
+ * 
+ * @author jon
+ * 
+ */
 public class TestBinPropertyContainer extends
     AbstractTestPropertyContainer {
 

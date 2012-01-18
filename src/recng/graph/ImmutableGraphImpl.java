@@ -20,6 +20,7 @@ public class ImmutableGraphImpl<T> implements ImmutableGraph<T> {
     private final TObjectIntHashMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph */
     private final List<Node> nodes;
+    /** Metadata about this graph. */
     private final GraphMetadata metadata;
 
     private ImmutableGraphImpl(GraphMetadata metadata,

@@ -11,7 +11,13 @@ import recng.index.PrefixLongSuffixID;
 import recng.index.StringIDs;
 import recng.index.UTF8StringID;
 
-public class TestStringKeys {
+/**
+ * Tests {@link StringIDs}.
+ * 
+ * @author jon
+ * 
+ */
+public class TestStringIDs {
 
     @Test
     public void testIntKey() {

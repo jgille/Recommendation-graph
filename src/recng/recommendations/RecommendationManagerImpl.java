@@ -85,10 +85,8 @@ public class RecommendationManagerImpl implements RecommendationManager {
         return new ProductFilter() {
             @Override
             public boolean accepts(ImmutableProduct product) {
-                Double price;
-                String name;
-                return (price = (Double) product.getProperty("Price")) < 0
-                    && (price = (Double) product.getProperty("Price")) <= 30;
+                return (Double) product.getProperty("Price") > 10
+                    && (Double) product.getProperty("Price") <= 30;
             }
         };
     }

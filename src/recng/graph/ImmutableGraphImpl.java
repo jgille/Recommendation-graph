@@ -84,6 +84,8 @@ public class ImmutableGraphImpl<T> implements ImmutableGraph<T> {
     public TraverserBuilder<T> prepareTraversal(NodeID<T> source,
                                                 EdgeType edgeType) {
         int index = getNodeIndex(source);
+        if (index < 0)
+            return null;
         return new TraverserBuilderImpl<T>(getNode(index), edgeType);
     }
 

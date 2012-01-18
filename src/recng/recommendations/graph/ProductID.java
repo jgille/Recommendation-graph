@@ -1,6 +1,7 @@
-package recng.recommendations;
+package recng.recommendations.graph;
 
 import recng.graph.NodeID;
+import recng.recommendations.domain.ProductNodeType;
 
 /**
  * Represent the ID of a product node in a graph.

@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import recng.graph.*;
-import recng.recommendations.ProductID;
-import recng.recommendations.RecommendationGraphMetadata;
-import recng.recommendations.RecommendationType;
+import recng.recommendations.graph.ProductID;
+import recng.recommendations.graph.RecommendationGraphMetadata;
+import recng.recommendations.graph.RecommendationType;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
 public class TestMutableGraphImpl {
 
     private static final RecommendationType EDGE_TYPE =

@@ -1,8 +1,6 @@
 package recng.recommendations.filter;
 
-import java.util.Set;
-
-import recng.recommendations.ImmutableProduct;
+import recng.recommendations.domain.ImmutableProduct;
 
 /**
  * A product filter used to filter product from a recommnedation.
@@ -19,9 +17,4 @@ public interface ProductFilter {
      * filter.
      */
     boolean accepts(ImmutableProduct product);
-
-    /**
-     * Gets the set of property names that this filter uses.
-     */
-    Set<String> getFilterProperties();
 }

@@ -1,4 +1,4 @@
-package recng.recommendations;
+package recng.recommendations.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,14 +6,14 @@ import java.util.List;
 /**
  * An immutable representation of a product, delegating gets to a wrapped
  * {@link Product}.
- * 
+ *
  * NOTE: This instance is immutable in that it contains no methods that modifies
  * it. The wrapped product can still be modified though, which will take affect
  * here as well. If the get methods of this class returns mutable values, the
  * result of modifying these values is undefined.
  *
  * @author jon
- * 
+ *
  */
 public class ImmutableProductImpl implements ImmutableProduct {
 
@@ -59,5 +59,10 @@ public class ImmutableProductImpl implements ImmutableProduct {
     @Override
     public boolean containsProperty(String key) {
         return product.containsProperty(key);
+    }
+
+    @Override
+    public String toString() {
+        return product.toString();
     }
 }

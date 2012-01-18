@@ -3,7 +3,6 @@ package tests.junit.recommendations;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,16 +24,16 @@ import recng.graph.NodeID;
 import recng.index.ID;
 import recng.index.StringIDs;
 import recng.recommendations.IDFactory;
-import recng.recommendations.ImmutableProduct;
-import recng.recommendations.ProductID;
-import recng.recommendations.ProductDataStore;
-import recng.recommendations.ProductDataStoreImpl;
 import recng.recommendations.ProductQuery;
-import recng.recommendations.RecommendationGraphMetadata;
 import recng.recommendations.RecommendationModel;
 import recng.recommendations.RecommendationModelImpl;
-import recng.recommendations.RecommendationType;
+import recng.recommendations.data.DataStore;
+import recng.recommendations.data.DataStoreImpl;
+import recng.recommendations.domain.ImmutableProduct;
 import recng.recommendations.filter.ProductFilter;
+import recng.recommendations.graph.ProductID;
+import recng.recommendations.graph.RecommendationGraphMetadata;
+import recng.recommendations.graph.RecommendationType;
 
 public class TestRecommendationModelImpl {
 
@@ -94,7 +93,7 @@ public class TestRecommendationModelImpl {
         return builder.build();
     }
 
-    private ProductDataStore createMetadata() {
+    private DataStore createMetadata() {
         KVStore<String, Map<String, Object>> db =
             new InMemoryKVStore<String, Map<String, Object>>();
         Map<String, Object> p1 = new HashMap<String, Object>();
@@ -141,12 +140,12 @@ public class TestRecommendationModelImpl {
         TableMetadata fs =
             new TableMetadataImpl.Builder().add(name).add(index).add(categories)
                 .add(isValid).build();
-        return new ProductDataStoreImpl(db, fs);
+        return new DataStoreImpl(db, fs);
     }
 
     private RecommendationModel getModel() {
         Graph<ID<String>> productGraph = buildGraph();
-        ProductDataStore productMetadata = createMetadata();
+        DataStore productMetadata = createMetadata();
         return new RecommendationModelImpl<ID<String>>(productGraph,
                                                         productMetadata,
                                                         KP);
@@ -186,11 +185,8 @@ public class TestRecommendationModelImpl {
 
         };
         RecommendationModel model = getModel();
-        Set<String> properties = new HashSet<String>();
-        properties.add("name");
-        properties.add("index");
         List<ImmutableProduct> related =
-            model.getRelatedProducts(N1.getID().getID(), query, properties);
+            model.getRelatedProducts(N1.getID().getID(), query);
 
         assertNotNull(related);
         assertEquals(2, related.size());

@@ -29,7 +29,7 @@ public class LRUCache<K, V> implements Cache<K, V> {
 
     /**
      * Constructs a new cache.
-     * 
+     *
      * @param maxSize
      *            The maximum number of elements in the cache.
      * @param maxWeight

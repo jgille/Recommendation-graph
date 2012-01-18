@@ -1,4 +1,4 @@
-package recng.recommendations;
+package recng.recommendations.domain;
 
 import recng.graph.NodeType;
 import recng.graph.NodeTypeImpl;

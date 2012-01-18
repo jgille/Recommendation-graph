@@ -1,4 +1,4 @@
-package recng.recommendations;
+package recng.recommendations.graph;
 
 import recng.graph.EdgeType;
 

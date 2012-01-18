@@ -1,7 +1,7 @@
 package tests.junit.graph;
 
 import recng.graph.*;
-import recng.recommendations.RecommendationGraphMetadata;
+import recng.recommendations.graph.RecommendationGraphMetadata;
 
 public class TestGraphImpl extends AbstractTestGraph {
 

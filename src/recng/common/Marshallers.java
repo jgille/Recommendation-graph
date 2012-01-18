@@ -83,6 +83,8 @@ public class Marshallers {
 
             /* Note that this has to be synchronized due to the SDF. */
         public synchronized Date parse(String s) {
+                if (s == null || s.isEmpty())
+                    return null;
                 try {
                     return DF.parse(s);
                 } catch (ParseException e) {
@@ -101,7 +103,7 @@ public class Marshallers {
             return ByteBuffer.wrap(bytes).getFloat();
         }
         public Float parse(String s) {
-            return Float.valueOf(s);
+                return Float.valueOf(s);
         }
     };
 
@@ -114,7 +116,7 @@ public class Marshallers {
             return ByteBuffer.wrap(bytes).getDouble();
         }
         public Double parse(String s) {
-            return Double.valueOf(s);
+                return Double.valueOf(s);
         }
     };
 

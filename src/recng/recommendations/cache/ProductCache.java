@@ -1,4 +1,6 @@
-package recng.recommendations;
+package recng.recommendations.cache;
+
+import recng.recommendations.domain.Product;
 
 /**
  * Cached product data.
@@ -16,6 +18,8 @@ public interface ProductCache<K> {
      */
     Product getProduct(K productId);
 
+    boolean contains(K productId);
+
     /**
      * Caches product properties.
      */
@@ -30,4 +34,6 @@ public interface ProductCache<K> {
      * Removed a product from the cache.
      */
     void remove(K productId);
+
+    int size();
 }

@@ -22,7 +22,6 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
     private final Map<Integer, NodeType> nodeTypes =
         new HashMap<Integer, NodeType>();
 
-
     /**
      * Avoid using different instances for equivalent keys
      */
@@ -52,51 +51,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
         try {
             fr = new FileReader(file);
             br = new BufferedReader(fr);
-            String line = null;
-            int nodeCount = 0;
-            int edgeCount = 0;
-            while ((line = br.readLine()) != null) {
-                if (line.isEmpty() || line.startsWith("#"))
-                    continue;
-                String[] fields = line.split(";");
-                if (fields.length == 3) {
-                    int i = 0;
-                    int index = Integer.parseInt(fields[i++]);
-                    String node = fields[i++];
-                    int type = Integer.parseInt(fields[i++]);
-                    NodeType nodeType = nodeTypes.get(type);
-                    if (nodeType == null)
-                        throw new IllegalArgumentException(
-                                                           "Illegal node type for line: "
-                                                               + line);
-
-                    int nodeIndex = builder.addNode(getNodeID(node, nodeType));
-                    if (nodeIndex != index)
-                        throw new IllegalStateException("Invalid node index: " +
-                            index);
-                    if (nodeCount % 10000 == 0)
-                        System.out.println("Imported " + nodeCount + " nodes");
-                    nodeCount++;
-
-                } else if (fields.length == 4) {
-                    int i = 0;
-                    int startNode = Integer.parseInt(fields[i++]);
-                    int endNode = Integer.parseInt(fields[i++]);
-                    int edgeTypeOrdinal = Integer.parseInt(fields[i++]);
-                    EdgeType edgeType = edgeTypes.get(edgeTypeOrdinal);
-                    if (edgeType == null)
-                        throw new IllegalArgumentException(
-                                                           "Illegal edge type for line: "
-                                                               + line);
-                    float weight =
-                        fields.length > i ? Float.parseFloat(fields[i++]) : -1f;
-                    builder.addEdge(startNode, endNode, edgeType,
-                                    weight);
-                    if (edgeCount % 10000 == 0)
-                        System.out.println("Imported " + edgeCount + " edges");
-                    edgeCount++;
-                }
-            }
+            importCSV(br);
         } finally {
             if (br != null)
                 br.close();
@@ -104,6 +59,58 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
                 fr.close();
         }
         return builder.build();
+    }
+
+    private void importCSV(BufferedReader br) throws IOException {
+
+        String line = null;
+        int nodeCount = 0;
+        int edgeCount = 0;
+        while ((line = br.readLine()) != null) {
+            if (line.isEmpty() || line.startsWith("#"))
+                continue;
+            String[] fields = line.split(";");
+            if (fields.length == 3) {
+                importNode(fields);
+                nodeCount++;
+                if (nodeCount % 10000 == 0)
+                    System.out.println("Imported " + nodeCount + " nodes");
+            } else if (fields.length == 4) {
+                importEdge(fields);
+                edgeCount++;
+                if (edgeCount % 100000 == 0)
+                    System.out.println("Imported " + edgeCount + " edges");
+            }
+        }
+    }
+
+    private void importNode(String[] fields) {
+        int i = 0;
+        int index = Integer.parseInt(fields[i++]);
+        String node = fields[i++];
+        int type = Integer.parseInt(fields[i++]);
+        NodeType nodeType = nodeTypes.get(type);
+        if (nodeType == null)
+            throw new IllegalArgumentException("Illegal node type : " + type);
+
+        int nodeIndex = builder.addNode(getNodeID(node, nodeType));
+        if (nodeIndex != index)
+            throw new IllegalStateException("Invalid node index: " + index);
+    }
+
+    private void importEdge(String[] fields) {
+        int i = 0;
+        int startNode = Integer.parseInt(fields[i++]);
+        int endNode = Integer.parseInt(fields[i++]);
+        int edgeTypeOrdinal = Integer.parseInt(fields[i++]);
+        EdgeType edgeType = edgeTypes.get(edgeTypeOrdinal);
+        if (edgeType == null)
+            throw new IllegalArgumentException("Illegal edge type for line: "
+                + edgeTypeOrdinal);
+        float weight =
+            fields.length > i ? Float.parseFloat(fields[i++]) : -1f;
+        builder.addEdge(startNode, endNode, edgeType,
+                        weight);
     }
 
     private NodeID<T> getNodeID(String id, NodeType nodeType) {
@@ -115,7 +122,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
     }
 
     /**
-     * Creates a node key from a string.
+     * Creates a node id from a string id and a node type.
      *
      */
     protected abstract NodeID<T> getNodeKey(String id, NodeType nodeType);

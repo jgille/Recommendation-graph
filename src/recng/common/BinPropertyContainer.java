@@ -180,7 +180,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
         if (index < 0)
             return -1;
         // Zero out everything but the lenght
-        int length = (int)(index & 0x0fff);
+        int length = (int) (index & 0xfffff);
         return length;
     }
 
@@ -328,7 +328,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
     }
 
     /*
-     * Marshalls a byte array in to a list of objects.
+     * Marshalls a byte array into a list of objects.
      */
     private <V> List<V> fromBytes(String fieldName, byte[] data) {
         if (data == null)

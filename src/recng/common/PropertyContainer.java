@@ -40,16 +40,16 @@ public interface PropertyContainer {
     /**
      * Gets a repeated property, i.e. a property list, by it's key.
      *
-     * NOTE: This will throw a CCE if the found value can not be cast to a list
-     * of the provided generic type.
+     * NOTE: This will throw a CCE if the found values can not be cast to
+     * the provided generic type.
      */
     <V> List<V> getRepeatedProperties(String key);
 
     /**
      * Sets a repeated property, i.e. a property list, for a key.
      *
-     * NOTE: This will throw a CCE if the found value can not be cast to a list
-     * of the provided generic type.
+     * NOTE: This will throw a CCE if the found values can not be cast to
+     * the provided generic type.
      */
     <V> List<V> setRepeatedProperties(String key, List<V> values);
 

@@ -38,7 +38,7 @@ public abstract class AbstractGraphNode<T> implements GraphNode<T> {
      * The end node is in the last 4 bytes of the out edge.
      */
     protected static int getEndNodeIndex(long edge) {
-        return (int) (edge & 0xffff);
+        return (int) (edge & 0x7fffffff);
     }
 
     /**

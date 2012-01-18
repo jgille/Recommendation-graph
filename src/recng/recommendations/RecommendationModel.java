@@ -1,7 +1,7 @@
 package recng.recommendations;
 
 import java.util.List;
-import java.util.Set;
+import recng.recommendations.domain.ImmutableProduct;
 
 /**
  * Methods for making product recommendations.
@@ -19,21 +19,24 @@ public interface RecommendationModel {
      *            The source product
      * @param query
      *            The rules to follow when getting related products
-     * @param properties
-     *            The set of properties to include for the returned products
      */
     List<ImmutableProduct> getRelatedProducts(String sourceProduct,
-                                              ProductQuery query,
-                                              Set<String> properties);
+                                              ProductQuery query);
 
     /**
      * Gets a product based on it's id.
      *
      * @param id
      *            The product id
-     * @param properties
-     *            The set of properties to get for the product
      * @return The product with the specified properties.
      */
-    ImmutableProduct getProduct(String id, Set<String> properties);
+    ImmutableProduct getProduct(String id);
+
+    /**
+     * Gets the status of this model, i.e. the number of products in the graph,
+     * cache hit percentage, filter percentage etc.
+     *
+     * @return
+     */
+    String getStatusString();
 }

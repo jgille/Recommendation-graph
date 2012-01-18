@@ -36,4 +36,11 @@ public interface Cache<K, V> {
      * Removes all entries from the cache.
      */
     void clear();
+
+    /**
+     * Gets the size in bytes of this cache- A negative value means unknown.
+     * 
+     * @return
+     */
+    long getWeight();
 }

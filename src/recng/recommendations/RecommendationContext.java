@@ -10,6 +10,8 @@ import recng.graph.NodeID;
 import recng.graph.NodeType;
 import recng.index.ID;
 import recng.index.StringIDs;
+import recng.recommendations.data.DataStore;
+import recng.recommendations.graph.RecommendationGraphMetadata;
 
 public class RecommendationContext {
 
@@ -31,7 +33,7 @@ public class RecommendationContext {
     }
 
     public static synchronized void setup(String productGraphFile,
-                                          ProductDataStore productData) {
+                                          DataStore productData) {
         if (INSTANCE != null)
             throw new RuntimeException("Already set up");
         IDFactory<ID<String>> keyParser =
@@ -51,8 +53,8 @@ public class RecommendationContext {
             importProductGraph(productGraphFile, keyParser);
         RecommendationModel model =
             new RecommendationModelImpl<ID<String>>(productGraph,
-                                                     productData,
-                                                     keyParser);
+                                                    productData,
+                                                    keyParser);
         INSTANCE = new RecommendationContext(model);
     }
 

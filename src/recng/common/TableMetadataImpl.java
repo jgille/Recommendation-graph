@@ -12,33 +12,48 @@ import java.util.Set;
  * @author Jon Ivmark
  */
 public class TableMetadataImpl implements TableMetadata {
-    private final Map<String, FM> fields;
+    private final Map<String, FM> field2FieldMetadata;
+    private final Map<Integer, FieldMetadata<?>> ordinal2FieldMetadata;
 
     private TableMetadataImpl(Map<String, FM> fields) {
-        this.fields = Collections.unmodifiableMap(fields);
+        this.field2FieldMetadata = Collections.unmodifiableMap(fields);
+        this.ordinal2FieldMetadata = new HashMap<Integer, FieldMetadata<?>>();
+        for (FM fm : fields.values())
+            ordinal2FieldMetadata.put(fm.ordinal, fm.metadata);
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> FieldMetadata<T> getFieldMetadata(String fieldName) {
         return (FieldMetadata<T>) getFM(fieldName).getFieldMetadata();
     }
 
-    public boolean contains(String fieldName) {
-        return fields.containsKey(fieldName);
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> FieldMetadata<T> getFieldMetadata(int ordinal) {
+        return (FieldMetadata<T>) ordinal2FieldMetadata.get(ordinal);
     }
 
+    @Override
+    public boolean contains(String fieldName) {
+        return field2FieldMetadata.containsKey(fieldName);
+    }
+
+    @Override
     public FieldMetadata.Type typeOf(String fieldName) {
         return getFM(fieldName).getFieldMetadata().getType();
     }
 
+    @Override
     public Set<String> getFields() {
-        return new HashSet<String>(fields.keySet());
+        return new HashSet<String>(field2FieldMetadata.keySet());
     }
 
     /**
      * The ordinal will be the position at which this field was created,
      * insertion order is kept.
      */
+    @Override
     public int ordinal(String fieldName) {
         if (!contains(fieldName))
             throw new IllegalArgumentException("Unknown field name: "
@@ -50,29 +65,30 @@ public class TableMetadataImpl implements TableMetadata {
         if (!contains(fieldName))
             throw new IllegalArgumentException("Unknown field name: "
                 + fieldName);
-        return fields.get(fieldName);
+        return field2FieldMetadata.get(fieldName);
     }
 
+    @Override
     public int size() {
-        return fields.size();
+        return field2FieldMetadata.size();
     }
 
     /**
      * Util class keeping track of a {@link FieldMetadata} instance and it's
      * ordinal.
-     * 
+     *
      */
     private static class FM {
-        private final FieldMetadata<?> fm;
+        private final FieldMetadata<?> metadata;
         private final int ordinal;
 
-        public FM(FieldMetadata<?> fm, int ordinal) {
-            this.fm = fm;
+        public FM(FieldMetadata<?> metadata, int ordinal) {
+            this.metadata = metadata;
             this.ordinal = ordinal;
         }
 
         public FieldMetadata<?> getFieldMetadata() {
-            return fm;
+            return metadata;
         }
 
         public int ordinal() {

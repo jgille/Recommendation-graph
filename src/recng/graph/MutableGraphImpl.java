@@ -92,6 +92,8 @@ public class MutableGraphImpl<T> implements MutableGraph<T> {
 
         int index = getPrimaryKey(source);
         MutableGraphNode<T> startNode = getNode(index);
+        if (startNode == null)
+            return null;
         return new TraverserBuilderImpl<T>(startNode, edgeType);
     }
 

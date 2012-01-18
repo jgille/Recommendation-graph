@@ -2,7 +2,7 @@ package tests.misc;
 
 import recng.graph.*;
 import recng.index.*;
-import recng.recommendations.RecommendationGraphMetadata;
+import recng.recommendations.graph.RecommendationGraphMetadata;
 
 public class TestMutableGraphImporter {
 

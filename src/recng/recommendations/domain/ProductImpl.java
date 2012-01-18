@@ -1,4 +1,4 @@
-package recng.recommendations;
+package recng.recommendations.domain;
 
 import java.util.List;
 import java.util.Set;
@@ -32,14 +32,14 @@ public class ProductImpl implements Product {
      */
     public ProductImpl(String id, boolean isValid, TableMetadata fields) {
         this.id = id;
-        this.properties = new BinPropertyContainer(fields, true);
+        this.properties = new BinPropertyContainer(fields, false);
         setIsValid(isValid);
     }
 
     @Override
     public boolean isValid() {
         Boolean isValid = properties.getProperty(IS_VALID_PROPERTY);
-        return isValid != null && isValid.booleanValue();
+        return isValid == null || isValid.booleanValue();
     }
 
     @Override

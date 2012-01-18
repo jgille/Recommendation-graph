@@ -1,4 +1,4 @@
-package recng.recommendations;
+package recng.recommendations.graph;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -9,6 +9,7 @@ import recng.graph.EdgeType;
 import recng.graph.GraphMetadata;
 import recng.graph.GraphMetadataImpl;
 import recng.graph.NodeType;
+import recng.recommendations.domain.ProductNodeType;
 
 public class RecommendationGraphMetadata extends GraphMetadataImpl implements
     GraphMetadata {

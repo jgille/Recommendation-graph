@@ -8,10 +8,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import recng.graph.*;
-import recng.recommendations.ProductNodeType;
-import recng.recommendations.RecommendationType;
+import recng.recommendations.domain.ProductNodeType;
+import recng.recommendations.graph.RecommendationType;
 
-@SuppressWarnings("unchecked")
 public abstract class AbstractTestGraph {
 
     private static final RecommendationType EDGE_TYPE = RecommendationType.PEOPLE_WHO_BOUGHT;

@@ -1,6 +1,7 @@
-package recng.recommendations;
+package recng.recommendations.cache;
 
 import recng.cache.Cache;
+import recng.recommendations.domain.Product;
 
 /**
  * A class containing cached product data.
@@ -36,5 +37,15 @@ public class ProductCacheImpl<K> implements ProductCache<K> {
 
     public void remove(K productId) {
         cache.evict(productId);
+    }
+
+    @Override
+    public boolean contains(K productId) {
+        return cache.contains(productId);
+    }
+
+    @Override
+    public int size() {
+        return cache.size();
     }
 }

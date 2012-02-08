@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.avail.emark</groupId>
+	<artifactId>rec-graph</artifactId>
+	<version>0.2.0-SNAPSHOT</version>
+	<name>eMark</name>
+	<url>http://www.avail.net/</url>
+	<inceptionYear>2012</inceptionYear>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java-version>1.6</java-version>
+	</properties>
+	
+	<repositories> 
+		<repository> 
+		    <id>orientechnologies-repository</id> 
+  		  	<name>Orient Technologies Maven2 Repository</name> 
+  			<url>http://www.orientechnologies.com/listing/m2</url> 
+  			<snapshots> 
+    			<enabled>true</enabled> 
+    			<updatePolicy>always</updatePolicy> 
+  			</snapshots> 
+		</repository>
+	</repositories> 
+	
+	<dependencies>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Data structures -->
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+
+		<!-- Mongo -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.7.2</version>
+		</dependency>
+
+
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- CSV support -->
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.0</version>
+		</dependency>
+		
+		<!-- H2, Java SQL database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.162</version>
+		</dependency>
+		
+		<!-- Orient, Java embedded database -->
+		<dependency>
+		   <groupId>com.orientechnologies</groupId>
+ 			<artifactId>orient-commons</artifactId>
+ 			<version>1.0rc7</version>
+		</dependency>
+
+		<dependency>
+ 			<groupId>com.orientechnologies</groupId>
+ 			<artifactId>orientdb-core</artifactId>
+ 			<version>1.0rc7</version>
+		</dependency>
+		
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.1</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>core</artifactId>
+			<version>2.5.2</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/ApacheJMeter_core.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jmeter</groupId>
+			<artifactId>java</artifactId>
+			<version>2.5.2</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/ApacheJMeter_java.jar</systemPath>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<includes>
+						<include>**/Test*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install</id>
+						<phase>install</phase>
+						<goals>
+							<goal>sources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
+				<configuration> <archive> <manifest> <addClasspath>true</addClasspath> <classpathPrefix>lib/</classpathPrefix> 
+				<mainClass>net.avail.emark.eMarketingSuite</mainClass> </manifest> <manifestEntries> 
+				<Title>The eMark Suite</Title> <Version>${project.version}</Version> <Vendor>Avail 
+				Intelligence AB</Vendor> </manifestEntries> </archive> </configuration> </plugin> -->
+		</plugins>
+	</build>
+
+
+
+	<scm>
+		<url>scm:git:ssh://repo.labs.avail.net:/var/git/java</url>
+	</scm>
+</project>

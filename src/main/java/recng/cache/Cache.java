@@ -2,7 +2,7 @@ package recng.cache;
 
 /**
  * Classes used to store cached values should implement this interface.
- *
+ * 
  * @author Jon Ivmark
  */
 public interface Cache<K, V> {

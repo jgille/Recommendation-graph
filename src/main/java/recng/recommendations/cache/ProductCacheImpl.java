@@ -48,4 +48,9 @@ public class ProductCacheImpl<K> implements ProductCache<K> {
     public int size() {
         return cache.size();
     }
+
+    @Override
+    public String toString() {
+        return "ProductCacheImpl [cache=" + cache + "]";
+    }
 }

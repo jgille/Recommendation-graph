@@ -4,9 +4,9 @@ import recng.recommendations.domain.Product;
 
 /**
  * Cached product data.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <K>
  *            The generic type of the keys in this cache
  */

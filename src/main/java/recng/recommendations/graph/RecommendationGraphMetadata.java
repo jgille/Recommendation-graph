@@ -13,9 +13,9 @@ import recng.recommendations.domain.RecommendationNodeType;
 
 /**
  * Metadata for a recommendation graph.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class RecommendationGraphMetadata extends GraphMetadataImpl implements
     GraphMetadata {

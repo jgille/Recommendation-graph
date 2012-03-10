@@ -4,73 +4,69 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
-import gnu.trove.TIntCollection;
-import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
+import org.apache.mahout.math.list.IntArrayList;
+import org.apache.mahout.math.map.AbstractObjectIntMap;
+import org.apache.mahout.math.map.OpenObjectIntHashMap;
+import org.apache.mahout.math.set.AbstractIntSet;
+import org.apache.mahout.math.set.OpenIntHashSet;
 
 import recng.predictor.PredictorBaseData;
 import recng.recommendations.domain.RecommendationNodeType;
 
 /**
  * Prediction base data stored in a graph.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class GraphPredictorBaseData implements PredictorBaseData {
 
-    private final TObjectIntHashMap<String> productIndex;
-    private final TObjectIntHashMap<String> userIndex;
-    private final TObjectIntHashMap<String> sessionIndex;
+    private final AbstractObjectIntMap<String> productIndex;
+    private final AbstractObjectIntMap<String> userIndex;
+    private final AbstractObjectIntMap<String> sessionIndex;
     private final List<Node> nodes;
-    private final boolean filterDuplicates;
 
     /**
      * Constructs an empty {@link GraphPredictorBaseData}.
-     *
-     * @param filterDuplicates
-     *            True if duplicated bought/viewed products for a user/session
-     *            should be ignored.
      */
-    public GraphPredictorBaseData(boolean filterDuplicates) {
-        this.filterDuplicates = filterDuplicates;
-        this.productIndex = new TObjectIntHashMap<String>(10000);
-        this.userIndex = new TObjectIntHashMap<String>(50000);
-        this.sessionIndex = new TObjectIntHashMap<String>(50000);
+    public GraphPredictorBaseData() {
+        this.productIndex = new OpenObjectIntHashMap<String>(10000);
+        this.userIndex = new OpenObjectIntHashMap<String>(50000);
+        this.sessionIndex = new OpenObjectIntHashMap<String>(50000);
         this.nodes = new ArrayList<Node>(100000);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.format("%s, %s, %s", productIndex.size(),
                              userIndex.size(), sessionIndex.size());
     }
 
     @Override
-    public TIntCollection getAllProducts() {
-        return productIndex.valueCollection();
+    public IntArrayList getAllProducts() {
+        return productIndex.values();
     }
 
     @Override
-    public TIntCollection getBuyers(int productID) {
+    public AbstractIntSet getBuyers(int productID) {
         Node node = getNode(productID);
         return node.getNeighbors(RecommendationNodeType.USER);
     }
 
     @Override
-    public TIntCollection getViewers(int productID) {
+    public AbstractIntSet getViewers(int productID) {
         Node node = getNode(productID);
         return node.getNeighbors(RecommendationNodeType.SESSION);
     }
 
     @Override
-    public TIntCollection getPurchasedProducts(int userID) {
+    public AbstractIntSet getPurchasedProducts(int userID) {
         Node node = getNode(userID);
         return node.getNeighbors(RecommendationNodeType.PRODUCT);
     }
 
     @Override
-    public TIntCollection getViewedProducts(int sessionID) {
+    public AbstractIntSet getViewedProducts(int sessionID) {
         Node node = getNode(sessionID);
         return node.getNeighbors(RecommendationNodeType.PRODUCT);
     }
@@ -131,7 +127,7 @@ public class GraphPredictorBaseData implements PredictorBaseData {
     }
 
     private int addOrGetProduct(String product) {
-        if (!productIndex.contains(product)) {
+        if (!productIndex.containsKey(product)) {
             int index = addNode(RecommendationNodeType.PRODUCT, product);
             productIndex.put(product, index);
             return index;
@@ -140,7 +136,7 @@ public class GraphPredictorBaseData implements PredictorBaseData {
     }
 
     private int addOrGetUser(String user) {
-        if (!userIndex.contains(user)) {
+        if (!userIndex.containsKey(user)) {
             int index = addNode(RecommendationNodeType.USER, user);
             userIndex.put(user, index);
             return index;
@@ -149,7 +145,7 @@ public class GraphPredictorBaseData implements PredictorBaseData {
     }
 
     private int addOrGetSession(String session) {
-        if (!sessionIndex.contains(session)) {
+        if (!sessionIndex.containsKey(session)) {
             int index = addNode(RecommendationNodeType.SESSION, session);
             sessionIndex.put(session, index);
             return index;
@@ -158,7 +154,7 @@ public class GraphPredictorBaseData implements PredictorBaseData {
     }
 
     private synchronized int addNode(RecommendationNodeType type, String id) {
-        Node node = new Node(type, id, filterDuplicates);
+        Node node = new Node(type, id);
         int index = nodes.size();
         nodes.add(node);
         return index;
@@ -174,28 +170,24 @@ public class GraphPredictorBaseData implements PredictorBaseData {
 
         private final RecommendationNodeType type;
         private final String id;
-        private final EnumMap<RecommendationNodeType, TIntCollection> edges;
-        private final boolean filterDuplicateNeighbors;
+        private final EnumMap<RecommendationNodeType, AbstractIntSet> edges;
 
-        public Node(RecommendationNodeType type, String id, boolean filterDuplicateNeighbors) {
+        public Node(RecommendationNodeType type, String id) {
             this.type = type;
             this.id = id;
-            this.filterDuplicateNeighbors = filterDuplicateNeighbors;
             Class<RecommendationNodeType> cls = RecommendationNodeType.class;
             this.edges =
-                new EnumMap<RecommendationNodeType, TIntCollection>(cls);
+                new EnumMap<RecommendationNodeType, AbstractIntSet>(cls);
         }
 
-        public TIntCollection getNeighbors(RecommendationNodeType neighborType) {
+        public AbstractIntSet getNeighbors(RecommendationNodeType neighborType) {
             return edges.get(neighborType);
         }
 
         public void addNeighbor(int index, RecommendationNodeType neighborType) {
-            TIntCollection neighbors = edges.get(neighborType);
+            AbstractIntSet neighbors = edges.get(neighborType);
             if (neighbors == null) {
-                neighbors =
-                    filterDuplicateNeighbors ? new TIntHashSet()
-                        : new TIntArrayList();
+                neighbors = new OpenIntHashSet();
                 edges.put(neighborType, neighbors);
             }
             neighbors.add(index);

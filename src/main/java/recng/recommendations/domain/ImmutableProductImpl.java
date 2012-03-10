@@ -17,17 +17,15 @@ import java.util.List;
  */
 public class ImmutableProductImpl implements ImmutableProduct {
 
-    private final String id;
     private final Product product;
 
-    public ImmutableProductImpl(String id, Product product) {
-        this.id = id;
+    public ImmutableProductImpl(Product product) {
         this.product = product;
     }
 
     @Override
-    public String getId() {
-        return id;
+    public String getID() {
+        return product.getID();
     }
 
     @Override

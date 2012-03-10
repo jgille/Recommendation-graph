@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 /**
  * A simple key/value container backed by a HashMap.
- *
+ * 
  * Note that this class is not thread safe.
  * 
  * @author jon
@@ -27,6 +27,7 @@ public class PropertyContainerImpl implements PropertyContainer {
     public Object setProperty(String key, Object value) {
         return properties.put(key, value);
     }
+
     @Override
     public List<String> getKeys() {
         if (properties == null)

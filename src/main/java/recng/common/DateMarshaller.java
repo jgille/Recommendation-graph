@@ -14,11 +14,12 @@ import java.util.Date;
  */
 public class DateMarshaller extends AbstractMarshaller<Date> {
 
+    private final DateFormat dateFormat;
+
     public DateMarshaller(Date defaultValue) {
         super(defaultValue);
+        this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
-
-    public static final DateFormat DF = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public byte[] marshall(Object value) {
@@ -37,7 +38,9 @@ public class DateMarshaller extends AbstractMarshaller<Date> {
         if (s.isEmpty())
             return getDefaultValue();
         try {
-            return DF.parse(s);
+            synchronized (dateFormat) {
+                return dateFormat.parse(s);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
             return null;

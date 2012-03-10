@@ -13,9 +13,9 @@ import recng.index.LongID;
 
 /**
  * Tests IDs matching the {@link LongID} pattern.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestLongKey {
 
@@ -23,13 +23,15 @@ public class TestLongKey {
         return LongID.Parser.getInstance().parse(id);
     }
 
-    @Test public void testGetValue() {
+    @Test
+    public void testGetValue() {
         String id = "1234567891234";
         ID<String> key = getKey(id);
         assertEquals(id, key.getID());
     }
 
-    @Test public void testEquals() {
+    @Test
+    public void testEquals() {
         String id1 = "1234567891234";
         ID<String> key1 = getKey(id1);
         String id2 = "2345783929298";
@@ -44,7 +46,8 @@ public class TestLongKey {
         assertEquals(map.get(key1), id1);
     }
 
-    @Test public void testInvalidId() {
+    @Test
+    public void testInvalidId() {
         IDPattern<String> factory = LongID.Parser.getInstance();
         String id = "abc2";
         assertFalse(factory.matches(id));

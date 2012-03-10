@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 /**
  * A Float marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class FloatMarshaller extends AbstractMarshaller<Float> {
 

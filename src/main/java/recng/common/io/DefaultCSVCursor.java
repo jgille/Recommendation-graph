@@ -16,9 +16,9 @@ import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * A cursor used when reading rows from a csv file.
- *
+ * 
  * @author jon
- *
+ * 
  */
 class DefaultCSVCursor implements CSVCursor<String[]> {
 

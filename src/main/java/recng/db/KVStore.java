@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Classes used as a key/value store (persistent or RAM only) should implement
  * this interface.
- *
+ * 
  * @author Jon Ivmark
  */
 public interface KVStore<K, V> {

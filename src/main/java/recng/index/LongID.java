@@ -11,27 +11,38 @@ import java.util.regex.Pattern;
 public class LongID implements ID<String> {
 
     private final long id;
+    private final int hc;
 
     private LongID(long id) {
         this.id = id;
+        this.hc = computeHashCode();
     }
 
     public String getID() {
         return id + "";
     }
 
-    @Override public boolean equals(Object other) {
-        if(other == null || other.getClass() != getClass())
+    @Override
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (other == null || other.getClass() != getClass())
             return false;
-        LongID key = (LongID)other;
+        LongID key = (LongID) other;
         return id == key.id;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
+        return hc;
+    }
+
+    private int computeHashCode() {
         return Long.valueOf(id).hashCode();
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.valueOf(id);
     }
 

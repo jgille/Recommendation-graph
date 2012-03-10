@@ -3,42 +3,57 @@ package recng.graph;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import recng.common.Consumer;
 
 /**
  * Base class for weighted graphs.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
+ *            The generic type of the node ids.
  */
 abstract class AbstractGraph<T> implements Graph<T> {
 
     private final GraphMetadata metadata;
-    private final GraphStatus status;
+    private final GraphStats status;
 
     public AbstractGraph(GraphMetadata metadata) {
         this.metadata = metadata;
-        this.status = new GraphStatusImpl();
+        this.status = new GraphStatsImpl();
     }
 
     protected abstract List<GraphNode<T>> getNodes();
 
     @Override
-    public void getAllNodes(Consumer<NodeID<T>, Void> consumer) {
+    public void forEachNode(NodeIDProcedure<T> proc) {
         for (GraphNode<T> node : getNodes())
-            consumer.consume(node.getNodeId());
+            proc.apply(node.getNodeId());
     }
 
     @Override
-    public void getNodes(Consumer<NodeID<T>, Void> consumer, NodeType nodeType) {
+    public void forEachNode(NodeIDProcedure<T> proc, NodeType nodeType) {
         for (GraphNode<T> node : getNodes())
-            if (node.getNodeId().getNodeType().equals(nodeType))
-                consumer.consume(node.getNodeId());
+            if (node.getNodeId().getNodeType().equals(nodeType)) {
+                if (!proc.apply(node.getNodeId()))
+                    break;
+            }
     }
 
     @Override
-    public void getAllEdges(Consumer<GraphEdge<T>, Void> consumer) {
+    public void forEachNeighbor(NodeID<T> source, EdgeType edgeType, NodeIDProcedure<T> proc) {
+        if (source == null)
+            throw new IllegalArgumentException("Null source node not allowed");
+        if (edgeType == null)
+            throw new IllegalArgumentException("Null edge type not allowed");
+
+        int index = getPrimaryKey(source);
+        GraphNode<T> startNode = getNode(index);
+        if (startNode != null)
+            startNode.forEachNeighbor(edgeType, proc);
+    }
+
+    @Override
+    public void forEachEdge(GraphEdgeProcedure<T> proc) {
         for (GraphNode<T> node : getNodes()) {
             for (EdgeType edgeType : getMetadata().getEdgeTypes()) {
                 Iterator<TraversableGraphEdge<T>> it =
@@ -49,9 +64,11 @@ abstract class AbstractGraph<T> implements Graph<T> {
                     GraphNode<T> endNode = edge.getEndNode();
                     if (startNode == null || endNode == null)
                         continue;
-                    consumer.consume(new GraphEdge<T>
-                        (startNode.getNodeId(), endNode.getNodeId(),
-                         edgeType, edge.getWeight()));
+                    GraphEdge<T> graphEdge =
+                        new GraphEdge<T>(startNode.getNodeId(), endNode.getNodeId(),
+                                         edgeType, edge.getWeight());
+                    if (!proc.apply(graphEdge))
+                        break;
                 }
             }
         }
@@ -69,7 +86,7 @@ abstract class AbstractGraph<T> implements Graph<T> {
         GraphNode<T> startNode = getNode(index);
         if (startNode == null)
             return null;
-        return new TraverserImpl<T>(startNode, edgeType);
+        return new TraverserImpl<T>(this, startNode, edgeType);
     }
 
     @Override
@@ -90,7 +107,7 @@ abstract class AbstractGraph<T> implements Graph<T> {
         }
         if (sourceNodes.isEmpty())
             return null;
-        return new MultiTraverser<T>(sourceNodes, edgeType);
+        return new MultiTraverser<T>(this, sourceNodes, edgeType);
     }
 
     @Override
@@ -125,11 +142,6 @@ abstract class AbstractGraph<T> implements Graph<T> {
     }
 
     @Override
-    public int nodeCount() {
-        return getNodes().size();
-    }
-
-    @Override
     public int edgeCount() {
         int edgeCount = 0;
         for (GraphNode<T> node : getNodes())
@@ -143,7 +155,7 @@ abstract class AbstractGraph<T> implements Graph<T> {
     }
 
     @Override
-    public GraphStatus getStatus() {
+    public GraphStats getStats() {
         return status;
     }
 }

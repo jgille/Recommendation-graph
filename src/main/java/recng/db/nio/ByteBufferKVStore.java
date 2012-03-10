@@ -7,9 +7,9 @@ import recng.db.ByteSequence;
 import recng.db.KVStore;
 
 /**
- *
+ * 
  * An in memory key/value store backed by a set of {@link ByteBuffer}s.
- *
+ * 
  * @author jon
  * 
  */

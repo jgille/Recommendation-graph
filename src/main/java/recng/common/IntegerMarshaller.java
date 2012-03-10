@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 /**
  * An Integer marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class IntegerMarshaller extends AbstractMarshaller<Integer> {
 

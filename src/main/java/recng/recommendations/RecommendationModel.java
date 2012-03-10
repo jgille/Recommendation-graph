@@ -1,6 +1,8 @@
 package recng.recommendations;
 
 import java.util.List;
+
+import recng.profiling.Profiler;
 import recng.recommendations.domain.ImmutableProduct;
 
 /**
@@ -9,7 +11,7 @@ import recng.recommendations.domain.ImmutableProduct;
  * @author jon
  *
  */
-public interface RecommendationModel {
+public interface RecommendationModel extends Profiler {
 
     /**
      * Gets products with a relation to the source product, according to a set
@@ -23,6 +25,19 @@ public interface RecommendationModel {
     List<ImmutableProduct> getRelatedProducts(String sourceProduct,
                                               ProductQuery query);
 
+
+        /**
+     * Gets products with a relation to one or more of the source products,
+     * following a set of rules defined in a query.
+     *
+     * @param sourceProducts
+     *            The source products
+     * @param query
+     *            The rules to follow when getting related products
+     */
+    List<ImmutableProduct> getRelatedProducts(List<String> sourceProducts,
+                                              ProductQuery query);
+
     /**
      * Gets a product based on it's id.
      *
@@ -32,10 +47,4 @@ public interface RecommendationModel {
      */
     ImmutableProduct getProduct(String id);
 
-    /**
-     * Gets the status of this model, e.g. the number of products in the graph,
-     * cache hit percentage, filter percentage etc.
-     * 
-     */
-    String getStatusString();
 }

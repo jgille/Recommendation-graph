@@ -8,9 +8,9 @@ import tests.junit.db.AbstractTestEmbeddedDocumentStore;
 
 /**
  * Tests for {@link OrientKVStore}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestOrientKVStore extends AbstractTestEmbeddedDocumentStore {
 

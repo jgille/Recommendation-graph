@@ -2,14 +2,16 @@ package recng.graph;
 
 import java.util.ArrayList;
 import java.util.List;
-import gnu.trove.list.array.TLongArrayList;
-import gnu.trove.map.hash.TObjectIntHashMap;
+
+import org.apache.mahout.math.list.LongArrayList;
+import org.apache.mahout.math.map.AbstractObjectIntMap;
+import org.apache.mahout.math.map.OpenObjectIntHashMap;
 
 /**
  * A mutable graph implementation.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class MutableGraphImpl<T> extends AbstractGraph<T> implements
     MutableGraph<T> {
@@ -18,7 +20,7 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
      * Maps node id -> internal primary key (index in of node in internal node
      * list)
      */
-    private final TObjectIntHashMap<NodeID<T>> nodeIndex;
+    private final AbstractObjectIntMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph. */
     private final List<MutableGraphNode<T>> nodes;
     /** Used for synchronization. */
@@ -28,26 +30,26 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
      * Creates an empty mutable graph.
      */
     public MutableGraphImpl(GraphMetadata metadata) {
-        this(metadata, new TObjectIntHashMap<NodeID<T>>(),
+        this(metadata, new OpenObjectIntHashMap<NodeID<T>>(),
              new ArrayList<NodeID<T>>(),
-             new ArrayList<TLongArrayList[]>());
+             new ArrayList<LongArrayList[]>());
     }
 
     private MutableGraphImpl(GraphMetadata metadata,
-                             TObjectIntHashMap<NodeID<T>> nodeIndex,
+                             AbstractObjectIntMap<NodeID<T>> nodeIndex,
                              List<NodeID<T>> nodes,
-                             List<TLongArrayList[]> edges) {
+                             List<LongArrayList[]> edges) {
         super(metadata);
         this.nodeIndex = nodeIndex;
         this.nodes = new ArrayList<MutableGraphNode<T>>();
         int i = 0;
         for (NodeID<T> nodeId : nodes) {
-            TLongArrayList[] nodeEdges = edges.get(i);
-            TLongArrayList[] edgeLists = new TLongArrayList[nodeEdges.length];
+            LongArrayList[] nodeEdges = edges.get(i);
+            LongArrayList[] edgeLists = new LongArrayList[nodeEdges.length];
             int j = 0;
-            for (TLongArrayList el : nodeEdges) {
+            for (LongArrayList el : nodeEdges) {
                 if (el == null) {
-                    edgeLists[j] = new TLongArrayList(0);
+                    edgeLists[j] = new LongArrayList(0);
                 } else {
                     edgeLists[j] = el;
                 }
@@ -167,7 +169,7 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
     @Override
     public int getPrimaryKey(NodeID<T> nodeId) {
         synchronized (lock) {
-            if (!nodeIndex.contains(nodeId))
+            if (!nodeIndex.containsKey(nodeId))
                 return -1;
             return nodeIndex.get(nodeId);
         }
@@ -187,13 +189,13 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
 
     /**
      * Creates a node if it does not already exist.
-     *
+     * 
      * Not thread safe and needs synchronization.
      */
     private int upsertNode(NodeID<T> nodeId) {
         if (nodeId == null)
             return -1;
-        if (nodeIndex.contains(nodeId))
+        if (nodeIndex.containsKey(nodeId))
             return nodeIndex.get(nodeId);
         MutableGraphNode<T> node = new MutableGraphNodeImpl<T>(this, nodeId);
         int index;
@@ -215,9 +217,9 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
         @Override
         protected Graph<T>
             constructGraph(GraphMetadata metadata,
-                           TObjectIntHashMap<NodeID<T>> nodeIndex,
+                           AbstractObjectIntMap<NodeID<T>> nodeIndex,
                            List<NodeID<T>> nodes,
-                           List<TLongArrayList[]> nodeEdges) {
+                           List<LongArrayList[]> nodeEdges) {
             return new MutableGraphImpl<T>(metadata, nodeIndex, nodes,
                                            nodeEdges);
         }

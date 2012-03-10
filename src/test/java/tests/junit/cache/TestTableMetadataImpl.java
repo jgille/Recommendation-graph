@@ -12,7 +12,7 @@ import recng.common.TableMetadataImpl;
 
 /**
  * Tests for {@link recng.common.TableMetadataImpl}.
- *
+ * 
  * @author Jon Ivmark
  */
 public class TestTableMetadataImpl {
@@ -24,13 +24,15 @@ public class TestTableMetadataImpl {
         FieldMetadataImpl.create("ISBN",
                                  FieldMetadata.Type.STRING);
 
-    @Test public void testGetFieldMetadata() {
+    @Test
+    public void testGetFieldMetadata() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         assertEquals(PRICE, fs.getFieldMetadata(PRICE.getFieldName()));
         assertEquals(ISBN, fs.getFieldMetadata(ISBN.getFieldName()));
     }
 
-    @Test public void testContains() {
+    @Test
+    public void testContains() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         assertTrue(fs.contains(PRICE.getFieldName()));
         assertFalse(fs.contains("foo"));
@@ -45,14 +47,16 @@ public class TestTableMetadataImpl {
         assertTrue(fs.contains(ISBN.getFieldName()));
     }
 
-    @Test public void testOrdinal() {
+    @Test
+    public void testOrdinal() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         assertEquals(0, fs.ordinal(PRICE.getFieldName()));
         assertEquals(1, fs.ordinal(ISBN.getFieldName()));
     }
 
-    @Test public void testSize() {
+    @Test
+    public void testSize() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         assertEquals(2, fs.size());
-   }
+    }
 }

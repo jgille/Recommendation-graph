@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.core.convert.converter.Converter;
+
 import recng.cache.Cache;
 import recng.cache.CacheBuilder;
 
@@ -14,23 +16,26 @@ import recng.cache.CacheBuilder;
  *
  * @author jon
  */
-public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
+public class GraphImporterImpl<T> implements GraphImporter<T> {
 
     private final GraphBuilder<T> builder;
-    private final Map<Integer, EdgeType> edgeTypes =
-        new HashMap<Integer, EdgeType>();
-    private final Map<Integer, NodeType> nodeTypes =
-        new HashMap<Integer, NodeType>();
+    private final Map<Integer, EdgeType> edgeTypes = new HashMap<Integer, EdgeType>();
+    private final Map<Integer, NodeType> nodeTypes = new HashMap<Integer, NodeType>();
 
     /**
      * Avoid using different instances for equivalent keys
      */
-    private final Cache<String, NodeID<T>> keyCache =
-        new CacheBuilder<String, NodeID<T>>()
+    private final Cache<String, NodeID<T>> keyCache = new CacheBuilder<String, NodeID<T>>()
         .concurrencyLevel(1).maxSize(50000).build();
 
-    public GraphImporterImpl(GraphBuilder<T> builder, GraphMetadata metadata) {
+    private final Converter<String, T> idConverter;
+
+    public GraphImporterImpl(GraphBuilder<T> builder, GraphMetadata metadata,
+                             Converter<String, T> idConverter) {
+
         this.builder = builder;
+        this.idConverter = idConverter;
+
         for (EdgeType edgeType : metadata.getEdgeTypes())
             edgeTypes.put(edgeType.ordinal(), edgeType);
         for (NodeType nodeType : metadata.getNodeTypes())
@@ -78,7 +83,7 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
             } else if (fields.length == 4) {
                 importEdge(fields);
                 edgeCount++;
-                if (edgeCount % 100000 == 0)
+                if (edgeCount % 500000 == 0)
                     System.out.println("Imported " + edgeCount + " edges");
             }
         }
@@ -108,10 +113,8 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
         if (edgeType == null)
             throw new IllegalArgumentException("Illegal edge type for line: "
                 + edgeTypeOrdinal);
-        float weight =
-            fields.length > i ? Float.parseFloat(fields[i++]) : -1f;
-        builder.addEdge(startNode, endNode, edgeType,
-                        weight);
+        float weight = fields.length > i ? Float.parseFloat(fields[i++]) : -1f;
+        builder.addEdge(startNode, endNode, edgeType, weight);
     }
 
     private NodeID<T> getNodeID(String id, NodeType nodeType) {
@@ -125,5 +128,9 @@ public abstract class GraphImporterImpl<T> implements GraphImporter<T> {
     /**
      * Parses a serialized node identifier to it's generic type.
      */
-    protected abstract T parseNodeID(String id);
+    protected T parseNodeID(String id) {
+
+        return idConverter.convert(id);
+
+    }
 }

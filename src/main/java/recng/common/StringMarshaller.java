@@ -4,9 +4,9 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * A String marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class StringMarshaller extends AbstractMarshaller<String> {
 

@@ -2,6 +2,7 @@ package recng.recommendations.domain;
 
 import java.util.List;
 
+import recng.common.FieldMetadata;
 import recng.common.WeightedPropertyContainer;
 
 /**
@@ -14,11 +15,16 @@ import recng.common.WeightedPropertyContainer;
  */
 public interface Product extends WeightedPropertyContainer {
     /** The field name used to store the validity property. */
-    public static final String ID_PROPERTY = "__id";
+    public static final String ID_PROPERTY = FieldMetadata.ID.getFieldName();
     /** The field name used to store the validity property. */
     public static final String IS_VALID_PROPERTY = "__is_valid";
     /** The field name used to store the categories property. */
     public static final String CATEGORIES_PROPERTY = "__categories";
+
+    /**
+     * Gets the product ID.
+     */
+    String getID();
 
     /**
      * Gets the validity of this product.

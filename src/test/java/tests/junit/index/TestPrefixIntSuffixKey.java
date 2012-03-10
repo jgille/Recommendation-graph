@@ -23,19 +23,23 @@ public class TestPrefixIntSuffixKey {
         return PrefixIntSuffixID.Parser.getInstance().parse(id);
     }
 
-    @Test public void testInt() {
+    @Test
+    public void testInt() {
         test("123");
     }
 
-    @Test public void testPrefixInt() {
+    @Test
+    public void testPrefixInt() {
         test("P123");
     }
 
-    @Test public void testIntSuffix() {
+    @Test
+    public void testIntSuffix() {
         test("123S");
     }
 
-    @Test public void testPrefixIntSuffix() {
+    @Test
+    public void testPrefixIntSuffix() {
         test("P123S");
     }
 
@@ -57,7 +61,8 @@ public class TestPrefixIntSuffixKey {
         assertFalse(factory.parse(id1).equals(factory.parse(id2)));
     }
 
-    @Test public void testInvalidId() {
+    @Test
+    public void testInvalidId() {
         IDPattern<String> factory = PrefixIntSuffixID.Parser.getInstance();
         String id = "abc";
         assertFalse(factory.matches(id));

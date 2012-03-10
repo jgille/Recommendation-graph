@@ -23,13 +23,15 @@ public class TestIntKey {
         return IntID.Parser.getInstance().parse(id);
     }
 
-    @Test public void testGetValue() {
+    @Test
+    public void testGetValue() {
         String id = "123";
         ID<String> key = getKey(id);
         assertEquals(id, key.getID());
     }
 
-    @Test public void testEquals() {
+    @Test
+    public void testEquals() {
         String id1 = "1";
         ID<String> key1 = getKey(id1);
         String id2 = "2";
@@ -44,7 +46,8 @@ public class TestIntKey {
         assertEquals(map.get(key1), id1);
     }
 
-    @Test public void testInvalidId() {
+    @Test
+    public void testInvalidId() {
         IDPattern<String> factory = IntID.Parser.getInstance();
         String id = "abc2";
         assertFalse(factory.matches(id));

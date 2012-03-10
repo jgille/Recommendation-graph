@@ -13,9 +13,9 @@ import recng.common.TableMetadata;
 
 /**
  * A csv file cursor that parses each row in a {@link PropertyContainer}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class CSVPropertyCursor implements CSVCursor<PropertyContainer> {
 

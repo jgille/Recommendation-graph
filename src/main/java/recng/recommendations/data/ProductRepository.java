@@ -6,9 +6,9 @@ import recng.common.TableMetadata;
 
 /**
  * An interface to a backend storage of product data.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public interface ProductRepository {
 

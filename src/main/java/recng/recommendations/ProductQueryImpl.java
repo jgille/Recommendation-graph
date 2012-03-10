@@ -6,7 +6,7 @@ import recng.recommendations.graph.RecommendationEdgeType;
 
 /**
  * A query used to fetch recommended products.
- * 
+ *
  * @author Jon Ivmark
  */
 public class ProductQueryImpl implements ProductQuery {
@@ -28,6 +28,10 @@ public class ProductQueryImpl implements ProductQuery {
             @Override
             public boolean accepts(ImmutableProduct product) {
                 return true;
+            }
+
+            @Override public String toString() {
+                return "Default, allows all";
             }
         };
         this.maxCursorSize = DEFAULT_MAX_CURSOR_SIZE;
@@ -71,4 +75,9 @@ public class ProductQueryImpl implements ProductQuery {
         return recType;
     }
 
+    @Override
+    public String toString() {
+        return String.format("{limit=%s, max cursor size=%s, max rel. distance=%s, filter=%s}",
+                             limit, maxCursorSize, maxRelationDistance, filter);
+    }
 }

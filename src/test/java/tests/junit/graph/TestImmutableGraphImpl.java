@@ -5,9 +5,9 @@ import recng.recommendations.graph.RecommendationGraphMetadata;
 
 /**
  * Tests {@link ImmutableGraphImpl}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestImmutableGraphImpl extends AbstractTestGraph {
 

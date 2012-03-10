@@ -1,23 +1,26 @@
 package recng.graph;
 
-import gnu.trove.iterator.TLongIterator;
-import gnu.trove.list.array.TLongArrayList;
 import java.nio.ByteBuffer;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.mahout.math.function.LongProcedure;
+import org.apache.mahout.math.list.LongArrayList;
 
 /**
- * A base implementation of a mutable graph node.
+ * An implementation of a mutable graph node.
  *
  * @author jon
  *
  * @param <T>
  *            The type of the key for this node.
  */
-public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
+public class MutableGraphNodeImpl<T> extends AbstractGraphNode<T>
     implements MutableGraphNode<T> {
 
     /**
@@ -51,34 +54,51 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
      *            The id of this node.
      */
     public MutableGraphNodeImpl(Graph<T> container, NodeID<T> id,
-                                    TLongArrayList[] outEdges) {
+                                LongArrayList[] outEdges) {
         super(container, id, outEdges);
     }
 
     @Override
-    public synchronized Iterator<TraversableGraphEdge<T>>
-    traverseNeighbors(EdgeType edgeType) {
-        TLongArrayList edgeList = getOutEdges(edgeType);
-        if (edgeList == null) // No out edges for this type
-            return new EmptyIterator<TraversableGraphEdge<T>>();
-        // return a copy of the edges to avoid concurrency issues
-        TLongArrayList copy = new TLongArrayList(edgeList);
-        return new NeighborIterator(getNodeId(), edgeType, copy);
+    public Iterator<TraversableGraphEdge<T>>
+        traverseNeighbors(EdgeType edgeType) {
+        LongArrayList edges;
+        synchronized (this) {
+            edges = getOutEdges(edgeType);
+            if (edges != null)
+                edges = edges.copy();
+        }
+        return traverseEdges(edgeType, edges);
     }
 
-    /**
-     * Overridden to add synchronization.
-     */
+    @Override
+    public void forEachNeighbor(EdgeType edgeType, final NodeIDProcedure<T> proc) {
+        LongArrayList edges;
+        synchronized (this) {
+            edges = getOutEdges(edgeType);
+            if (edges != null)
+                edges = edges.copy();
+        }
+        forEachEdge(edges, proc);
+    }
+
     @Override
     public synchronized int getEdgeCount() {
-        return super.getEdgeCount();
+        LongArrayList[] outEdges = getOutEdges();
+        int edgeCount = 0;
+        if (outEdges == null)
+            return edgeCount;
+        for (LongArrayList edges : outEdges) {
+            if (edges != null)
+                edgeCount += edges.size();
+        }
+        return edgeCount;
     }
 
     @Override
     public synchronized void addEdge(int endNodeIndex, EdgeType edgeType,
                                      float weight) {
         long edge = createOutEdge(endNodeIndex, weight);
-        TLongArrayList edges = getOutEdges(edgeType);
+        LongArrayList edges = getOutEdges(edgeType);
         if (edges == null) { // First edge of this type, set the edge array
                              // accordingly
             setEdges(edgeType, Collections.singletonList(endNodeIndex),
@@ -92,7 +112,7 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
                 // Finds the appropriate index at which to insert this edge
                 // (based on edge weight)
                 int index = findIndex(edgeType, weight);
-                edges.insert(index, edge);
+                edges.beforeInsert(index, edge);
             }
         }
     }
@@ -104,7 +124,7 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
         int index = findEdge(edgeType, endNodeIndex);
         if (index < 0) // Non existing edge
             return false;
-        TLongArrayList edges = getOutEdges(edgeType);
+        LongArrayList edges = getOutEdges(edgeType);
         long edge = createOutEdge(endNodeIndex, weight);
         int newIndex = findIndex(edgeType, weight);
         // We (might) need to move the edge in the array to keep it sorted on
@@ -127,14 +147,18 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
         return true;
     }
 
-    private void shiftLeft(TLongArrayList edges, int offset, int length) {
+    private void shiftLeft(LongArrayList edges, int offset, int length) {
         for (int i = 0; i < length; i++)
             edges.set(offset + i - 1, edges.get(offset + i));
     }
 
-    private void shiftRight(TLongArrayList edges, int offset, int length) {
-        for (int i = 0; i < length; i++)
-            edges.set(offset + i + 1, edges.get(offset + i));
+    private void shiftRight(LongArrayList edges, int offset, int length) {
+        for (int i = offset + length - 1; i >= offset; i--) {
+            if (i < edges.size() - 1)
+                edges.set(i + 1, edges.get(i));
+            else
+                edges.add(edges.get(i));
+        }
     }
 
     @Override
@@ -143,8 +167,8 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
         int index = findEdge(edgeType, endNodeIndex);
         if (index < 0)
             return false; // Non existing edge
-        TLongArrayList edges = getOutEdges(edgeType);
-        edges.remove(index, 1);
+        LongArrayList edges = getOutEdges(edgeType);
+        edges.remove(index);
         return true;
     }
 
@@ -153,7 +177,7 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
                                       List<Integer> endNodes,
                                       List<Float> weights) {
         int edgeTypeIndex = edgeType.ordinal();
-        TLongArrayList edges = new TLongArrayList(endNodes.size());
+        LongArrayList edges = new LongArrayList(endNodes.size());
         int i = 0;
         // Create edge list
         for (int endNode : endNodes) {
@@ -164,9 +188,9 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
         if (edgeType.isWeighted()) // Keep weighted edges sorted
             edges.sort();
         // Create/expand array if necessary
-        TLongArrayList[] outEdges = getOutEdges();
+        LongArrayList[] outEdges = getOutEdges();
         if (outEdges == null) {
-            outEdges = new TLongArrayList[edgeTypeIndex + 1];
+            outEdges = new LongArrayList[edgeTypeIndex + 1];
             setOutEdges(outEdges);
         } else if (edgeTypeIndex >= outEdges.length) {
             outEdges = Arrays.copyOf(outEdges, edgeTypeIndex + 1);
@@ -180,19 +204,27 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
      *
      * Performed by a (potentially) full scan of the edge list.
      */
-    private int findEdge(EdgeType edgeType, int endNodeIndex) {
-        TLongArrayList edges = getOutEdges(edgeType);
+    private int findEdge(EdgeType edgeType, final int endNodeIndex) {
+        LongArrayList edges = getOutEdges(edgeType);
         if (edges == null)
             return -1;
-        TLongIterator it = edges.iterator();
-        int index = 0;
-        while (it.hasNext()) {
-            long edge = it.next();
-            int nodeIndex = getEndNodeIndex(edge);
-            if (nodeIndex == endNodeIndex)
-                return index;
-            index++;
-        }
+        final AtomicInteger index = new AtomicInteger(0);
+        final AtomicBoolean found = new AtomicBoolean(false);
+        edges.forEach(new LongProcedure() {
+
+            @Override
+            public boolean apply(long edge) {
+                int nodeIndex = getEndNodeIndex(edge);
+                if (nodeIndex == endNodeIndex) {
+                    found.set(true);
+                    return false;
+                }
+                index.incrementAndGet();
+                return true;
+            }
+        });
+        if (found.get())
+            return index.get();
         return -1;
     }
 
@@ -201,7 +233,7 @@ public class MutableGraphNodeImpl<T> extends GraphNodeImpl<T>
      * Since edges are sorted on weight, we use a binary search here.
      */
     private int findIndex(EdgeType edgeType, float weight) {
-        TLongArrayList edges = getOutEdges(edgeType);
+        LongArrayList edges = getOutEdges(edgeType);
         if (edges == null)
             return -1;
         int low = 0;

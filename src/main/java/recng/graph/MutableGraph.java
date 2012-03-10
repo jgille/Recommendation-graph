@@ -4,9 +4,9 @@ import java.util.List;
 
 /**
  * A graph containing nodes with (possibly weighted) edges to other nodes.
- *
+ * 
  * Edges can be added, updated or removed.
- *
+ * 
  * @author Jon Ivmark
  */
 public interface MutableGraph<T> extends Graph<T> {
@@ -20,7 +20,7 @@ public interface MutableGraph<T> extends Graph<T> {
 
     /**
      * Updates an edge.
-     *
+     * 
      * @return True if an edge was updated, false if no such edge was found.
      */
     boolean updateEdge(NodeID<T> startNode, NodeID<T> endNode,
@@ -28,7 +28,7 @@ public interface MutableGraph<T> extends Graph<T> {
 
     /**
      * Removed an edge.
-     *
+     * 
      * @return True if an edge was removed, false if no such edge was found.
      */
     boolean

@@ -24,13 +24,13 @@ import recng.db.EmbeddedDocumentStore;
 
 /**
  * A document store backed by a H2 sql database.
- *
+ * 
  * All properties are stored as Strings in the db and conversions are made using
  * the {@link Marshaller} linked to each field in the {@link TableMetadata} for
  * this key/value store.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class H2KVStore implements EmbeddedDocumentStore<String> {
 
@@ -40,7 +40,9 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Initiates a h2 store.
-     * @param tableMetadata Describes the entries in this key/value store.
+     * 
+     * @param tableMetadata
+     *            Describes the entries in this key/value store.
      */
     public H2KVStore(TableMetadata tableMetadata) {
         this.tableMetadata = tableMetadata;
@@ -48,13 +50,10 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Initiates a connection to the db.
-     *
-     * Expected properties:
-     *     url - The database url or directory
-     *     table - The table name
-     *     user - The database user
-     *     pwd - The password
-     *     primary_key - The field used as primary key
+     * 
+     * Expected properties: url - The database url or directory table - The
+     * table name user - The database user pwd - The password primary_key - The
+     * field used as primary key
      */
     @Override
     public void init(Map<String, String> properties) {
@@ -146,7 +145,7 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
         throws SQLException {
         if (fm.isRepeated()) {
             @SuppressWarnings("unchecked")
-            List<Object> l = (List<Object>)value;
+            List<Object> l = (List<Object>) value;
             Object[] arr = new Object[l.size()];
             int i = 0;
             for (Object o : l)
@@ -305,9 +304,9 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Imports data from a csv file using the built in function csvread.
-     *
+     * 
      * See: http://www.h2database.com/html/functions.html#csvread
-     *
+     * 
      * NOTE: Will drop all previously stored data!
      */
     @Override
@@ -397,7 +396,7 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Imports data from a csv file.
-     *
+     * 
      * Expected parameters: db url (path), table name, data file, format file
      */
     public static void main(String[] args) throws SQLException, IOException {

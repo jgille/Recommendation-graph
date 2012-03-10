@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 /**
  * A Long marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class LongMarshaller extends AbstractMarshaller<Long> {
 

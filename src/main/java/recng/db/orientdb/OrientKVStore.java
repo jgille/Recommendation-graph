@@ -31,9 +31,9 @@ import recng.db.EmbeddedDocumentStore;
 
 /**
  * A document store backed by an embedded OrientDB document database.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class OrientKVStore implements EmbeddedDocumentStore<String> {
 
@@ -109,7 +109,7 @@ public class OrientKVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Creates the schema for this document store.
-     *
+     * 
      */
     public void setupSchema() {
         ODatabaseDocument db = new ODatabaseDocumentTx(url).create();
@@ -129,7 +129,7 @@ public class OrientKVStore implements EmbeddedDocumentStore<String> {
 
     /**
      * Imports data from a csv file.
-     *
+     * 
      * NOTE: Will drop all previously stored data!
      */
     @Override

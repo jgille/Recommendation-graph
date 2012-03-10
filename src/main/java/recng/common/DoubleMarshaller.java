@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 /**
  * A Double marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class DoubleMarshaller extends AbstractMarshaller<Double> {
 

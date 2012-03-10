@@ -12,9 +12,9 @@ import recng.common.DefaultMarshallers;
 
 /**
  * Tests for all marshallers in {@link DefaultMarshallers}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class DefaultMarshallersTest {
 

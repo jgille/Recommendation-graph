@@ -4,9 +4,9 @@ import recng.graph.EdgeType;
 
 /**
  * Describes the type of a recommendation and an edge type in a product graph.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public enum RecommendationEdgeType implements EdgeType {
     PEOPLE_WHO_BOUGHT(true),

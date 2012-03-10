@@ -20,18 +20,23 @@ public class IntID implements ID<String> {
         return id + "";
     }
 
-    @Override public boolean equals(Object other) {
-        if(other == null || other.getClass() != getClass())
+    @Override
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (other == null || other.getClass() != getClass())
             return false;
-        IntID key = (IntID)other;
+        IntID key = (IntID) other;
         return id == key.id;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return id;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.valueOf(id);
     }
 

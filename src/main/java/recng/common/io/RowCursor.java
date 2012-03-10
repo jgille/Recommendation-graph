@@ -4,9 +4,9 @@ import java.io.IOException;
 
 /**
  * Classes used to iterate rows in a file might implement this interface,
- *
+ * 
  * @author jon
- *
+ * 
  * @param <E>
  */
 public interface RowCursor<E> {
@@ -28,7 +28,7 @@ public interface RowCursor<E> {
 
     /**
      * Close the cursor.
-     *
+     * 
      * NOTE: Make sure to always do this in a finally block.
      */
     void close() throws IOException;

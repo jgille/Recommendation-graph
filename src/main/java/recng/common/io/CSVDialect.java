@@ -2,9 +2,9 @@ package recng.common.io;
 
 /**
  * Settings class used when working with csv files.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class CSVDialect {
 

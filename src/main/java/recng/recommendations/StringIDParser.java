@@ -5,9 +5,9 @@ import recng.index.StringIDs;
 
 /**
  * A factory for creating {@link ID}s containing Strings.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public class StringIDParser implements IDParser<ID<String>> {
 
@@ -19,5 +19,10 @@ public class StringIDParser implements IDParser<ID<String>> {
     @Override
     public String serialize(ID<String> id) {
         return id.getID();
+    }
+
+    @Override
+    public String toString() {
+        return "StringIDParser []";
     }
 }

@@ -2,9 +2,9 @@ package recng.graph;
 
 /**
  * Used to build graphs.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The generic type of the node IDs in the graph.
  */
@@ -25,7 +25,7 @@ public interface GraphBuilder<T> {
 
     /**
      * Adds a weighted edge to the graph.
-     *
+     * 
      * @param startNodeIndex
      *            The index of the start node.
      * @param endNodeIndex

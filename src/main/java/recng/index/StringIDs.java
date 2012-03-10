@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * A class used to parse a String ID into a matching {@link ID}.
- *
+ * 
  * @author jon
  */
 public class StringIDs {
@@ -18,10 +18,11 @@ public class StringIDs {
                       PrefixLongSuffixID.Parser.getInstance(),
                       UTF8StringID.Parser.getInstance());
 
-    private StringIDs() {}
+    private StringIDs() {
+    }
 
     public static ID<String> parseID(String id) {
-        for(IDPattern<String> parser : PARSERS) {
+        for (IDPattern<String> parser : PARSERS) {
             if (parser.matches(id))
                 return parser.parse(id);
         }

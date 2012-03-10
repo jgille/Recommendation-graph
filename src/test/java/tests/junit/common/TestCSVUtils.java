@@ -32,9 +32,9 @@ import recng.common.io.CSVUtils;
 
 /**
  * Simple tests for {@link CSVUtils}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestCSVUtils {
 
@@ -155,7 +155,7 @@ public class TestCSVUtils {
         for (String fieldValue : row) {
             String column = COLUMNS.get(i);
             switch (i) {
-                case 0:
+            case 0:
                 map.put(column, fieldValue);
                 break;
             case 1:

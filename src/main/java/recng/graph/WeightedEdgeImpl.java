@@ -2,7 +2,7 @@ package recng.graph;
 
 /**
  * Base implementation of a weighted edge in a graph.
- *
+ * 
  * @author Jon Ivmark
  */
 public class WeightedEdgeImpl<T> extends EdgeImpl<T> implements WeightedEdge<T> {
@@ -18,7 +18,8 @@ public class WeightedEdgeImpl<T> extends EdgeImpl<T> implements WeightedEdge<T> 
         return weight;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.format("{%s -> %s, weight: %s}", getStartNode(),
                              getEndNode(), weight);
     }

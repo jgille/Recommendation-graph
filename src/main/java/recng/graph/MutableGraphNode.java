@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * A mutable graph node. The identifiers of the nodes are {@link NodeID}
  * instances, and the primary keys used internally in the graph are integers.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The type of the key for this node.
  */
@@ -15,7 +15,7 @@ public interface MutableGraphNode<T> extends GraphNode<T> {
 
     /**
      * Adds a new edge originating from this node.
-     *
+     * 
      * @param endNodeIndex
      *            The primary key of the neighbor node
      * @param edgeType
@@ -26,7 +26,7 @@ public interface MutableGraphNode<T> extends GraphNode<T> {
     void addEdge(int endNodeIndex, EdgeType edgeType, float weight);
 
     /**
-     *
+     * 
      * @param endNodeIndex
      *            The primary key of the neighbor node
      * @param edgeType
@@ -38,7 +38,7 @@ public interface MutableGraphNode<T> extends GraphNode<T> {
     boolean updateEdge(int endNodeIndex, EdgeType edgeType, float weight);
 
     /**
-     *
+     * 
      * @param endNodeIndex
      *            The primary key of the neighbor node
      * @param edgeType
@@ -49,7 +49,7 @@ public interface MutableGraphNode<T> extends GraphNode<T> {
 
     /**
      * Sets the set of edges of a certain type originating from ths node.
-     *
+     * 
      * @param edgeType
      *            The type of the edges to set
      * @param endNodes

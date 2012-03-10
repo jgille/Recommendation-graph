@@ -21,9 +21,9 @@ import recng.predictor.PredictorBaseData;
 
 /**
  * Base prediction service producing a graph.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The generic type of the graph node keys.
  */
@@ -31,7 +31,6 @@ public abstract class AbstractGraphPredictorService<T> implements
     GraphPredictorService<T> {
 
     private String clickDataFile, transactionDataFile;
-    private boolean filterDuplicateNeighbors = true;
 
     @Override
     public void init(Map<String, String> config) {
@@ -42,18 +41,13 @@ public abstract class AbstractGraphPredictorService<T> implements
             throw new IllegalArgumentException("At least one of " +
                 "\"click_data_file\" or \"transaction_data_file\"" +
                 "must be specified in the config");
-
-        if (config.containsKey("filter_duplicate_neighbors"))
-            this.filterDuplicateNeighbors =
-                config.get("filter_duplicate_neighbors")
-                    .equalsIgnoreCase("true");
     }
 
     @Override
     public Graph<T> createPredictions() {
         try {
             GraphPredictorBaseData baseData =
-                new GraphPredictorBaseData(filterDuplicateNeighbors);
+                new GraphPredictorBaseData();
             addTransactionData(baseData);
             addClickData(baseData);
             Graph<T> recGraph =

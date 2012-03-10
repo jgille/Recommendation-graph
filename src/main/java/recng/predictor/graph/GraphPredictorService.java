@@ -7,7 +7,7 @@ import recng.predictor.PredictorService;
  * A prediction service producing a graph.
  * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The generic type of the graph node keys.
  */

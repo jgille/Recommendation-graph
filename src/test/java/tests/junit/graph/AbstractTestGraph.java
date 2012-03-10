@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -24,7 +26,6 @@ public abstract class AbstractTestGraph {
         RecommendationEdgeType.PEOPLE_WHO_BOUGHT;
     private static final RecommendationEdgeType SECONDARY_EDGE_TYPE =
         RecommendationEdgeType.PEOPLE_WHO_VIEWED;
-
 
     private static final NodeType NODE_TYPE = RecommendationNodeType.PRODUCT;
 
@@ -48,12 +49,8 @@ public abstract class AbstractTestGraph {
     protected abstract <K> GraphBuilder<K> getGraphBuilder();
 
     /**
-     * 1 -- w=0.7 --> 2
-     * 1 -- w=0.3 --> 3
-     * 2 -- w=0.6 --> 4
-     * 2 -- w=0.4 --> 1
-     * 3 -- w=1.0 --> 1
-     * 4 -- w=1.0 --> 2
+     * 1 -- w=0.7 --> 2 1 -- w=0.3 --> 3 2 -- w=0.6 --> 4 2 -- w=0.4 --> 1 3 --
+     * w=1.0 --> 1 4 -- w=1.0 --> 2
      */
     private Graph<Integer> buildGraph() {
         GraphBuilder<Integer> builder = getGraphBuilder();
@@ -259,7 +256,7 @@ public abstract class AbstractTestGraph {
         // Test with limited return count
         traverser =
             graph.getMultiTraverser(Arrays.asList(getNodeId(1),
-                                                      getNodeId(2)), DEFAULT_EDGE_TYPE)
+                                                  getNodeId(2)), DEFAULT_EDGE_TYPE)
                 .setMaxReturnedEdges(3);
 
         expected =
@@ -321,6 +318,42 @@ public abstract class AbstractTestGraph {
         testTraversal(traverser, expected);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSimpleForEach() {
+        Graph<Integer> graph = buildGraph();
+        final List<NodeID<Integer>> neighbors = new ArrayList<NodeID<Integer>>();
+        List<NodeID<Integer>> expected = Arrays.asList(getNodeId(N2), getNodeId(N3));
+        NodeIDProcedure<Integer> proc = new NodeIDProcedure<Integer>() {
+
+            @Override
+            public boolean apply(NodeID<Integer> neighbor) {
+                neighbors.add(neighbor);
+                return true;
+            }
+        };
+        graph.forEachNeighbor(getNodeId(N1), DEFAULT_EDGE_TYPE, proc);
+        Assert.assertEquals("Wrong neighbors found in forEach loop.", expected, neighbors);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testBreakForEach() {
+        Graph<Integer> graph = buildGraph();
+        final List<NodeID<Integer>> neighbors = new ArrayList<NodeID<Integer>>();
+        List<NodeID<Integer>> expected = Arrays.asList(getNodeId(N2));
+        NodeIDProcedure<Integer> proc = new NodeIDProcedure<Integer>() {
+
+            @Override
+            public boolean apply(NodeID<Integer> neighbor) {
+                neighbors.add(neighbor);
+                return false;
+            }
+        };
+        graph.forEachNeighbor(getNodeId(N1), DEFAULT_EDGE_TYPE, proc);
+        Assert.assertEquals("Wrong neighbors found in forEach loop.", expected, neighbors);
+    }
+
     private static GraphEdge<Integer>
         newEdge(int n1,
                 int n2,
@@ -330,14 +363,13 @@ public abstract class AbstractTestGraph {
         return new GraphEdge<Integer>(node1, node2, DEFAULT_EDGE_TYPE, weight);
     }
 
-    private
-        void
+    private void
         testTraversal(Traverser<Integer> traverser,
                       List<GraphEdge<Integer>> expected) {
         List<GraphEdge<Integer>> edges = new ArrayList<GraphEdge<Integer>>();
         GraphCursor<Integer> cursor = null;
         try {
-            cursor  = traverser.traverse();
+            cursor = traverser.traverse();
             while (cursor.hasNext())
                 edges.add(cursor.next());
         } finally {
@@ -347,7 +379,6 @@ public abstract class AbstractTestGraph {
         assertEquals(expected, edges);
         assertEquals(expected, traverser.getPath());
     }
-
 
     private static NodeID<Integer> getNodeId(int id) {
         return new NodeID<Integer>(id, NODE_TYPE);

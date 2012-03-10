@@ -1,7 +1,6 @@
 package tests.junit.predictor.graph;
 
-import gnu.trove.TIntCollection;
-
+import org.apache.mahout.math.set.AbstractIntSet;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -10,15 +9,15 @@ import recng.recommendations.domain.RecommendationNodeType;
 
 /**
  * Basic test for {@link GraphPredictorBaseData}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestGraphPredictorBaseData {
 
     @Test
     public void testSimple() {
-        GraphPredictorBaseData baseData = new GraphPredictorBaseData(true);
+        GraphPredictorBaseData baseData = new GraphPredictorBaseData();
         baseData.addPurchasedProduct("u1", "p1");
         baseData.addPurchasedProduct("u1", "p2");
         baseData.addPurchasedProduct("u2", "p1");
@@ -37,20 +36,23 @@ public class TestGraphPredictorBaseData {
         int p2 = baseData.getIndex(RecommendationNodeType.PRODUCT, "p2");
         int p3 = baseData.getIndex(RecommendationNodeType.PRODUCT, "p3");
 
-        TIntCollection u1p = baseData.getPurchasedProducts(u1);
+        AbstractIntSet u1p = baseData.getPurchasedProducts(u1);
         assertEquals(2, u1p.size());
-        assertTrue(u1p.containsAll(new int[] { p1, p2 }));
+        assertTrue(u1p.contains(p1));
+        assertTrue(u1p.contains(p2));
 
-        TIntCollection u2p = baseData.getPurchasedProducts(u2);
+        AbstractIntSet u2p = baseData.getPurchasedProducts(u2);
         assertEquals(2, u1p.size());
-        assertTrue(u2p.containsAll(new int[] { p1, p3 }));
+        assertTrue(u2p.contains(p1));
+        assertTrue(u2p.contains(p3));
 
-        TIntCollection s1p = baseData.getViewedProducts(s1);
+        AbstractIntSet s1p = baseData.getViewedProducts(s1);
         assertEquals(1, s1p.size());
-        assertTrue(s1p.containsAll(new int[] { p1 }));
+        assertTrue(s1p.contains(p1));
 
-        TIntCollection s2p = baseData.getViewedProducts(s2);
+        AbstractIntSet s2p = baseData.getViewedProducts(s2);
         assertEquals(2, s2p.size());
-        assertTrue(s2p.containsAll(new int[] { p2, p3 }));
+        assertTrue(s2p.contains(p2));
+        assertTrue(s2p.contains(p3));
     }
 }

@@ -2,7 +2,7 @@ package recng.graph;
 
 /**
  * A weighted edge in a graph.
- *
+ * 
  * @author jon
  */
 public class GraphEdge<T> extends WeightedEdgeImpl<NodeID<T>> {

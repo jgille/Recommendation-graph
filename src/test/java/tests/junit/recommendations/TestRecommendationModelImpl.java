@@ -20,14 +20,15 @@ import recng.graph.NodeID;
 import recng.index.ID;
 import recng.recommendations.IDParser;
 import recng.recommendations.ProductQuery;
+import recng.recommendations.ProductQueryImpl;
 import recng.recommendations.RecommendationModel;
 import recng.recommendations.RecommendationModelImpl;
 import recng.recommendations.StringIDParser;
 import recng.recommendations.data.ProductRepository;
 import recng.recommendations.data.ProductRepositoryImpl;
 import recng.recommendations.domain.ImmutableProduct;
+import recng.recommendations.domain.Product;
 import recng.recommendations.domain.RecommendationNodeType;
-import recng.recommendations.filter.ProductFilter;
 import recng.recommendations.graph.RecommendationGraphMetadata;
 import recng.recommendations.graph.RecommendationEdgeType;
 
@@ -68,9 +69,13 @@ public class TestRecommendationModelImpl {
     private static final Float N3_N1 = 1.0f;
     private static final Float N4_N2 = 1.0f;
 
-    /**
-     * 1 -- w=0.7 --> 2; 1 -- w=0.3 --> 3; 2 -- w=0.6 --> 4; 2 -- w=0.4 --> 1; 3
-     * -- w=1.0 --> 1; 4 -- w=1.0 --> 2;
+    /*
+     * 1 -- w=0.7 --> 2;
+     * 1 -- w=0.3 --> 3;
+     * 2 -- w=0.6 --> 4;
+     * 2 -- w=0.4 --> 1;
+     * 3 -- w=1.0 --> 1;
+     * 4 -- w=1.0 --> 2;
      */
     private Graph<ID<String>> buildGraph() {
         ImmutableGraphImpl.Builder<ID<String>> builder =
@@ -95,30 +100,36 @@ public class TestRecommendationModelImpl {
         KVStore<String, Map<String, Object>> db =
             new InMemoryKVStore<String, Map<String, Object>>();
         Map<String, Object> p1 = new HashMap<String, Object>();
+        p1.put(Product.ID_PROPERTY, N1.getID().getID());
         p1.put("name", N1.getID().getID());
         p1.put("index", 1);
         p1.put("__is_valid", true);
         p1.put("__categories", Arrays.<String> asList("cat1", "cat2"));
         db.put(N1.getID().getID(), p1);
         Map<String, Object> p2 = new HashMap<String, Object>();
+        p2.put(Product.ID_PROPERTY, N2.getID().getID());
         p2.put("name", N2.getID().getID());
         p2.put("index", 2);
         p2.put("__categories", Arrays.<String> asList("cat2", "cat3"));
         p2.put("__is_valid", true);
         db.put(N2.getID().getID(), p2);
         Map<String, Object> p3 = new HashMap<String, Object>();
+        p3.put(Product.ID_PROPERTY, N3.getID().getID());
         p3.put("name", N3.getID().getID());
         p3.put("index", 3);
         p3.put("__categories", Arrays.<String> asList("cat3", "cat4"));
         p3.put("__is_valid", true);
         db.put(N3.getID().getID(), p3);
         Map<String, Object> p4 = new HashMap<String, Object>();
+        p4.put(Product.ID_PROPERTY, N4.getID().getID());
         p4.put("name", N4.getID().getID());
         p4.put("index", 4);
         p4.put("__categories", Arrays.<String> asList("cat3"));
         p4.put("__is_valid", true);
         db.put(N4.getID().getID(), p4);
 
+        FieldMetadata id =
+            FieldMetadataImpl.create(Product.ID_PROPERTY, FieldMetadata.Type.STRING);
         FieldMetadata name =
             FieldMetadataImpl.create("name", FieldMetadata.Type.STRING);
         FieldMetadata index =
@@ -131,7 +142,7 @@ public class TestRecommendationModelImpl {
         FieldMetadata isValid =
             FieldMetadataImpl.create("__is_valid", FieldMetadata.Type.BOOLEAN);
         TableMetadata fs =
-            new TableMetadataImpl(Arrays.asList(name, index, categories,
+            new TableMetadataImpl(Arrays.asList(id, name, index, categories,
                                                 isValid));
         return new ProductRepositoryImpl(db, fs);
     }
@@ -146,33 +157,7 @@ public class TestRecommendationModelImpl {
 
     @Test
     public void testGetRelatedProducts() {
-        ProductQuery query = new ProductQuery() {
-            public int getLimit() {
-                return 2;
-            }
-
-            public ProductFilter getFilter() {
-                return new ProductFilter() {
-                    public boolean accepts(ImmutableProduct product) {
-                        Integer index = (Integer) product.getProperty("index");
-                        return index.intValue() > 2;
-                    }
-                };
-            }
-
-            public int getMaxCursorSize() {
-                return 1000;
-            }
-
-            public int getMaxRelationDistance() {
-                return 2;
-            }
-
-            public RecommendationEdgeType getRecommendationType() {
-                return EDGE_TYPE;
-            }
-
-        };
+        ProductQuery query = getDefaultQuery();
         RecommendationModel model = getModel();
         List<ImmutableProduct> related =
             model.getRelatedProducts(N1.getID().getID(), query);
@@ -180,16 +165,43 @@ public class TestRecommendationModelImpl {
         assertNotNull(related);
         assertEquals(2, related.size());
         ImmutableProduct r1 = related.get(0);
-        assertEquals(N3.getID().getID(), r1.getId());
-        assertEquals(3, r1.getProperty("index"));
-        assertEquals("3", r1.getProperty("name"));
-        assertEquals(Arrays.<String> asList("cat3", "cat4"), r1.getCategories());
+        assertEquals(N2.getID().getID(), r1.getID());
+        assertEquals(2, r1.getProperty("index"));
+        assertEquals("2", r1.getProperty("name"));
+        assertEquals(Arrays.<String> asList("cat2", "cat3"), r1.getCategories());
 
         ImmutableProduct r2 = related.get(1);
 
-        assertEquals(N4.getID().getID(), r2.getId());
+        assertEquals(N3.getID().getID(), r2.getID());
+        assertEquals(3, r2.getProperty("index"));
+        assertEquals("3", r2.getProperty("name"));
+        assertEquals(Arrays.<String> asList("cat3", "cat4"), r2.getCategories());
+    }
+
+    @Test
+    public void testMultipleSourceProducts() {
+        ProductQuery query = getDefaultQuery();
+        RecommendationModel model = getModel();
+        List<ImmutableProduct> related =
+            model.getRelatedProducts(Arrays.asList(N2.getID().getID(), N3.getID().getID()), query);
+        assertNotNull(related);
+        assertEquals(2, related.size());
+        ImmutableProduct r1 = related.get(0);
+        assertEquals(N1.getID().getID(), r1.getID());
+        assertEquals(1, r1.getProperty("index"));
+        assertEquals("1", r1.getProperty("name"));
+        assertEquals(Arrays.<String> asList("cat1", "cat2"), r1.getCategories());
+
+        ImmutableProduct r2 = related.get(1);
+
+        assertEquals(N4.getID().getID(), r2.getID());
         assertEquals(4, r2.getProperty("index"));
         assertEquals("4", r2.getProperty("name"));
         assertEquals(Arrays.<String> asList("cat3"), r2.getCategories());
+
+    }
+
+    private ProductQuery getDefaultQuery() {
+        return new ProductQueryImpl(2, EDGE_TYPE);
     }
 }

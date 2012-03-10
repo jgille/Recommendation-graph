@@ -9,12 +9,13 @@ import recng.cache.Weigher;
 
 /**
  * Tests for {@link recng.cache.LRUCache}.
- *
+ * 
  * @author Jon Ivmark
  */
 public class TestLRUCache {
 
-    @Test public void testCache() {
+    @Test
+    public void testCache() {
         Cache<Integer, String> cache =
             new CacheBuilder<Integer, String>().maxSize(1).concurrencyLevel(1).build();
         assertEquals(0, cache.size());
@@ -24,7 +25,8 @@ public class TestLRUCache {
         assertEquals(1, cache.size());
     }
 
-    @Test public void testEvict() {
+    @Test
+    public void testEvict() {
         Cache<Integer, String> cache =
             new CacheBuilder<Integer, String>().maxSize(1).concurrencyLevel(1).build();
         cache.cache(1, "1");
@@ -34,7 +36,8 @@ public class TestLRUCache {
         assertEquals(0, cache.size());
     }
 
-    @Test public void testLRUEviction() {
+    @Test
+    public void testLRUEviction() {
         Cache<Integer, String> cache =
             new CacheBuilder<Integer, String>().maxSize(1).concurrencyLevel(1).build();
         cache.cache(1, "1");
@@ -46,10 +49,11 @@ public class TestLRUCache {
         assertEquals(1, cache.size());
     }
 
-    @Test public void testWeightEviction() {
+    @Test
+    public void testWeightEviction() {
         Cache<Integer, String> cache =
             new CacheBuilder<Integer, String>().concurrencyLevel(1).
-            maxWeight(10).weigher(new Weigher<Integer, String>() {
+                maxWeight(10).weigher(new Weigher<Integer, String>() {
                     public int weigh(int overhead, Integer key, String value) {
                         return key.intValue();
                     }
@@ -72,13 +76,14 @@ public class TestLRUCache {
         assertEquals(2, cache.size());
     }
 
-    @Test public void testNullKey() {
+    @Test
+    public void testNullKey() {
         Cache<Integer, String> cache =
             new CacheBuilder<Integer, String>().maxSize(1).concurrencyLevel(1).build();
         boolean exception = false;
         try {
             cache.cache(null, "1");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             exception = true;
         }
         assertTrue(exception);

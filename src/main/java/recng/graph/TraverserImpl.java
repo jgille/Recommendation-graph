@@ -14,23 +14,15 @@ class TraverserImpl<T> extends AbstractTraverser<T> implements Traverser<T> {
     /**
      * Creates a traverser.
      *
+     * @param graph
+     *            The graph to traverse.
      * @param startNode
      *            The node to start traversing from
      * @param edgeType
      *            The type of edges to follow
-     * @param returnableFilter
-     *            A filter used to decide if a traversed edge should be included
-     *            in the result.
-     * @param maxDepth
-     *            The maximum depth of the traversal
-     * @param maxReturnedEdges
-     *            The maximum number of edges that may be returned
-     * @param maxTraversedEdges
-     *            The maximum number of edges that may be traversed before
-     *            returning
      */
-    TraverserImpl(GraphNode<T> startNode, EdgeType edgeType) {
-        super(edgeType);
+    TraverserImpl(Graph<T> graph, GraphNode<T> startNode, EdgeType edgeType) {
+        super(graph, edgeType);
         this.startNode = startNode;
     }
 

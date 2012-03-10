@@ -4,9 +4,9 @@ import java.util.Map;
 
 /**
  * A service for creating predictions.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The generic type of the predictions container.
  */

@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * A key/value container.
- *
+ * 
  * @author jon
  */
 public interface PropertyContainer {

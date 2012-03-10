@@ -8,12 +8,13 @@ import recng.cache.CacheBuilder;
 
 /**
  * Tests for {@link recng.cache.ShardedLRUCache}.
- *
+ * 
  * @author Jon Ivmark
  */
 public class TestShardedLRUCache {
 
-    @Test public void testCache() {
+    @Test
+    public void testCache() {
         Cache<Integer, String> cache = createCache(1, 1);
         assertEquals(0, cache.size());
         cache.cache(1, "1");
@@ -32,7 +33,8 @@ public class TestShardedLRUCache {
         assertEquals(2, cache.size());
     }
 
-    @Test public void testEvict() {
+    @Test
+    public void testEvict() {
         Cache<Integer, String> cache = createCache(2, 1);
         cache.cache(1, "1");
         cache.cache(2, "2");
@@ -44,7 +46,8 @@ public class TestShardedLRUCache {
         assertEquals(1, cache.size());
     }
 
-    @Test public void testLRUEviction() {
+    @Test
+    public void testLRUEviction() {
         Cache<Integer, String> cache = createCache(2, 2);
         assertEquals(0, cache.size());
         cache.cache(1, "1");
@@ -66,12 +69,13 @@ public class TestShardedLRUCache {
         assertEquals(4, cache.size());
     }
 
-    @Test public void testNullKey() {
+    @Test
+    public void testNullKey() {
         Cache<Integer, String> cache = createCache(2, 1);
         boolean exception = false;
         try {
             cache.cache(null, "1");
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             exception = true;
         }
         assertTrue(exception);
@@ -80,7 +84,7 @@ public class TestShardedLRUCache {
 
     private Cache<Integer, String> createCache(final int shardCount,
                                                int maxSizePerShard) {
-        return new CacheBuilder<Integer, String>().maxSize(maxSizePerShard*shardCount).
+        return new CacheBuilder<Integer, String>().maxSize(maxSizePerShard * shardCount).
             concurrencyLevel(shardCount).build();
     }
 }

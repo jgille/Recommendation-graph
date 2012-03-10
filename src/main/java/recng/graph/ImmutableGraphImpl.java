@@ -3,8 +3,11 @@ package recng.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.list.array.TLongArrayList;
+import org.apache.mahout.math.list.LongArrayList;
+import org.apache.mahout.math.map.AbstractObjectIntMap;
+
+import recng.graph.jmx.JMXGraph;
+import recng.jmx.JMXUtils;
 
 /**
  * A graph containing nodes with weighted edges to other nodes.
@@ -14,41 +17,48 @@ import gnu.trove.list.array.TLongArrayList;
 public class ImmutableGraphImpl<T> extends AbstractGraph<T> {
 
     /** Index node id -> internal primary key */
-    private final TObjectIntHashMap<NodeID<T>> nodeIndex;
+    private final AbstractObjectIntMap<NodeID<T>> nodeIndex;
     /** All nodes in the graph */
     private final List<GraphNode<T>> nodes;
 
     private ImmutableGraphImpl(GraphMetadata metadata,
-                               TObjectIntHashMap<NodeID<T>> nodeIndex,
+                               AbstractObjectIntMap<NodeID<T>> nodeIndex,
                                List<NodeID<T>> nodes,
-                               List<TLongArrayList[]> edges) {
+                               List<LongArrayList[]> edges) {
         super(metadata);
         this.nodeIndex = nodeIndex;
         this.nodes = new ArrayList<GraphNode<T>>();
         int i = 0;
         for (NodeID<T> nodeId : nodes) {
-            TLongArrayList[] nodeEdges = edges.get(i);
-            if (nodeEdges == null || nodeEdges.length == 0)
-                continue;
-            TLongArrayList[] edgeLists = new TLongArrayList[nodeEdges.length];
+            LongArrayList[] nodeEdges = edges.get(i++);
+            if (nodeEdges == null) {
+                throw new IllegalArgumentException("Null edge array for node "
+                    + nodeId);
+            }
+            LongArrayList[] edgeLists = new LongArrayList[nodeEdges.length];
             int j = 0;
-            for (TLongArrayList el : nodeEdges) {
+            for (LongArrayList el : nodeEdges) {
                 if (el == null) {
-                    edgeLists[j] = new TLongArrayList(0);
+                    edgeLists[j] = new LongArrayList(0);
                 } else {
                     edgeLists[j] = el;
                 }
                 j++;
             }
-            GraphNode<T> node = new GraphNodeImpl<T>(this, nodeId, edgeLists);
+            GraphNode<T> node = new ImmutableGraphNodeImpl<T>(this, nodeId, edgeLists);
             this.nodes.add(node);
-            i++;
         }
+        JMXUtils.registerMBean(new JMXGraph<T>(this));
     }
 
     @Override
     protected List<GraphNode<T>> getNodes() {
         return nodes;
+    }
+
+    @Override
+    public int nodeCount() {
+        return nodes.size();
     }
 
     /**
@@ -58,6 +68,7 @@ public class ImmutableGraphImpl<T> extends AbstractGraph<T> {
     public GraphNode<T> getNode(int index) {
         if (index < 0 || index >= nodes.size())
             return null;
+
         return nodes.get(index);
     }
 
@@ -65,7 +76,7 @@ public class ImmutableGraphImpl<T> extends AbstractGraph<T> {
      * Gets the primary key for a node.
      */
     private int getNodeIndex(NodeID<T> id) {
-        if (!nodeIndex.contains(id))
+        if (!nodeIndex.containsKey(id))
             return -1;
         return nodeIndex.get(id);
     }
@@ -81,10 +92,10 @@ public class ImmutableGraphImpl<T> extends AbstractGraph<T> {
 
         @Override
         protected Graph<T>
-            constructGraph(GraphMetadata metadata,
-                           TObjectIntHashMap<NodeID<T>> nodeIndex,
-                           List<NodeID<T>> nodes,
-                           List<TLongArrayList[]> nodeEdges) {
+        constructGraph(GraphMetadata metadata,
+                       AbstractObjectIntMap<NodeID<T>> nodeIndex,
+                       List<NodeID<T>> nodes,
+                       List<LongArrayList[]> nodeEdges) {
             return new ImmutableGraphImpl<T>(metadata, nodeIndex, nodes, nodeEdges);
         }
 

@@ -1,8 +1,9 @@
 package recng.common;
 
 /**
- * Classes used to marshal and unmarshal objects should implement this interface.
- *
+ * Classes used to marshal and unmarshal objects should implement this
+ * interface.
+ * 
  * @author Jon Ivmark
  */
 public interface Marshaller {

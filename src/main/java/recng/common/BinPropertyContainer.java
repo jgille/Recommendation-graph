@@ -11,26 +11,26 @@ import java.util.Map;
 
 /**
  * A property container (key/value store) with a fixed set of keys.
- *
+ * 
  * The data is stored in a single byte array, another array contains indexes
  * keeping track of which bytes belong to which field. Marshallers able to
  * translate the byte arrays into objects and vice versa are linked to each
  * field.
- *
+ * 
  * NOTE: All methods in this class may throw an IllegalArgumentException or
  * ClassCastException if the type of an object does not match that of the field
  * described in the TableMetadata for this container.
- *
+ * 
  * Repeated fields, i.e. lists, are stored in the same data array as the
  * primitive fields. Each repeated value if prepended with 2 bytes that
  * represents the size of the field in bytes.
- *
+ * 
  * NOTE: This class can hold at most 2^31-1 bytes of data, or around 2G. Trying
  * to add more data will result in an exception. Individual values have a max
  * size of 2^15-1 bytes, around 32K.
- *
+ * 
  * This class is thread safe.
- *
+ * 
  * @author Jon Ivmark
  */
 public class BinPropertyContainer implements WeightedPropertyContainer {
@@ -72,7 +72,8 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
     public synchronized int getWeight() {
         int weight = 8; // Object overhead
         weight += 4; // Reference to the FieldSet
-        weight += indexes.length * 8 + 12; // each long in the index + the array overhead
+        weight += indexes.length * 8 + 12; // each long in the index + the array
+                                           // overhead
         if (data != null) {
             weight += 12; // array overhead
             weight += data.length; // the actual data
@@ -144,10 +145,10 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
         // In the non sparse implementation indexes are stored in the array
         // placed according to their ordinals
         int ordinal = fields.ordinal(fieldName);
-        if(ordinal < 0 || ordinal >= indexes.length)
+        if (ordinal < 0 || ordinal >= indexes.length)
             throw new IndexOutOfBoundsException("Unable to get value for field " +
-                                                    fieldName + ", ordinal = "
-                                                    + ordinal);
+                fieldName + ", ordinal = "
+                + ordinal);
         long index = indexes[ordinal];
         return index;
     }
@@ -170,10 +171,10 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
             return;
         }
         int ordinal = fields.ordinal(fieldName);
-        if(ordinal < 0 || ordinal >= indexes.length)
+        if (ordinal < 0 || ordinal >= indexes.length)
             throw new IndexOutOfBoundsException("Unable to get value for field " +
-                                                    fieldName + ", ordinal = "
-                                                    + ordinal);
+                fieldName + ", ordinal = "
+                + ordinal);
         indexes[ordinal] = index;
     }
 
@@ -191,7 +192,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
 
     /**
      * Gets the length of a field's value (in bytes).
-     *
+     * 
      * The lenght is the last 2 bytes of the index.
      */
     protected int getLength(long index) {
@@ -204,7 +205,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
 
     /**
      * Gets the offset in the data array for a field.
-     *
+     * 
      * The offset is the middle 4 bytes of the index.
      */
     protected int getOffset(long index) {
@@ -212,7 +213,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
             return -1;
         index = index << 16; // Shift out field identifier
         index = index >> 32; // Put offset bytes (32 bits) last
-        int offset = (int)index;
+        int offset = (int) index;
         return offset;
     }
 
@@ -223,7 +224,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
      * - The final 2 bytes contains the lenght of the field value (in bytes).
      */
     private long createIndex(String fieldName, int offset, int length) {
-        long f = (long)fields.ordinal(fieldName) << 48;
+        long f = (long) fields.ordinal(fieldName) << 48;
         long o = (long) offset << 16;
         long l = length;
         long index = f | o | l;
@@ -294,7 +295,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
 
     /**
      * Sets the values for a repeated property field.
-     *
+     * 
      * NOTE: Individual repeated field values has a maximum size of 2^15 - 1
      * bytes.
      */
@@ -313,7 +314,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
 
     /**
      * Add a a repeated property.
-     *
+     * 
      * NOTE: Individual repeated field values has a maximum size of 2^15 - 1
      * bytes.
      */
@@ -333,7 +334,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
      * follows: For each repeated value we store 2 bytes (a short) that
      * represents the size (number of bytes) of the field, followed by the
      * actual data.
-     *
+     * 
      * NOTE: This means that individual repeated fields has a maximum length of
      * 2^15 - 1 bytes.
      */
@@ -382,7 +383,8 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
     }
 
     private void remove(String fieldName) {
-        index(fieldName, createIndex(fieldName, -1, -1)); // Removes it from the index
+        index(fieldName, createIndex(fieldName, -1, -1)); // Removes it from the
+                                                          // index
     }
 
     /**
@@ -485,7 +487,7 @@ public class BinPropertyContainer implements WeightedPropertyContainer {
         @Override
         public BinPropertyContainer create() {
             throw new NoSuchMethodError("This class requires metadata," +
-                                            "use create(TableMetadata)");
+                "use create(TableMetadata)");
         }
 
         @Override

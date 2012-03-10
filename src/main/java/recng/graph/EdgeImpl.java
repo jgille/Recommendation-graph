@@ -2,7 +2,7 @@ package recng.graph;
 
 /**
  * Base implementation of an edge in a graph.
- *
+ * 
  * @author Jon Ivmark
  */
 public class EdgeImpl<T> implements Edge<T> {
@@ -56,7 +56,8 @@ public class EdgeImpl<T> implements Edge<T> {
             && type.equals(other.type);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.format("%s -> %s", getStartNode(), getEndNode());
     }
 

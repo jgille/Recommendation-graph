@@ -21,13 +21,15 @@ public class TestUTF8StringKey {
         return UTF8StringID.Parser.getInstance().parse(id);
     }
 
-    @Test public void testStringValue() {
+    @Test
+    public void testStringValue() {
         String id = "abc";
         ID<String> key = getKey(id);
         assertEquals(id, key.getID());
     }
 
-    @Test public void testEquals() {
+    @Test
+    public void testEquals() {
         String id1 = "a";
         ID<String> key1 = getKey(id1);
         String id2 = "b";

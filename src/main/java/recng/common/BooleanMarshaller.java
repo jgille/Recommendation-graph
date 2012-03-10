@@ -2,9 +2,9 @@ package recng.common;
 
 /**
  * A Boolean marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class BooleanMarshaller extends AbstractMarshaller<Boolean> {
 

@@ -1,22 +1,23 @@
 package recng.db;
 
-import gnu.trove.map.hash.TObjectLongHashMap;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.mahout.math.map.AbstractObjectLongMap;
+import org.apache.mahout.math.map.OpenObjectLongHashMap;
+
 /**
  * Base class for {@link KVStore} mapping Strings to byte arrays.
- *
+ * 
  * This is an append-only data structure.
- *
+ * 
  * TODO: Add more documentation
- *
+ * 
  * @author jon
- *
+ * 
  */
 public abstract class AbstractBinKVStore implements KVStore<String, byte[]> {
 
@@ -26,13 +27,13 @@ public abstract class AbstractBinKVStore implements KVStore<String, byte[]> {
     private final byte[] prefix, suffix;
 
     /** key -> index. */
-    private final TObjectLongHashMap<String> index;
+    private final AbstractObjectLongMap<String> index;
 
     /** Partition the data into multiple shards. */
     private final List<ByteSequence> shards = new ArrayList<ByteSequence>();
 
     public AbstractBinKVStore() {
-        this.index = new TObjectLongHashMap<String>();
+        this.index = new OpenObjectLongHashMap<String>();
         try {
             this.prefix = getEntryPrefix().getBytes("UTF8");
             this.suffix = getEntrySuffix().getBytes("UTF8");
@@ -58,7 +59,7 @@ public abstract class AbstractBinKVStore implements KVStore<String, byte[]> {
     public byte[] get(String key) {
         long primaryKey;
         synchronized (index) {
-            if (!index.contains(key))
+            if (!index.containsKey(key))
                 return null;
             primaryKey = index.get(key);
         }
@@ -178,13 +179,13 @@ public abstract class AbstractBinKVStore implements KVStore<String, byte[]> {
 
     @Override
     public byte[] remove(String key) {
-        if (!index.contains(key))
+        if (!index.containsKey(key))
             return null;
         long primaryKey = index.get(key);
         byte[] data = getData(primaryKey);
         // Append "deleted" entry
         put(key, true, new byte[0]);
-        index.remove(key);
+        index.removeKey(key);
         return data;
     }
 

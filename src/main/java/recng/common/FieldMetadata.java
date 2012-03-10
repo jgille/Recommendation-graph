@@ -2,9 +2,9 @@ package recng.common;
 
 /**
  * Metadata for a field (key) in a key/value pair.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public interface FieldMetadata {
 

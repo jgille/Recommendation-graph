@@ -19,4 +19,3 @@ public interface GraphMetadata {
      */
     Set<NodeType> getNodeTypes();
 }
-

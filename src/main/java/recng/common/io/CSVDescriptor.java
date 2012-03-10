@@ -6,9 +6,9 @@ import recng.common.TableMetadata;
 
 /**
  * Describes a csv file.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class CSVDescriptor {
     private String encoding;
@@ -45,7 +45,7 @@ public class CSVDescriptor {
 
     /**
      * Sets the gzipped flag, indicating if the csv is gzipped or not.
-     *
+     * 
      * Defaults to false.
      */
     public CSVDescriptor setGzipped(boolean gzipped) {
@@ -59,7 +59,7 @@ public class CSVDescriptor {
 
     /**
      * Sets the {@link CSVDialect} used in the csv file.
-     *
+     * 
      * For defaults, see {@link CSVDialect}.
      */
     public CSVDescriptor setDialect(CSVDialect dialect) {
@@ -73,7 +73,7 @@ public class CSVDescriptor {
 
     /**
      * Indicated wheter or not the csv file contains a header row.
-     *
+     * 
      * Defaults to false.
      */
     public CSVDescriptor setHasHeader(boolean hasHeader) {
@@ -88,7 +88,7 @@ public class CSVDescriptor {
     /**
      * Gets the column names in the csv file, gotten from the file header if it
      * exists.
-     *
+     * 
      * Defaults to null, i.e. unknown.
      */
     public CSVDescriptor setColumns(List<String> fields) {
@@ -102,7 +102,7 @@ public class CSVDescriptor {
 
     /**
      * Sets the metadata for the columns in the file.
-     *
+     * 
      * Defaults to null, i.e. unknown.
      */
     public CSVDescriptor setMetadata(TableMetadata metadata) {
@@ -112,7 +112,7 @@ public class CSVDescriptor {
 
     /**
      * Sets the minimum number of columns expected.
-     *
+     * 
      * Defaults to 0.
      */
     public CSVDescriptor setMinColumns(int minColumns) {

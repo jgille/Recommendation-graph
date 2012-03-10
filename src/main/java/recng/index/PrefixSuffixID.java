@@ -26,7 +26,7 @@ abstract class PrefixSuffixID implements ID<String> {
     private static String getOrCacheString(String s) {
         if (s == null)
             return null;
-        if(STRING_CACHE.contains(s))
+        if (STRING_CACHE.contains(s))
             return STRING_CACHE.get(s);
         STRING_CACHE.cache(s, s);
         return s;
@@ -40,15 +40,16 @@ abstract class PrefixSuffixID implements ID<String> {
         return suffix == null ? "" : suffix;
     }
 
-    @Override public boolean equals(Object other) {
-        if(other == null || other.getClass() != getClass())
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || other.getClass() != getClass())
             return false;
-        PrefixSuffixID pid = (PrefixSuffixID)other;
+        PrefixSuffixID pid = (PrefixSuffixID) other;
         return sameString(pid.getPrefix(), prefix) && sameString(pid.getSuffix(), suffix);
     }
 
     private boolean sameString(String s1, String s2) {
-        if(s1 == null)
+        if (s1 == null)
             return s2 == null;
         return s1.equals(s2);
     }
@@ -58,7 +59,8 @@ abstract class PrefixSuffixID implements ID<String> {
         return getID();
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int hc = 0;
         if (prefix != null)
             hc += prefix.hashCode();

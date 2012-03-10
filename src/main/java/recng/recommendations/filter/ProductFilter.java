@@ -4,9 +4,9 @@ import recng.recommendations.domain.ImmutableProduct;
 
 /**
  * A product filter used to filter product from a recommnedation.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public interface ProductFilter {
 

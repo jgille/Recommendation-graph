@@ -15,9 +15,9 @@ import static org.junit.Assert.*;
 
 /**
  * Tests {@link MutableGraphImpl}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestMutableGraphImpl {
 
@@ -68,7 +68,6 @@ public class TestMutableGraphImpl {
 
         return graph;
     }
-
 
     @SuppressWarnings("unchecked")
     @Test
@@ -246,7 +245,7 @@ public class TestMutableGraphImpl {
 
         traverser =
             graph.getMultiTraverser(Arrays.asList(NODES.get(3),
-                                                      NODES.get(4)), EDGE_TYPE)
+                                                  NODES.get(4)), EDGE_TYPE)
                 .setMaxReturnedEdges(4);
 
         expected =
@@ -414,12 +413,11 @@ public class TestMutableGraphImpl {
 
     private static GraphEdge<Integer> newEdge(NodeID<Integer> n1,
                                               NodeID<Integer> n2,
-                float weight) {
+                                              float weight) {
         return new GraphEdge<Integer>(n1, n2, EDGE_TYPE, weight);
     }
 
-    private
-        void
+    private void
         testTraversal(Traverser<Integer> traverser,
                       List<GraphEdge<Integer>> expected) {
         List<GraphEdge<Integer>> edges =

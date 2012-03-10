@@ -1,11 +1,5 @@
 package recng.predictor.graph;
 
-import gnu.trove.TIntCollection;
-import gnu.trove.iterator.TIntIntIterator;
-import gnu.trove.iterator.TIntIterator;
-import gnu.trove.map.TIntIntMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +9,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.mahout.math.function.IntIntProcedure;
+import org.apache.mahout.math.function.IntProcedure;
+import org.apache.mahout.math.list.IntArrayList;
+import org.apache.mahout.math.map.OpenIntIntHashMap;
+import org.apache.mahout.math.set.AbstractIntSet;
 
 import recng.graph.EdgeType;
 import recng.graph.Graph;
@@ -34,9 +34,9 @@ import recng.recommendations.graph.RecommendationEdgeType;
 
 /**
  * Naive prediction service producing a graph.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class NaiveGraphPredictorService extends
     AbstractGraphPredictorService<ID<String>> {
@@ -56,7 +56,7 @@ public class NaiveGraphPredictorService extends
         GraphMetadata metadata = getGraphMetadata();
         GraphBuilder<ID<String>> builder =
             ImmutableGraphImpl.Builder.create(metadata);
-        TIntCollection allProducts = baseData.getAllProducts();
+        IntArrayList allProducts = baseData.getAllProducts();
         System.out.println("Setting up recommendation graph...");
         addEdges(builder, allProducts, baseData,
                  RecommendationEdgeType.PEOPLE_WHO_BOUGHT);
@@ -77,43 +77,41 @@ public class NaiveGraphPredictorService extends
     }
 
     /**
-     * Adds product->product edges of the provided {@link RecommendationEdgeType}.
+     * Adds product->product edges of the provided
+     * {@link RecommendationEdgeType}.
      */
     private void addEdges(final GraphBuilder<ID<String>> builder,
-                          final TIntCollection allProducts,
+                          final IntArrayList allProducts,
                           final PredictorBaseData baseData,
                           final RecommendationEdgeType recType) {
         System.out.println("Creating " + recType + " relations...");
-        TIntIterator it = allProducts.iterator();
         // Use a thread pool for increased performance
-        ExecutorService service =
+        final ExecutorService service =
             Executors.newFixedThreadPool(Runtime.getRuntime()
                 .availableProcessors());
         // Counter used for printouts
         final AtomicInteger productCounter = new AtomicInteger();
         final AtomicInteger edgeCounter = new AtomicInteger();
-        while(it.hasNext()) {
-            final int product = it.next();
-            service.submit(new Runnable() {
+        allProducts.forEach(new IntProcedure() {
 
-                @Override
-                public void run() {
-                    // Add edges from this product
-                    int edgeCount =
-                        addProductEdges(builder, baseData, recType, product);
-                    int totalEdgeCount = edgeCounter.addAndGet(edgeCount);
-                    int totalProductCount = productCounter.incrementAndGet();
-                    if (totalProductCount % 5000 == 0) {
-                        System.out.println(String
-                            .format("Done for %s of %s products",
-                                    totalProductCount, allProducts.size()));
-                        System.out.println(String.format("Added %s %s edges",
-                                                         totalEdgeCount,
-                                                         recType));
-                    }
+            @Override
+            public boolean apply(int product) {
+                // Add edges from this product
+                int edgeCount =
+                    addProductEdges(builder, baseData, recType, product);
+                int totalEdgeCount = edgeCounter.addAndGet(edgeCount);
+                int totalProductCount = productCounter.incrementAndGet();
+                if (totalProductCount % 5000 == 0) {
+                    System.out.println(String
+                        .format("Done for %s of %s products",
+                                totalProductCount, allProducts.size()));
+                    System.out.println(String.format("Added %s %s edges",
+                                                     totalEdgeCount,
+                                                     recType));
                 }
-            });
-        }
+                return true;
+            }
+        });
         service.shutdown();
         try {
             service.awaitTermination(15, TimeUnit.MINUTES);
@@ -122,73 +120,90 @@ public class NaiveGraphPredictorService extends
         }
     }
 
-    private int addProductEdges(GraphBuilder<ID<String>> builder,
-                                PredictorBaseData baseData,
-                                RecommendationEdgeType recType,
-                                int product) {
+    private boolean addBaseEdges() {
+        return false;
+    }
+
+    private int addProductEdges(final GraphBuilder<ID<String>> builder,
+                                final PredictorBaseData baseData,
+                                final RecommendationEdgeType recType,
+                                final int product) {
         // product index -> nof occurrences
-        TIntIntMap productCounts = new TIntIntHashMap();
+        final OpenIntIntHashMap productCounts = new OpenIntIntHashMap();
         // users or sessions
-        TIntCollection connectors =
+        AbstractIntSet connectors =
             getConnectors(baseData, product, recType);
         if (connectors == null)
             return 0;
         // Iterate all users/sessions that have bought viewed this product.
         // For these, iterate the products they have also bougth/viewed and
         // group them by index.
-        for (TIntIterator cit = connectors.iterator(); cit.hasNext();) {
-            // user/session index
-            int connector = cit.next();
-            addBaseEdge(builder, baseData, recType, connector, product);
-            // Viewed or bought products
-            TIntCollection products =
-                getProducts(baseData, connector, recType);
-            if (products == null)
-                continue;
-            for (TIntIterator pit = products.iterator(); pit.hasNext();) {
-                int otherProduct = pit.next();
-                if (otherProduct == product)
-                    continue;
-                // increment counter
-                if (!productCounts.containsKey(otherProduct))
-                    productCounts.put(otherProduct, 1);
-                else
-                    productCounts.increment(otherProduct);
+        connectors.forEachKey(new IntProcedure() {
+
+            @Override
+            public boolean apply(int connector) {
+                // user/session index
+                if (addBaseEdges())
+                    addBaseEdge(builder, baseData, recType, connector, product);
+                // Viewed or bought products
+                AbstractIntSet products =
+                    getProducts(baseData, connector, recType);
+                if (products == null)
+                    return true;
+                products.forEachKey(new IntProcedure() {
+
+                    @Override
+                    public boolean apply(int otherProduct) {
+                        if (otherProduct == product)
+                            return true;
+                        // increment counter
+                        productCounts.adjustOrPutValue(otherProduct, 1, 1);
+                        return true;
+                    }
+                });
+                return true;
             }
-        }
+        });
         // Get total related count used to normalize edge weights
-        int related = 0;
-        TIntCollection counts = productCounts.valueCollection();
-        for (TIntIterator it = counts.iterator(); it.hasNext();) {
-            int count = it.next();
-            if (count > 1)
-                related += count;
-        }
-        String productID = baseData.getProductID(product);
-        int added = 0;
+        final AtomicInteger related = new AtomicInteger(0);
+        IntArrayList counts = productCounts.values();
+        counts.forEach(new IntProcedure() {
+
+            @Override
+            public boolean apply(int count) {
+                if (count > 1)
+                    related.addAndGet(count);
+                return true;
+            }
+        });
+
+        final String productID = baseData.getProductID(product);
+        final AtomicInteger added = new AtomicInteger(0);
 
         // Iterate all related products and add weighted graph edges to them
-        for (TIntIntIterator it = productCounts.iterator(); it.hasNext();) {
-            it.advance();
-            int otherProduct = it.key();
-            int count = it.value();
-            if (count < 2)
-                continue;
-            String otherProductID = baseData.getProductID(otherProduct);
-            // Must be synchronized since we're using a thread pool
-            synchronized (lock) {
-                NodeID<ID<String>> sourceProduct = getProductID(productID);
-                NodeID<ID<String>> recommendedProduct =
-                    getProductID(otherProductID);
-                int start = builder.addOrGetNode(sourceProduct);
-                int end = builder.addOrGetNode(recommendedProduct);
-                float weight = getWeight(related, count);
-                builder
-                    .addEdge(start, end, recType, weight);
+        productCounts.forEachPair(new IntIntProcedure() {
+
+            @Override
+            public boolean apply(int otherProduct, int count) {
+                if (count < 2)
+                    return true;
+                String otherProductID = baseData.getProductID(otherProduct);
+                // Must be synchronized since we're using a thread pool
+                synchronized (lock) {
+                    NodeID<ID<String>> sourceProduct = getProductID(productID);
+                    NodeID<ID<String>> recommendedProduct =
+                        getProductID(otherProductID);
+                    int start = builder.addOrGetNode(sourceProduct);
+                    int end = builder.addOrGetNode(recommendedProduct);
+                    float weight = getWeight(related.get(), count);
+                    builder
+                        .addEdge(start, end, recType, weight);
+                }
+                added.incrementAndGet();
+                return true;
             }
-            added++;
-        }
-        return added;
+        });
+        return added.get();
     }
 
     private void addBaseEdge(GraphBuilder<ID<String>> builder,
@@ -230,7 +245,7 @@ public class NaiveGraphPredictorService extends
         }
     }
 
-    private TIntCollection getConnectors(PredictorBaseData baseData,
+    private AbstractIntSet getConnectors(PredictorBaseData baseData,
                                          int product,
                                          RecommendationEdgeType recType) {
         switch (recType) {
@@ -243,7 +258,7 @@ public class NaiveGraphPredictorService extends
         }
     }
 
-    private TIntCollection getProducts(PredictorBaseData baseData,
+    private AbstractIntSet getProducts(PredictorBaseData baseData,
                                        int connector,
                                        RecommendationEdgeType recType) {
         switch (recType) {

@@ -9,9 +9,9 @@ import tests.junit.db.AbstractTestEmbeddedDocumentStore;
 
 /**
  * Tests for {@link H2KVStore}.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestH2KVStore extends AbstractTestEmbeddedDocumentStore {
 

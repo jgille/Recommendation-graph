@@ -9,9 +9,9 @@ import recng.common.PropertyContainerFactory;
 
 /**
  * Helper class for reading CSV files.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class CSVUtils {
 
@@ -35,7 +35,7 @@ public class CSVUtils {
 
     /**
      * Gets a cursor used to read the rows one by one.
-     *
+     * 
      * NOTE: Make sure to close the cursor in a finally block.
      */
     public static CSVCursor<String[]> read(String file,
@@ -71,7 +71,7 @@ public class CSVUtils {
      * Gets a cursor used to read the rows one by one. Each row is parsed into a
      * {@link PropertyContainer} using the settings from the provided
      * {@link CSVDescriptor}.
-     *
+     * 
      * NOTE: Make sure to close the cursor in a finally block.
      */
     public static CSVPropertyCursor

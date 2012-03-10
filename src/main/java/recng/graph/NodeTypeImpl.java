@@ -2,17 +2,18 @@ package recng.graph;
 
 /**
  * Describes a type of node in a graph.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class NodeTypeImpl implements NodeType {
 
     private final String name;
     private final int ordinal;
+
     /**
      * Creates a node type instance.
-     *
+     * 
      * @param name
      *            The node type name
      * @param validEdgeTypes

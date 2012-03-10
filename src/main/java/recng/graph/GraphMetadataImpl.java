@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * Metadata about the valid edge and node types for a graph.
- *
+ * 
  * @author jon
  */
 public class GraphMetadataImpl implements GraphMetadata {

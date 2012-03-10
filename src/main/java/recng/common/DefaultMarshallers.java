@@ -3,7 +3,7 @@ package recng.common;
 /**
  * Default marshallers for all supported primitives. All marshallers are thread
  * safe.
- *
+ * 
  * @author Jon Ivmark
  */
 public class DefaultMarshallers {

@@ -13,9 +13,9 @@ import recng.index.PrefixLongSuffixID;
 
 /**
  * Tests IDs matching the {@link PrefixIntSuffixID} pattern.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TestPrefixLongSuffixKey {
 
@@ -23,19 +23,23 @@ public class TestPrefixLongSuffixKey {
         return PrefixLongSuffixID.Parser.getInstance().parse(id);
     }
 
-    @Test public void testLong() {
+    @Test
+    public void testLong() {
         test("123456789123456");
     }
 
-    @Test public void testPrefixLong() {
+    @Test
+    public void testPrefixLong() {
         test("P123456789123456");
     }
 
-    @Test public void testLongSuffix() {
+    @Test
+    public void testLongSuffix() {
         test("123456789123456S");
     }
 
-    @Test public void testPrefixLongSuffix() {
+    @Test
+    public void testPrefixLongSuffix() {
         test("P123456789123456S");
     }
 
@@ -57,7 +61,8 @@ public class TestPrefixLongSuffixKey {
         assertFalse(factory.parse(id1).equals(factory.parse(id2)));
     }
 
-    @Test public void testInvalidId() {
+    @Test
+    public void testInvalidId() {
         IDPattern<String> factory = PrefixLongSuffixID.Parser.getInstance();
         String id = "abc";
         assertFalse(factory.matches(id));

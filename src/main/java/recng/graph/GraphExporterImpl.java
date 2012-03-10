@@ -5,8 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import recng.common.Consumer;
-
 /**
  * Exports graphs to file in csv format.
  *
@@ -39,12 +37,12 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
                 pw.println("#");
                 pw.println("# Nodes (index;id;node type ordinal)");
                 NodeExporter nodeExporter = new NodeExporter(graph, pw);
-                graph.getAllNodes(nodeExporter);
+                graph.forEachNode(nodeExporter);
                 System.out.println("Done exporting all nodes");
                 pw.println("# Edges (start node index;end node index;" +
                     "edge type ordinal;edge weight)");
                 EdgeExporter<T> edgeExporter = new EdgeExporter<T>(graph, pw);
-                graph.getAllEdges(edgeExporter);
+                graph.forEachEdge(edgeExporter);
                 System.out.println("Done exporting all edges");
             } finally {
                 if (pw != null)
@@ -59,8 +57,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
         }
     }
 
-    private class NodeExporter implements
-        Consumer<NodeID<T>, Void> {
+    private class NodeExporter implements NodeIDProcedure<T> {
 
         private final Graph<T> graph;
         private final int nodeCount;
@@ -74,7 +71,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
         }
 
         @Override
-        public Void consume(NodeID<T> node) {
+        public boolean apply(NodeID<T> node) {
             String line =
                 String.format("%s;%s;%s",
                               graph.getPrimaryKey(node),
@@ -88,13 +85,11 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
                                                  count, nodeCount));
 
             }
-
-            return null;
+            return true;
         }
     }
 
-    private static class EdgeExporter<T> implements
-        Consumer<GraphEdge<T>, Void> {
+    private static class EdgeExporter<T> implements GraphEdgeProcedure<T> {
 
         private final Graph<T> graph;
         private final int edgeCount;
@@ -108,8 +103,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
         }
 
         @Override
-        public Void
-            consume(GraphEdge<T> edge) {
+        public boolean apply(GraphEdge<T> edge) {
             String line =
                 String.format("%s;%s;%s;%s",
                               graph.getPrimaryKey(edge.getStartNode()),
@@ -121,7 +115,7 @@ public abstract class GraphExporterImpl<T> implements GraphExporter<T> {
             if (count % 1000000 == 0)
                 System.out.println(String.format("Exported %s of %s edges..",
                                                  count, edgeCount));
-            return null;
+            return true;
         }
     }
 

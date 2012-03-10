@@ -6,11 +6,13 @@ package recng.graph;
  * @author jon
  *
  * @param <T>
+ *            The generic type of the id.
  */
 public class NodeID<T> {
 
     private final T id;
     private final NodeType type;
+    private final int hc;
 
     /**
      * Creates a node id, uniquely identified by the combination of the id and
@@ -24,6 +26,7 @@ public class NodeID<T> {
     public NodeID(T id, NodeType type) {
         this.id = id;
         this.type = type;
+        this.hc = computeHashCode();
     }
 
     public T getID() {
@@ -36,6 +39,10 @@ public class NodeID<T> {
 
     @Override
     public int hashCode() {
+        return hc;
+    }
+
+    private int computeHashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + id.hashCode();

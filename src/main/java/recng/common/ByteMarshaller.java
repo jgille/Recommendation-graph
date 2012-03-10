@@ -2,9 +2,9 @@ package recng.common;
 
 /**
  * A Byte marshaller.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class ByteMarshaller extends AbstractMarshaller<Byte> {
 

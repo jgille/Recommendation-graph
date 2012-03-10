@@ -26,6 +26,7 @@ import recng.graph.GraphMetadata;
 import recng.graph.ImmutableGraphImpl;
 import recng.index.ID;
 import recng.index.StringIDs;
+import recng.index.StringToStringIdConverter;
 import recng.recommendations.data.ProductRepository;
 import recng.recommendations.domain.Product;
 import recng.recommendations.graph.RecommendationGraphMetadata;
@@ -48,11 +49,6 @@ public class RecommendationService {
         return model;
     }
 
-    @Override
-    public String toString() {
-        return model.getStatusString();
-    }
-
     /**
      * Sets up an all RAM recommendation model, i.e. graph + product data in
      * RAM.
@@ -65,37 +61,37 @@ public class RecommendationService {
      *            The product format file.
      */
     public static RecommendationService setup(String graphFile,
-                                              String productDataFile,
-                                              String productFormatFile)
+                                              String productDataFile, String productFormatFile)
         throws IOException {
         GraphMetadata graphMetadata = RecommendationGraphMetadata.getInstance();
-        GraphBuilder<ID<String>> builder =
-            ImmutableGraphImpl.Builder.create(graphMetadata);
-        GraphImporter<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(builder, graphMetadata) {
 
-                @Override
-                protected ID<String> parseNodeID(String id) {
-                    return StringIDs.parseID(id);
-                }
-            };
+        // HERE
+
+        GraphBuilder<ID<String>> builder = ImmutableGraphImpl.Builder
+            .create(graphMetadata);
+        GraphImporter<ID<String>> importer =
+            new GraphImporterImpl<ID<String>>(
+                                              builder, graphMetadata,
+                                              new StringToStringIdConverter());
+
         Graph<ID<String>> graph = importer.importGraph(graphFile);
-        TableMetadata metadata =
-            TableMetadataUtils.parseTableMetadata(productFormatFile);
+        TableMetadata metadata = TableMetadataUtils
+            .parseTableMetadata(productFormatFile);
+
         final KVStore<ID<String>, PropertyContainer> productData =
             new InMemoryKVStore<ID<String>, PropertyContainer>();
         CSVDescriptor descriptor = new CSVDescriptor();
-        descriptor.setGzipped(productDataFile.endsWith(".gz"))
-            .setMetadata(metadata);
+        descriptor.setGzipped(productDataFile.endsWith(".gz")).setMetadata(
+                                                                           metadata);
         PropertyContainerFactory factory = new BinPropertyContainer.Factory();
-        CSVPropertyCursor cursor =
-            CSVUtils.readAndParse(productDataFile, descriptor, factory);
+        CSVPropertyCursor cursor = CSVUtils.readAndParse(productDataFile,
+                                                         descriptor, factory);
         try {
             PropertyContainer props;
             int j = 0;
             while ((props = cursor.nextRow()) != null) {
-                String pid =
-                    (String) props.getProperty(FieldMetadata.ID.getFieldName());
+                String pid = (String) props.getProperty(FieldMetadata.ID
+                    .getFieldName());
                 productData.put(StringIDs.parseID(pid), props);
                 if (++j % 10000 == 0) {
                     System.out.println(String.format("Uploaded %s products..",
@@ -113,8 +109,8 @@ public class RecommendationService {
         fieldMetadata.add(FieldMetadataImpl.create(Product.IS_VALID_PROPERTY,
                                                    FieldMetadata.Type.BOOLEAN));
         final IDParser<ID<String>> idFactory = new StringIDParser();
-        final TableMetadata completeMetadata =
-            new TableMetadataImpl(fieldMetadata);
+        final TableMetadata completeMetadata = new TableMetadataImpl(
+                                                                     fieldMetadata);
         ProductRepository productRepo = new ProductRepository() {
 
             @Override
@@ -124,16 +120,15 @@ public class RecommendationService {
 
             @Override
             public Map<String, Object> getProductData(String id) {
-                PropertyContainer props =
-                    productData.get(idFactory.parse(id));
+                PropertyContainer props = productData.get(idFactory.parse(id));
                 if (props == null)
                     return null;
                 return props.asMap();
             }
         };
         RecommendationModel model =
-            new RecommendationModelImpl<ID<String>>(graph, productRepo,
-                                                    idFactory);
+            new RecommendationModelImpl<ID<String>>(
+                                                    graph, productRepo, idFactory);
         RecommendationService service = new RecommendationService(model);
         return service;
     }
@@ -150,5 +145,10 @@ public class RecommendationService {
         long t1 = System.currentTimeMillis();
         System.out.println(service);
         System.out.println("Done in " + (t1 - t0) + " ms.");
+    }
+
+    @Override
+    public String toString() {
+        return "RecommendationService [model=" + model + "]";
     }
 }

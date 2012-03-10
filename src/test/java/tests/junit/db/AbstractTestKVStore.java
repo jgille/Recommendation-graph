@@ -15,7 +15,8 @@ public abstract class AbstractTestKVStore {
 
     protected abstract KVStore<String, String> getKVStore();
 
-    @Test public void testPutGetRemove() {
+    @Test
+    public void testPutGetRemove() {
         KVStore<String, String> store = getKVStore();
         String key = "k";
         String value0 = "v0";

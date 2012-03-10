@@ -15,9 +15,9 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * Utility methods for creating {@link TableMetadata} instances.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class TableMetadataUtils {
 

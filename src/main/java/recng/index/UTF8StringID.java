@@ -11,36 +11,47 @@ import java.util.Arrays;
 public class UTF8StringID implements ID<String> {
 
     private final byte[] bytes;
+    private final int hc;
 
     private UTF8StringID(String id) {
         try {
             this.bytes = id.getBytes("UTF8");
-        } catch(UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
         }
+        this.hc = computeHashCode();
     }
 
     public String getID() {
         try {
             return new String(bytes, "UTF8");
-        } catch(UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    @Override public boolean equals(Object other) {
-        if(other == null || other.getClass() != getClass())
+    @Override
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (other == null || other.getClass() != getClass())
             return false;
-        UTF8StringID key = (UTF8StringID)other;
+        UTF8StringID key = (UTF8StringID) other;
         byte[] ba = key.bytes;
         return Arrays.equals(bytes, ba);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
+        return hc;
+    }
+
+    private int computeHashCode() {
         return Arrays.hashCode(bytes);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return getID();
     }
 

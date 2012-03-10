@@ -16,9 +16,9 @@ import recng.common.PropertyContainer;
 
 /**
  * Base class for testing {@link PropertyContainer}s.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public abstract class AbstractTestPropertyContainer {
 
@@ -45,7 +45,8 @@ public abstract class AbstractTestPropertyContainer {
 
     protected abstract PropertyContainer getPropertyContainer(TableMetadata fs);
 
-    @Test public void testGetSetContainsProperty() {
+    @Test
+    public void testGetSetContainsProperty() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN,
                                                                RELEASE_DATE));
         PropertyContainer properties = getPropertyContainer(fs);
@@ -85,7 +86,8 @@ public abstract class AbstractTestPropertyContainer {
         assertTrue(exception);
     }
 
-    @Test public void testGetKeys() {
+    @Test
+    public void testGetKeys() {
         TableMetadata fs = new TableMetadataImpl(Arrays.asList(PRICE, ISBN));
         PropertyContainer properties = getPropertyContainer(fs);
         List<String> fields = properties.getKeys();

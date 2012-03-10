@@ -26,9 +26,9 @@ import static org.junit.Assert.*;
 
 /**
  * Base test class for {@link EmbeddedDocumentStore}s.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public abstract class AbstractTestEmbeddedDocumentStore {
 

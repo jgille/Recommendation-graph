@@ -2,8 +2,6 @@ package recng.graph;
 
 import java.util.List;
 
-import recng.common.Consumer;
-
 /**
  * A graph containing nodes with (possibly weighted) edges to other nodes.
  *
@@ -24,23 +22,33 @@ public interface Graph<T> {
     Traverser<T> getMultiTraverser(List<NodeID<T>> sourceNodes, EdgeType eType);
 
     /**
-     * Gets all nodes in the graph and passes them to the consumer.
+     * Iterates all nodes in the graph and passes them to the procedure.
      *
      */
-    void getAllNodes(Consumer<NodeID<T>, Void> consumer);
+    void forEachNode(NodeIDProcedure<T> proc);
 
     /**
-     * Gets nodes of a certain type in the graph and passes them to the
-     * consumer.
+     * Iterates nodes of a certain type in the graph and passes them to the
+     * procedure.
      *
+     * Iteration will cease once the procedure call returns false.
      */
-    void getNodes(Consumer<NodeID<T>, Void> consumer, NodeType nodeType);
+    void forEachNode(NodeIDProcedure<T> proc, NodeType nodeType);
 
     /**
-     * Gets all edges in the graph and passes them to the consumer.
+     * Iterates all edges in the graph and passes them to the procedure.
      *
+     * Iteration will cease once the procedure call returns false.
      */
-    void getAllEdges(Consumer<GraphEdge<T>, Void> consumer);
+    void forEachEdge(GraphEdgeProcedure<T> proc);
+
+    /**
+     * Iterates all neighbors for a node, following a certain edge type, and
+     * passes them to the procedure.
+     *
+     * Iteration will cease once the procedure call returns false.
+     */
+    void forEachNeighbor(NodeID<T> source, EdgeType eType, NodeIDProcedure<T> proc);
 
     /**
      * Gets the number of nodes in this graph.
@@ -68,7 +76,7 @@ public interface Graph<T> {
     GraphMetadata getMetadata();
 
     /**
-     * Gets status info for this graph.
+     * Gets stats for this graph.
      */
-    GraphStatus getStatus();
+    GraphStats getStats();
 }

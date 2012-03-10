@@ -69,10 +69,6 @@ public class TableMetadataImpl implements TableMetadata {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        for (FieldMetadata field : fields)
-            sb.append("\n").append(field);
-        sb.append("\n]");
-        return sb.toString();
+        return "TableMetadataImpl [fields=" + fields + "]";
     }
 }

@@ -12,35 +12,32 @@ import java.util.List;
  */
 abstract class AbstractTraverser<T> implements Traverser<T> {
 
+    private final Graph<T> graph;
     private final EdgeType edgeType;
-    private EdgeFilter<T> returnableFilter =
-        new EdgeFilter<T>() {
-            public boolean accepts(NodeID<T> start, NodeID<T> end) {
-                return true;
-            }
-        };
-    private int maxDepth = 1;
-    private int maxReturnedEdges = Integer.MAX_VALUE;
-    private int maxTraversedEdges = Integer.MAX_VALUE;
+    private EdgeFilter<T> returnableFilter;
+    private int maxDepth;
+    private int maxReturnedEdges;
+    private int maxTraversedEdges;
 
     /**
      * Creates a traverser.
      *
+     * @param graph
+     *            The graph instance that is being traversed.
      * @param edgeType
      *            The type of edges to follow
-     * @param returnableFilter
-     *            A filter used to decide if a traversed edge should be included
-     *            in the result.
-     * @param maxDepth
-     *            The maximum depth of the traversal
-     * @param maxReturnedEdges
-     *            The maximum number of edges that may be returned
-     * @param maxTraversedEdges
-     *            The maximum number of edges that may be traversed before
-     *            returning
      */
-    public AbstractTraverser(EdgeType edgeType) {
+    public AbstractTraverser(Graph<T> graph, EdgeType edgeType) {
+        this.graph = graph;
         this.edgeType = edgeType;
+        this.returnableFilter = new EdgeFilter<T>() {
+            public boolean accepts(NodeID<T> start, NodeID<T> end) {
+                return true;
+            }
+        };
+        this.maxDepth = 1;
+        this.maxReturnedEdges = Integer.MAX_VALUE;
+        this.maxTraversedEdges = Integer.MAX_VALUE;
     }
 
     public EdgeType getEdgeType() {
@@ -100,18 +97,15 @@ abstract class AbstractTraverser<T> implements Traverser<T> {
     /**
      * Return the graph that is being traversed.
      */
-    protected abstract Graph<T> getGraph();
+    protected Graph<T> getGraph() {
+        return graph;
+    }
 
     protected void logTraversalStats(long startTime, int returnedEdges,
                                      int traversedEdges) {
-        long now = System.currentTimeMillis();
-        long delta = now - startTime;
-        GraphStatus status = getGraph().getStatus();
-        status.incNumberOfTraversals();
-        status.incRequestedEdges(getMaxReturnedEdges());
-        status.incReturnedEdges(returnedEdges);
+        GraphStats status = getGraph().getStats();
+        status.incTraversals();
         status.incTraversedEdges(traversedEdges);
-        status.incTraversalTime(delta);
     }
 
 }

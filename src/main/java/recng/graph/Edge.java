@@ -2,7 +2,7 @@ package recng.graph;
 
 /**
  * An edge in a graph.
- *
+ * 
  * @author Jon Ivmark
  */
 public interface Edge<T> {

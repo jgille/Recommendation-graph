@@ -3,9 +3,9 @@ package recng.recommendations;
 /**
  * Classes used to represent an ID in some other (possibly more memory efficent)
  * way should implement this interface.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  *            The generic type of the ID representation.
  */

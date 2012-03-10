@@ -14,26 +14,36 @@ import java.util.regex.Pattern;
 public class PrefixLongSuffixID extends PrefixSuffixID {
 
     private final long root;
+    private final int hc;
 
     private PrefixLongSuffixID(String prefix, long root, String suffix) {
         super(prefix, suffix);
         this.root = root;
+        this.hc = computeHashCode();
     }
 
     public String getID() {
         return getPrefix() + root + getSuffix();
     }
 
-    @Override public boolean equals(Object other) {
-        if(other == null || other.getClass() != getClass())
+    @Override
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (other == null || other.getClass() != getClass())
             return false;
-        PrefixLongSuffixID key = (PrefixLongSuffixID)other;
+        PrefixLongSuffixID key = (PrefixLongSuffixID) other;
         if (root != key.root)
             return false;
         return super.equals(other);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
+        return hc;
+    }
+
+    private int computeHashCode() {
         return 7 * (11 * Long.valueOf(root).hashCode() + super.hashCode());
     }
 

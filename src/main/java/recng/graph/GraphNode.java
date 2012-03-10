@@ -17,6 +17,14 @@ interface GraphNode<T> {
     Iterator<TraversableGraphEdge<T>> traverseNeighbors(EdgeType edgeType);
 
     /**
+     * Iterates all neighbors for this node, following a certain edge type, and
+     * passes them to the procedure.
+     * 
+     * Iteration will cease once the procedure call returns false.
+     */
+    void forEachNeighbor(EdgeType edgeType, NodeIDProcedure<T> proc);
+
+    /**
      * Return the node id.
      */
     NodeID<T> getNodeId();
@@ -28,7 +36,7 @@ interface GraphNode<T> {
 
     /**
      * Gets the graph this node is a member of.
-     * 
+     *
      */
     Graph<T> getGraph();
 }

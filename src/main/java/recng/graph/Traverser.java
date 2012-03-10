@@ -7,9 +7,9 @@ import java.util.List;
  * 
  * NOTE: The effect of calling the setter method after a traversal is started is
  * undefined. All setters should be called before the traversal is commenced.
- *
+ * 
  * NOTE: Implementations of this class can be assumed to be non thread safe.
- *
+ * 
  * @author Jon Ivmark
  */
 public interface Traverser<T> {
@@ -17,9 +17,9 @@ public interface Traverser<T> {
     /**
      * Gets and iterator used to traverse product nodes connected to a product,
      * according to the rules setup in the traverser.
-     *
+     * 
      * Neighbors are traversed ordered by descending edge weight.
-     *
+     * 
      * NOTE: Make sure you always close the cursor once you've started to
      * traverse it, i.e. close it in a finally block.
      */
@@ -28,7 +28,7 @@ public interface Traverser<T> {
     /**
      * Gets the entire traversal path according to the rules setup in the
      * traverser.
-     *
+     * 
      * Neighbors are traversed ordered by descending edge weight.
      */
     List<GraphEdge<T>> getPath();

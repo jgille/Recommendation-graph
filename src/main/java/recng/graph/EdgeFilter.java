@@ -2,9 +2,9 @@ package recng.graph;
 
 /**
  * Used to filter edges during graph traversal.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <T>
  */
 public interface EdgeFilter<T> {

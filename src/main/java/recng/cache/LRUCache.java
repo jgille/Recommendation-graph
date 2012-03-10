@@ -7,9 +7,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A LRU cache based on a LinkedHashMap.
- *
+ * 
  * This class is thread safe.
- *
+ * 
  * @author Jon Ivmark
  */
 public class LRUCache<K, V> implements Cache<K, V> {
@@ -29,7 +29,7 @@ public class LRUCache<K, V> implements Cache<K, V> {
 
     /**
      * Constructs a new cache.
-     *
+     * 
      * @param maxSize
      *            The maximum number of elements in the cache.
      * @param maxWeight
@@ -42,24 +42,24 @@ public class LRUCache<K, V> implements Cache<K, V> {
         this.maxWeight = maxWeight;
         this.weigher = weigher;
         Map<K, V> underlying = new LinkedHashMap<K, V>(maxSize + 1, LOAD_FACTOR, true) {
-                private static final long serialVersionUID = 201212231211L;
+            private static final long serialVersionUID = 201212231211L;
 
-                @Override
-                protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-                    if ((maxSize >= 0 && super.size() > maxSize) ||
-                        (maxWeight >= 0 && getWeight() > maxWeight)) {
-                        evict(eldest.getKey());
-                    }
-                    // Note: Always return false here since we modify the map
-                    // ourselves through evict
-                    return false;
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                if ((maxSize >= 0 && super.size() > maxSize) ||
+                    (maxWeight >= 0 && getWeight() > maxWeight)) {
+                    evict(eldest.getKey());
                 }
+                // Note: Always return false here since we modify the map
+                // ourselves through evict
+                return false;
+            }
         };
         this.cache = Collections.synchronizedMap(underlying);
     }
 
     public V cache(K key, V value) {
-        if(key == null)
+        if (key == null)
             throw new IllegalArgumentException("Null key not allowed");
         if (weigher != null) {
             if (cache.containsKey(key)) {
@@ -112,7 +112,8 @@ public class LRUCache<K, V> implements Cache<K, V> {
         return weigher.weigh(ENTRY_OVERHEAD, key, value);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return String.format("{maxSize: %s,\n size: %s,\n maxWeight: %s,\n weight: %s}",
                              maxSize, cache.size(), maxWeight, getWeight());
     }

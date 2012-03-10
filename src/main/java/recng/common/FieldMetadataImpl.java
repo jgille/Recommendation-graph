@@ -55,7 +55,7 @@ public class FieldMetadataImpl implements FieldMetadata {
 
     @Override
     public String toString() {
-        return String.format("Name: %s, Type: %s, Repeated: %s)",
+        return String.format("%s (type: %s, repeated: %s)",
                              fieldName, type, repeated);
     }
 

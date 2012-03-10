@@ -2,9 +2,9 @@ package recng.common;
 
 /**
  * Base marshaller class.
- *
+ * 
  * @author jon
- *
+ * 
  */
 abstract class AbstractMarshaller<E> implements Marshaller {
 

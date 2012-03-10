@@ -50,7 +50,6 @@ public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
     // Used to avoid using the same start node twice
     private final Set<NodeID<T>> startNodes = new HashSet<NodeID<T>>();
 
-
     /**
      * Created an iterator originating at a start node.
      *
@@ -106,11 +105,11 @@ public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
         if (currentDepth > maxDepth)
             return false; // We've traversed too deeply
 
-        // Iterate immediate out edges until a valid edge is found (if one exists)
+        // Iterate immediate out edges until a valid edge is found (if one
+        // exists)
         while (edgeIterator.hasNext()) {
             if (traversedEdgeCount++ >= maxTraversedEdges)
                 return false; // We've traversed too many edges
-
             TraversableGraphEdge<T> edge = edgeIterator.next();
             GraphNode<T> startNode = edge.getStartNode();
             GraphNode<T> endNode = edge.getEndNode();
@@ -138,7 +137,7 @@ public class GraphIterator<T> implements Iterator<GraphEdge<T>> {
         }
         // If no edge was found and we've exhausted all immediate neighbors,
         // dequeue a neighbor node and traverse it's out edges (thereby
-        // descending on level deeper into the graph).
+        // descending one level deeper into the graph).
         if (!neighborQueue.isEmpty()) {
             NodeAndDepth<T> neighbor = neighborQueue.removeFirst();
             currentDepth = neighbor.depth + 1;

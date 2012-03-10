@@ -13,9 +13,9 @@ import recng.db.DocumentStore;
 
 /**
  * A key/value store backed by mongodb.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public class MongoKVStore implements DocumentStore<String> {
 

@@ -1,13 +1,13 @@
 package recng.graph;
 
 /**
- *
+ * 
  * A cursor returned from a graph traversal.
- *
+ * 
  * @author jon
- *
+ * 
  */
-class GraphCursorImpl<T> implements GraphCursor<T>  {
+class GraphCursorImpl<T> implements GraphCursor<T> {
     private boolean isClosed = false;
     private final GraphIterator<T> iterator;
 

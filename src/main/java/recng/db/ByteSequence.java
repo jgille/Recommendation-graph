@@ -10,7 +10,7 @@ public interface ByteSequence {
 
     /**
      * Appends data to the sequence.
-     *
+     * 
      * @return The offset in the sequence at which the data was written.
      */
     int append(byte[] data);

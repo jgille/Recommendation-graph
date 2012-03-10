@@ -30,4 +30,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     public TableMetadata getMetadata() {
         return fields;
     }
+
+    @Override
+    public String toString() {
+        return "ProductRepositoryImpl [db=" + db + ", fields=" + fields + "]";
+    }
 }

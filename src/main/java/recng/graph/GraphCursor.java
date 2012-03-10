@@ -2,9 +2,9 @@ package recng.graph;
 
 /**
  * A cursor returned from a graph traversal.
- *
+ * 
  * @author jon
- *
+ * 
  */
 public interface GraphCursor<T> {
 
@@ -15,7 +15,7 @@ public interface GraphCursor<T> {
 
     /**
      * Gets the next available edge.
-     *
+     * 
      */
     GraphEdge<T> next();
 

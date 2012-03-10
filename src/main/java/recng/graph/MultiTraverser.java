@@ -18,7 +18,9 @@ class MultiTraverser<T> extends AbstractTraverser<T> implements Traverser<T> {
 
     /**
      * Creates a traverser.
-     *
+     * 
+     * @param graph
+     *            The graph to traverse.
      * @param startNodes
      *            The nodes to start traversing from
      * @param edgeType
@@ -33,8 +35,8 @@ class MultiTraverser<T> extends AbstractTraverser<T> implements Traverser<T> {
      * @param maxTraversedEdges
      *            The maximum number of traversed edges per start node.
      */
-    MultiTraverser(List<GraphNode<T>> startNodes, EdgeType edgeType) {
-        super(edgeType);
+    MultiTraverser(Graph<T> graph, List<GraphNode<T>> startNodes, EdgeType edgeType) {
+        super(graph, edgeType);
         this.startNodes = startNodes;
     }
 

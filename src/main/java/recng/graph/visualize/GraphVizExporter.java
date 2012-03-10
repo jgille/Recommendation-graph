@@ -1,8 +1,5 @@
 package recng.graph.visualize;
 
-import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TObjectIntHashMap;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +9,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import recng.common.Consumer;
+import org.apache.mahout.math.map.AbstractObjectIntMap;
+import org.apache.mahout.math.map.OpenObjectIntHashMap;
+
 import recng.common.io.Closer;
 import recng.graph.EdgeFilter;
 import recng.graph.EdgeType;
@@ -20,16 +19,19 @@ import recng.graph.Graph;
 import recng.graph.GraphBuilder;
 import recng.graph.GraphCursor;
 import recng.graph.GraphEdge;
+import recng.graph.GraphEdgeProcedure;
 import recng.graph.GraphExporter;
 import recng.graph.GraphImporter;
 import recng.graph.GraphImporterImpl;
 import recng.graph.GraphMetadata;
 import recng.graph.ImmutableGraphImpl;
 import recng.graph.NodeID;
+import recng.graph.NodeIDProcedure;
 import recng.graph.NodeType;
 import recng.graph.Traverser;
 import recng.index.ID;
 import recng.index.StringIDs;
+import recng.index.StringToStringIdConverter;
 import recng.recommendations.domain.RecommendationNodeType;
 import recng.recommendations.graph.RecommendationGraphMetadata;
 
@@ -71,20 +73,20 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
 
     private void writeFullGraph(Graph<T> graph,
                                 final GraphVizWriter<T> graphWriter) {
-        graph.getAllNodes(new Consumer<NodeID<T>, Void>() {
+        graph.forEachNode(new NodeIDProcedure<T>() {
             @Override
-            public Void consume(NodeID<T> node) {
+            public boolean apply(NodeID<T> node) {
                 graphWriter.writeNode(node);
-                return null;
+                return true;
             }
         });
 
-        graph.getAllEdges(new Consumer<GraphEdge<T>, Void>() {
+        graph.forEachEdge(new GraphEdgeProcedure<T>() {
 
             @Override
-            public Void consume(GraphEdge<T> edge) {
+            public boolean apply(GraphEdge<T> edge) {
                 graphWriter.writeEdge(edge);
-                return null;
+                return true;
             }
         });
     }
@@ -94,14 +96,12 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
         final Set<NodeID<T>> visitedNodes = new HashSet<NodeID<T>>();
         int edgeCount = 0;
 
-        TObjectIntMap<NodeID<T>> outEdgeCounts =
-            new TObjectIntHashMap<NodeID<T>>();
+        AbstractObjectIntMap<NodeID<T>> outEdgeCounts = new OpenObjectIntHashMap<NodeID<T>>();
         outer: for (NodeID<T> node : sources) {
             graphWriter.writeNode(node);
             visitedNodes.add(node);
             for (EdgeType eType : graph.getMetadata().getEdgeTypes()) {
-                Traverser<T> traverser =
-                    graph.getTraverser(node, eType);
+                Traverser<T> traverser = graph.getTraverser(node, eType);
                 EdgeFilter<T> filter = new EdgeFilter<T>() {
 
                     @Override
@@ -110,8 +110,7 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
                         return visitedNodes.contains(startNode);
                     }
                 };
-                traverser.setMaxDepth(maxDepth)
-                    .setReturnableFilter(filter);
+                traverser.setMaxDepth(maxDepth).setReturnableFilter(filter);
                 GraphCursor<T> cursor = traverser.traverse();
                 try {
                     while (cursor.hasNext()) {
@@ -121,7 +120,7 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
                             outEdgeCounts.put(startNode, 0);
 
                         if (outEdgeCounts.get(startNode) <= maxEdgesPerNode) {
-                            outEdgeCounts.increment(startNode);
+                            outEdgeCounts.adjustOrPutValue(startNode, 1, 1);
                             graphWriter.writeEdge(edge);
                             visitedNodes.add(startNode);
                             NodeID<T> endNode = edge.getEndNode();
@@ -148,7 +147,8 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
             writer = new PrintWriter(bw);
             writer.println("digraph G {");
             final GraphVizWriter<T> graphWriter =
-                new GraphVizWriter<T>(graph.getMetadata(), writer);
+                new GraphVizWriter<T>(
+                                      graph.getMetadata(), writer);
 
             if (sources == null || sources.isEmpty()) {
                 writeFullGraph(graph, graphWriter);
@@ -186,15 +186,15 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
             int nColors = GraphVizConstants.COLORS.length;
             int etIndex = 0;
             for (EdgeType edgeType : metadata.getEdgeTypes())
-                edgeColors.put(edgeType,
-                               GraphVizConstants.COLORS[etIndex++ % nColors]);
+                edgeColors.put(edgeType, GraphVizConstants.COLORS[etIndex++
+                    % nColors]);
         }
 
         public void writeNode(NodeID<T> node) {
             String id = node.getID().toString();
             NodeType nodeType = node.getNodeType();
-            writer.println(String.format("\"%s\" [shape=\"%s\"];",
-                                         id, nodeShapes.get(nodeType)));
+            writer.println(String.format("\"%s\" [shape=\"%s\"];", id,
+                                         nodeShapes.get(nodeType)));
         }
 
         public void writeEdge(GraphEdge<T> edge) {
@@ -203,40 +203,33 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
             float weight = edge.getWeight();
             EdgeType edgeType = edge.getType();
             if (edgeType.isWeighted())
-                writer
-                    .println(String
-                        .format("\"%s\"->\"%s\" [label=\"t:%s\\nw:%.5f\" color=\"%s\" fontsize=12];",
-                                from, to, edgeType.name(), weight,
-                                edgeColors.get(edgeType)));
+                writer.println(String
+                    .format("\"%s\"->\"%s\" [label=\"t:%s\\nw:%.5f\" color=\"%s\" fontsize=12];",
+                            from, to, edgeType.name(), weight,
+                            edgeColors.get(edgeType)));
             else
-                writer
-                    .println(String
-                        .format("\"%s\"->\"%s\" [label=\"t:%s\" color=\"%s\" fontsize=12];",
-                                from, to, edgeType.name(),
-                                edgeColors.get(edgeType)));
+                writer.println(String
+                    .format("\"%s\"->\"%s\" [label=\"t:%s\" color=\"%s\" fontsize=12];",
+                            from, to, edgeType.name(),
+                            edgeColors.get(edgeType)));
 
         }
     }
 
     public static void main(String[] args) {
         GraphMetadata metadata = RecommendationGraphMetadata.getInstance();
-        GraphBuilder<ID<String>> builder =
-            ImmutableGraphImpl.Builder.create(metadata);
+        GraphBuilder<ID<String>> builder = ImmutableGraphImpl.Builder
+            .create(metadata);
         GraphImporter<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(builder, metadata) {
+            new GraphImporterImpl<ID<String>>(
+                                              builder, metadata, new StringToStringIdConverter());
 
-                @Override
-                protected ID<String> parseNodeID(String id) {
-                    return StringIDs.parseID(id);
-                }
-            };
         Graph<ID<String>> graph = importer.importGraph(args[0]);
         Set<NodeID<ID<String>>> sources = new HashSet<NodeID<ID<String>>>();
         for (int i = 2; i < args.length; i++)
             sources.add(new NodeID<ID<String>>(StringIDs.parseID(args[i]),
                                                RecommendationNodeType.PRODUCT));
-        GraphVizExporter<ID<String>> graphVizExporter =
-            new GraphVizExporter<ID<String>>();
+        GraphVizExporter<ID<String>> graphVizExporter = new GraphVizExporter<ID<String>>();
         graphVizExporter.setSources(sources);
         graphVizExporter.exportGraph(graph, args[1]);
     }

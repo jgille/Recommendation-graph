@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import recng.common.BinPropertyContainer;
+import recng.common.ArrayPropertyContainer;
 import recng.common.TableMetadata;
 import recng.common.WeightedPropertyContainer;
 
@@ -18,25 +18,25 @@ import recng.common.WeightedPropertyContainer;
  */
 public class ProductImpl implements Product {
 
-    private final String id;
     private boolean isValid;
     private final WeightedPropertyContainer properties;
 
     /**
      * Constructs a new product.
      *
-     * @param id
-     *            The product ID
      * @param isValid
      *            Whether or not this product is valid.
      * @param fields
      *            The valid properties for this product.
      */
-    public ProductImpl(String id, boolean isValid, TableMetadata fields) {
-        this.id = id;
-        this.properties =
-            new BinPropertyContainer.Factory(false).create(fields);
+    public ProductImpl(boolean isValid, TableMetadata fields) {
+        this.properties = new ArrayPropertyContainer(fields);
         setIsValid(isValid);
+    }
+
+    @Override
+    public String getID() {
+        return implicitCast(getProperty(ID_PROPERTY));
     }
 
     @Override
@@ -104,7 +104,7 @@ public class ProductImpl implements Product {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Id: ").append(id);
+        StringBuilder sb = new StringBuilder("Id: ").append(getID());
         sb.append(". Properties: { ").append(properties).append(" }");
         return sb.toString();
     }

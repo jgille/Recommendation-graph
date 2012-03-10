@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 /**
  * An ever empty iterator.
- *
+ * 
  * @author jon
- *
+ * 
  * @param <E>
  */
 class EmptyIterator<E> implements Iterator<E> {

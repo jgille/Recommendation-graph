@@ -16,6 +16,7 @@ import java.util.Map;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import recng.common.FieldMetadata;
+import recng.common.FieldType;
 import recng.common.Marshaller;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataUtils;
@@ -297,7 +298,7 @@ public class H2KVStore implements EmbeddedDocumentStore<String> {
     private String getSQLType(FieldMetadata fm) {
         if (fm.isRepeated())
             return "ARRAY";
-        if (fm.getType() == FieldMetadata.Type.STRING)
+        if (fm.getType() == FieldType.STRING)
             return "VARCHAR(20000)";
         return "VARCHAR(32)";
     }

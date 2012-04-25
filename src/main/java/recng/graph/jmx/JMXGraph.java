@@ -8,13 +8,15 @@ import recng.graph.EdgeType;
 import recng.graph.Graph;
 import recng.graph.GraphStats;
 import recng.graph.NodeType;
+import recng.jmx.AbstractMBean;
 
-public class JMXGraph<T> implements JMXGraphMBean {
+public class JMXGraph<T> extends AbstractMBean implements JMXGraphMBean {
 
     private final Graph<T> graph;
 
     public JMXGraph(Graph<T> graph) {
         this.graph = graph;
+        setBeanName(graph.getClass().getName());
     }
 
     @Override

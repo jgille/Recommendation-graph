@@ -70,14 +70,14 @@ public class TableMetadataUtils {
                 continue;
             String fieldName = m.group(1);
             String typeName = m.group(2).toUpperCase();
-            FieldMetadata.Type type = FieldMetadata.Type.valueOf(typeName);
+            FieldType type = FieldType.valueOf(typeName);
             fields.add(getFieldMetadata(fieldName, type));
         }
         return fields;
     }
 
     private static FieldMetadata getFieldMetadata(String fieldName,
-                                                  FieldMetadata.Type type) {
+                                                  FieldType type) {
         boolean required = isRequired(fieldName);
         Object defaultValue = getDefaultValue(fieldName, type);
         return new FieldMetadataImpl.Builder(fieldName, type)
@@ -85,7 +85,7 @@ public class TableMetadataUtils {
     }
 
     private static Object getDefaultValue(String fieldName,
-                                          FieldMetadata.Type type) {
+                                          FieldType type) {
         return null; // TODO: Implement
     }
 

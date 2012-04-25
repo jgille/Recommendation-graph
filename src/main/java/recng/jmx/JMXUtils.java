@@ -1,7 +1,6 @@
 package recng.jmx;
 
 import java.lang.management.ManagementFactory;
-import java.util.Collections;
 import java.util.Map;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -15,22 +14,22 @@ import org.apache.mahout.math.map.OpenObjectIntHashMap;
 
 public class JMXUtils {
 
-    private static final String DEFAULT_DOMAIN = "recng";
-
     private static final AbstractObjectIntMap<String> M_BEAN_NAMES =
         new OpenObjectIntHashMap<String>();
 
-    public static void registerMBean(Object mBean) {
-        String mBeanName = mBean.getClass().getSimpleName();
+    public static void registerMBean(MBean mBean) {
+        String mBeanName = mBean.getBeanName();
+        Map<String, String> mBeanProperties = mBean.getProperties();
         synchronized (M_BEAN_NAMES) {
             int cnt = M_BEAN_NAMES.adjustOrPutValue(mBeanName, 1, 1);
             mBeanName = String.format("%s(%d)", mBeanName, cnt);
         }
-        registerMBean(mBean, DEFAULT_DOMAIN, Collections.singletonMap("name", mBeanName));
+        mBeanProperties.put("name", mBeanName);
+        registerMBean(mBean, mBean.getDomain(), mBeanProperties);
     }
 
-    public static void registerMBean(Object mBean, String mBeanDomain,
-                                     Map<String, String> mBeanProperties) {
+    private static void registerMBean(Object mBean, String mBeanDomain,
+                                      Map<String, String> mBeanProperties) {
         try {
             StringBuilder mBeanObjectPattern = new StringBuilder(mBeanDomain).append(":");
             boolean first = true;

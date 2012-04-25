@@ -20,6 +20,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import recng.common.BinPropertyContainer;
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
+import recng.common.FieldType;
 import recng.common.PropertyContainer;
 import recng.common.PropertyContainerFactory;
 import recng.common.TableMetadata;
@@ -132,11 +133,11 @@ public class TestCSVUtils {
     private static TableMetadata getMetadata() {
         List<FieldMetadata> fields = new ArrayList<FieldMetadata>();
         fields.add(FieldMetadataImpl.create(COLUMNS.get(0),
-                                            FieldMetadata.Type.STRING));
+                                            FieldType.STRING));
         fields.add(FieldMetadataImpl.create(COLUMNS.get(1),
-                                            FieldMetadata.Type.DOUBLE));
+                                            FieldType.DOUBLE));
         fields.add(new FieldMetadataImpl.Builder(COLUMNS.get(2),
-                                                 FieldMetadata.Type.INT)
+                                                 FieldType.INT)
             .setDefaultValue(DEFAULT_INT).build());
         return new TableMetadataImpl(fields);
     }

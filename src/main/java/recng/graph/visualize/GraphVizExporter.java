@@ -16,24 +16,15 @@ import recng.common.io.Closer;
 import recng.graph.EdgeFilter;
 import recng.graph.EdgeType;
 import recng.graph.Graph;
-import recng.graph.GraphBuilder;
 import recng.graph.GraphCursor;
 import recng.graph.GraphEdge;
 import recng.graph.GraphEdgeProcedure;
 import recng.graph.GraphExporter;
-import recng.graph.GraphImporter;
-import recng.graph.GraphImporterImpl;
 import recng.graph.GraphMetadata;
-import recng.graph.ImmutableGraphImpl;
 import recng.graph.NodeID;
 import recng.graph.NodeIDProcedure;
 import recng.graph.NodeType;
 import recng.graph.Traverser;
-import recng.index.ID;
-import recng.index.StringIDs;
-import recng.index.StringToStringIdConverter;
-import recng.recommendations.domain.RecommendationNodeType;
-import recng.recommendations.graph.RecommendationGraphMetadata;
 
 /**
  * Exports a graph to a text file in graphviz format.
@@ -214,23 +205,5 @@ public class GraphVizExporter<T> implements GraphExporter<T> {
                             edgeColors.get(edgeType)));
 
         }
-    }
-
-    public static void main(String[] args) {
-        GraphMetadata metadata = RecommendationGraphMetadata.getInstance();
-        GraphBuilder<ID<String>> builder = ImmutableGraphImpl.Builder
-            .create(metadata);
-        GraphImporter<ID<String>> importer =
-            new GraphImporterImpl<ID<String>>(
-                                              builder, metadata, new StringToStringIdConverter());
-
-        Graph<ID<String>> graph = importer.importGraph(args[0]);
-        Set<NodeID<ID<String>>> sources = new HashSet<NodeID<ID<String>>>();
-        for (int i = 2; i < args.length; i++)
-            sources.add(new NodeID<ID<String>>(StringIDs.parseID(args[i]),
-                                               RecommendationNodeType.PRODUCT));
-        GraphVizExporter<ID<String>> graphVizExporter = new GraphVizExporter<ID<String>>();
-        graphVizExporter.setSources(sources);
-        graphVizExporter.exportGraph(graph, args[1]);
     }
 }

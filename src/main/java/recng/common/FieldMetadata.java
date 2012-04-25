@@ -1,15 +1,16 @@
 package recng.common;
 
+
 /**
  * Metadata for a field (key) in a key/value pair.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public interface FieldMetadata {
 
     public static final FieldMetadata ID =
-        new FieldMetadataImpl.Builder("__id", Type.STRING).setRequired(true)
+        new FieldMetadataImpl.Builder("__id", FieldType.STRING).setRequired(true)
             .build();
 
     /**
@@ -26,7 +27,7 @@ public interface FieldMetadata {
     /**
      * Returns the type of the mapped value for this field.
      */
-    Type getType();
+    FieldType getType();
 
     /**
      * Returns whether or not this field is repeated (a list) or not.
@@ -43,8 +44,4 @@ public interface FieldMetadata {
      * values).
      */
     boolean isRequired();
-
-    public static enum Type {
-        BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BOOLEAN, STRING, DATE;
-    }
 }

@@ -11,15 +11,16 @@ import org.apache.mahout.math.map.OpenObjectLongHashMap;
 
 /**
  * Base class for {@link KVStore} mapping Strings to byte arrays.
- * 
+ *
  * This is an append-only data structure.
- * 
+ *
  * TODO: Add more documentation
- * 
+ *
  * @author jon
- * 
+ *
  */
 public abstract class AbstractBinKVStore implements KVStore<String, byte[]> {
+
 
     private static final String PREFIX = "#!_~*:";
     private static final String SUFFIX = "#!_~*!";

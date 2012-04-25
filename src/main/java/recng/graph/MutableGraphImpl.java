@@ -7,11 +7,14 @@ import org.apache.mahout.math.list.LongArrayList;
 import org.apache.mahout.math.map.AbstractObjectIntMap;
 import org.apache.mahout.math.map.OpenObjectIntHashMap;
 
+import recng.graph.jmx.JMXGraph;
+import recng.jmx.JMXUtils;
+
 /**
  * A mutable graph implementation.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public class MutableGraphImpl<T> extends AbstractGraph<T> implements
     MutableGraph<T> {
@@ -60,6 +63,7 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
             this.nodes.add(node);
             i++;
         }
+        JMXUtils.registerMBean(new JMXGraph<T>(this));
     }
 
     @Override
@@ -189,7 +193,7 @@ public class MutableGraphImpl<T> extends AbstractGraph<T> implements
 
     /**
      * Creates a node if it does not already exist.
-     * 
+     *
      * Not thread safe and needs synchronization.
      */
     private int upsertNode(NodeID<T> nodeId) {

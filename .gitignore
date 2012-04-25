@@ -1,6 +1,5 @@
 *.class
 *.*#
-build/
-bin/
-slask/
-reports
+target
+bin
+.settings

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
+import recng.common.FieldType;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 import recng.common.PropertyContainer;
@@ -24,23 +25,23 @@ public abstract class AbstractTestPropertyContainer {
 
     protected static final FieldMetadata PRICE =
         FieldMetadataImpl.create("Price",
-                                 FieldMetadata.Type.INT);
+                                 FieldType.INT);
     protected static final FieldMetadata ISBN =
         FieldMetadataImpl.create("ISBN",
-                                 FieldMetadata.Type.STRING);
+                                 FieldType.STRING);
 
     protected static final FieldMetadata RELEASE_DATE =
         FieldMetadataImpl.create("ReleaseDate",
-                                 FieldMetadata.Type.LONG);
+                                 FieldType.LONG);
 
     protected static final FieldMetadata CATEGORIES =
         new FieldMetadataImpl.Builder("Categories",
-                                      FieldMetadata.Type.STRING)
+                                      FieldType.STRING)
             .setRepeated(true).build();
 
     protected static final FieldMetadata INT_LIST =
         new FieldMetadataImpl.Builder("IntList",
-                                      FieldMetadata.Type.INT).setRepeated(true)
+                                      FieldType.INT).setRepeated(true)
             .build();
 
     protected abstract PropertyContainer getPropertyContainer(TableMetadata fs);

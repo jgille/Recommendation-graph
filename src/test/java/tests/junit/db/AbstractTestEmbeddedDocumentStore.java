@@ -18,6 +18,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
+import recng.common.FieldType;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 import recng.common.io.CSVDialect;
@@ -36,17 +37,17 @@ public abstract class AbstractTestEmbeddedDocumentStore {
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected static final FieldMetadata ID =
-        FieldMetadataImpl.create("__id", FieldMetadata.Type.STRING);
+        FieldMetadataImpl.create("__id", FieldType.STRING);
     private static final FieldMetadata NAME =
-        FieldMetadataImpl.create("Name", FieldMetadata.Type.STRING);
+        FieldMetadataImpl.create("Name", FieldType.STRING);
     private static final FieldMetadata PRICE =
-        FieldMetadataImpl.create("Price", FieldMetadata.Type.DOUBLE);
+        FieldMetadataImpl.create("Price", FieldType.DOUBLE);
     private static final FieldMetadata COUNT =
-        FieldMetadataImpl.create("Count", FieldMetadata.Type.INT);
+        FieldMetadataImpl.create("Count", FieldType.INT);
     private static final FieldMetadata VALID =
-        FieldMetadataImpl.create("Valid", FieldMetadata.Type.BOOLEAN);
+        FieldMetadataImpl.create("Valid", FieldType.BOOLEAN);
     private static final FieldMetadata CATEGORIES =
-        new FieldMetadataImpl.Builder("Categories", FieldMetadata.Type.STRING)
+        new FieldMetadataImpl.Builder("Categories", FieldType.STRING)
             .setRepeated(true).build();
 
     protected String getTempFolder() {

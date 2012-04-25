@@ -7,7 +7,5 @@ public interface JMXProfilerMBean {
 
     List<Map<String, String>> getEntries();
 
-    String getProfilerClass();
-
     String getProfilerSettings();
 }

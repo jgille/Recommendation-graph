@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import recng.common.FieldMetadata;
 import recng.common.FieldMetadataImpl;
+import recng.common.FieldType;
 import recng.common.TableMetadata;
 import recng.common.TableMetadataImpl;
 
@@ -19,10 +20,10 @@ public class TestTableMetadataImpl {
 
     private static final FieldMetadata PRICE =
         FieldMetadataImpl.create("Price",
-                                 FieldMetadata.Type.INT);
+                                 FieldType.INT);
     private static final FieldMetadata ISBN =
         FieldMetadataImpl.create("ISBN",
-                                 FieldMetadata.Type.STRING);
+                                 FieldType.STRING);
 
     @Test
     public void testGetFieldMetadata() {

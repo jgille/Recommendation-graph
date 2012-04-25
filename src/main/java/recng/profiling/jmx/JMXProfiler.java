@@ -6,16 +6,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import recng.jmx.AbstractMBean;
 import recng.profiling.Profiler;
 import recng.profiling.ProfilerEntry;
 import recng.profiling.ProfilerSettings;
 
-public class JMXProfiler implements JMXProfilerMBean {
+public class JMXProfiler extends AbstractMBean implements JMXProfilerMBean {
 
     private final Profiler profiler;
 
     public JMXProfiler(Profiler profiler) {
         this.profiler = profiler;
+        setBeanName(profiler.getClass().getName());
     }
 
     @Override
@@ -32,11 +34,6 @@ public class JMXProfiler implements JMXProfilerMBean {
             entries.add(stringProps);
         }
         return entries;
-    }
-
-    @Override
-    public String getProfilerClass() {
-        return profiler.getClass().getName();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package recng.common;
 
-import java.util.Date;
-
 /**
  * Metadata for a field (key) in a key/value pair.
  *
@@ -10,15 +8,15 @@ import java.util.Date;
 public class FieldMetadataImpl implements FieldMetadata {
     private final String fieldName;
     private final Marshaller marshaller;
-    private final Type type;
+    private final FieldType type;
     private final boolean repeated;
     private final boolean required;
     private final Object defaultValue;
 
-    private FieldMetadataImpl(String fieldName, Type type, boolean repeated,
+    private FieldMetadataImpl(String fieldName, FieldType type, boolean repeated,
                               boolean required, Object defaultValue) {
         this.fieldName = fieldName;
-        this.marshaller = createMarshaller(type, defaultValue);
+        this.marshaller = type.createMarshaller(defaultValue);
         this.type = type;
         this.repeated = repeated;
         this.required = required;
@@ -29,7 +27,7 @@ public class FieldMetadataImpl implements FieldMetadata {
      * Creates a non required, non repeated, no default value
      * {@link FieldMetadata} instance.
      */
-    public static FieldMetadata create(String fieldName, Type type) {
+    public static FieldMetadata create(String fieldName, FieldType type) {
         return new Builder(fieldName, type).build();
     }
 
@@ -44,7 +42,7 @@ public class FieldMetadataImpl implements FieldMetadata {
     }
 
     @Override
-    public Type getType() {
+    public FieldType getType() {
         return type;
     }
 
@@ -59,31 +57,6 @@ public class FieldMetadataImpl implements FieldMetadata {
                              fieldName, type, repeated);
     }
 
-    private static Marshaller createMarshaller(Type type, Object defaultValue) {
-        switch (type) {
-        case BYTE:
-            return new ByteMarshaller((Byte) defaultValue);
-        case SHORT:
-            return new ShortMarshaller((Short) defaultValue);
-        case INT:
-            return new IntegerMarshaller((Integer) defaultValue);
-        case LONG:
-            return new LongMarshaller((Long) defaultValue);
-        case FLOAT:
-            return new FloatMarshaller((Float) defaultValue);
-        case DOUBLE:
-            return new DoubleMarshaller((Double) defaultValue);
-        case BOOLEAN:
-            return new BooleanMarshaller((Boolean) defaultValue);
-        case STRING:
-            return new StringMarshaller((String) defaultValue);
-        case DATE:
-            return new DateMarshaller((Date) defaultValue);
-        default:
-            throw new IllegalArgumentException("Unknown type: " + type);
-        }
-    }
-
     @Override
     public Object getDefaultValue() {
         return defaultValue;
@@ -96,13 +69,13 @@ public class FieldMetadataImpl implements FieldMetadata {
 
     public static class Builder {
         private final String fieldName;
-        private final Type type;
+        private final FieldType type;
 
         private boolean repeated = false;
         private boolean required = false;
         private Object defaultValue;
 
-        public Builder(String fieldName, Type type) {
+        public Builder(String fieldName, FieldType type) {
             this.fieldName = fieldName;
             this.type = type;
         }

@@ -2,32 +2,77 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.avail.emark</groupId>
-	<artifactId>rec-graph</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
-	<name>eMark</name>
-	<url>http://www.avail.net/</url>
+	<groupId>recng</groupId>
+	<artifactId>recng</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 	<inceptionYear>2012</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java-version>1.6</java-version>
+		<org.springframework-version>3.1.0.RELEASE</org.springframework-version>
+		<org.slf4j-version>1.6.4</org.slf4j-version>
 	</properties>
-	
-	<repositories> 
-		<repository> 
-		    <id>orientechnologies-repository</id> 
-  		  	<name>Orient Technologies Maven2 Repository</name> 
-  			<url>http://www.orientechnologies.com/listing/m2</url> 
-  			<snapshots> 
-    			<enabled>true</enabled> 
-    			<updatePolicy>always</updatePolicy> 
-  			</snapshots> 
+
+	<repositories>
+		<repository>
+			<id>orientechnologies-repository</id>
+			<name>Orient Technologies Maven2 Repository</name>
+			<url>http://www.orientechnologies.com/listing/m2</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
 		</repository>
-	</repositories> 
-	
+	</repositories>
+
 	<dependencies>
 
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+
+		<!-- Mahaout -->
+
+		<dependency>
+			<groupId>org.apache.mahout</groupId>
+			<artifactId>mahout-collections</artifactId>
+			<version>1.0</version>
+		</dependency>
+
 		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -53,12 +98,6 @@
 		</dependency>
 
 		<!-- Data structures -->
-		<dependency>
-			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-			<version>3.0.2</version>
-		</dependency>
-
 		<!-- Mongo -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -74,34 +113,34 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- CSV support -->
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>2.0</version>
 		</dependency>
-		
+
 		<!-- H2, Java SQL database -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.3.162</version>
 		</dependency>
-		
+
 		<!-- Orient, Java embedded database -->
 		<dependency>
-		   <groupId>com.orientechnologies</groupId>
- 			<artifactId>orient-commons</artifactId>
- 			<version>1.0rc7</version>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orient-commons</artifactId>
+			<version>1.0rc7</version>
 		</dependency>
 
 		<dependency>
- 			<groupId>com.orientechnologies</groupId>
- 			<artifactId>orientdb-core</artifactId>
- 			<version>1.0rc7</version>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-core</artifactId>
+			<version>1.0rc7</version>
 		</dependency>
-		
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -115,7 +154,7 @@
 			<version>1.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.jmeter</groupId>
 			<artifactId>core</artifactId>
@@ -177,18 +216,9 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jar-plugin</artifactId> 
-				<configuration> <archive> <manifest> <addClasspath>true</addClasspath> <classpathPrefix>lib/</classpathPrefix> 
-				<mainClass>net.avail.emark.eMarketingSuite</mainClass> </manifest> <manifestEntries> 
-				<Title>The eMark Suite</Title> <Version>${project.version}</Version> <Vendor>Avail 
-				Intelligence AB</Vendor> </manifestEntries> </archive> </configuration> </plugin> -->
 		</plugins>
 	</build>
 
 
 
-	<scm>
-		<url>scm:git:ssh://repo.labs.avail.net:/var/git/java</url>
-	</scm>
 </project>

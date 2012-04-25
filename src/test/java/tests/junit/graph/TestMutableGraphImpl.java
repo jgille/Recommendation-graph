@@ -7,28 +7,23 @@ import java.util.List;
 import org.junit.Test;
 
 import recng.graph.*;
-import recng.recommendations.domain.RecommendationNodeType;
-import recng.recommendations.graph.RecommendationGraphMetadata;
-import recng.recommendations.graph.RecommendationEdgeType;
-
 import static org.junit.Assert.*;
 
 /**
  * Tests {@link MutableGraphImpl}.
- * 
+ *
  * @author jon
- * 
+ *
  */
 public class TestMutableGraphImpl {
 
-    private static final RecommendationEdgeType EDGE_TYPE =
-        RecommendationEdgeType.PEOPLE_WHO_BOUGHT;
+    private static final TestEdgeType EDGE_TYPE =
+        TestEdgeType.DEFAULT_EDGE_TYPE;
 
-    private static final RecommendationEdgeType SECONDARY_EDGE_TYPE =
-        RecommendationEdgeType.PEOPLE_WHO_VIEWED;
+    private static final TestEdgeType SECONDARY_EDGE_TYPE =
+        TestEdgeType.SECONDARY_EDGE_TYPE;
 
-    private static final GraphMetadata GRAPH_METADATA =
-        RecommendationGraphMetadata.getInstance();
+    private static final GraphMetadata GRAPH_METADATA = null; // TODO: Fixme
 
     @SuppressWarnings("unchecked")
     private static final List<NodeID<Integer>> NODES =
@@ -42,7 +37,7 @@ public class TestMutableGraphImpl {
                                         createProductID(7));
 
     private static NodeID<Integer> createProductID(int id) {
-        return new NodeID<Integer>(id, RecommendationNodeType.PRODUCT);
+        return new NodeID<Integer>(id, TestNodeType.DEFAULT_NODE_TYPE);
     }
 
     private MutableGraph<Integer> buildGraph() {

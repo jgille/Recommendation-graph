@@ -11,8 +11,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import recng.graph.*;
-import recng.recommendations.domain.RecommendationNodeType;
-import recng.recommendations.graph.RecommendationEdgeType;
 
 /**
  * Base class for testing {@link Graph}s.
@@ -22,12 +20,12 @@ import recng.recommendations.graph.RecommendationEdgeType;
  */
 public abstract class AbstractTestGraph {
 
-    private static final RecommendationEdgeType DEFAULT_EDGE_TYPE =
-        RecommendationEdgeType.PEOPLE_WHO_BOUGHT;
-    private static final RecommendationEdgeType SECONDARY_EDGE_TYPE =
-        RecommendationEdgeType.PEOPLE_WHO_VIEWED;
+    private static final EdgeType DEFAULT_EDGE_TYPE =
+        TestEdgeType.DEFAULT_EDGE_TYPE;
+    private static final EdgeType SECONDARY_EDGE_TYPE =
+        TestEdgeType.SECONDARY_EDGE_TYPE;
 
-    private static final NodeType NODE_TYPE = RecommendationNodeType.PRODUCT;
+    private static final NodeType NODE_TYPE = TestNodeType.DEFAULT_NODE_TYPE;
 
     private static final Integer N1 = 1;
     private static final Integer N2 = 2;
@@ -40,6 +38,11 @@ public abstract class AbstractTestGraph {
     private static final Float N2_N1 = 0.4f;
     private static final Float N3_N1 = 1.0f;
     private static final Float N4_N2 = 1.0f;
+
+    protected GraphMetadata getMetadata() {
+        // TODO: Implement
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Gets a builder used to create the graph.
